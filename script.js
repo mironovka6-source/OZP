@@ -127,7 +127,7 @@ function registerServiceWorker() {
         // Добавляем слушатель события load, чтобы Service Worker регистрировался после загрузки страницы
         window.addEventListener('load', () => {
             // Убедитесь, что sw.js лежит в корневой папке
-            navigator.serviceWorker.register('/sw.js') 
+            navigator.serviceWorker.register('sw.js') 
                 .then(registration => {
                     console.log('ServiceWorker успешно зарегистрирован:', registration.scope);
                 })
