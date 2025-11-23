@@ -9,29 +9,28 @@ const nextButton = document.getElementById('next-button');
 const resultsScreen = document.getElementById('results-screen');
 const scoreDisplay = document.getElementById('score');
 
-let questions = []; // Массив для хранения всех вопросов
+let questions = []; 
 let currentQuestionIndex = 0;
 let score = 0;
-let userSelection = null; // Выбор пользователя для текущего вопроса
+let userSelection = null; 
 
 /**
- * Загружает вопросы из JSON-файла.
+ * Асинхронно загружает вопросы из JSON-файла.
  */
 async function loadQuestions() {
     try {
-        // Запрос к файлу questions.json
-        const response = await fetch('questions.json');
+        // Убедитесь, что questions.json лежит в корневой папке
+        const response = await fetch('questions.json'); 
         questions = await response.json();
         
-        // Перемешивание вопросов (по желанию)
-        // questions.sort(() => Math.random() - 0.5); 
+        // questions.sort(() => Math.random() - 0.5); // Можно добавить перемешивание
         
         displayQuestion();
         quizContainer.style.display = 'block';
 
     } catch (error) {
         console.error('Ошибка загрузки вопросов:', error);
-        questionTextElement.textContent = 'Не удалось загрузить вопросы. Попробуйте обновить страницу.';
+        questionTextElement.textContent = 'Не удалось загрузить вопросы. Убедитесь, что questions.json существует.';
     }
 }
 
@@ -39,14 +38,19 @@ async function loadQuestions() {
  * Отображает текущий вопрос и варианты ответов.
  */
 function displayQuestion() {
+    // Проверка, достигнут ли конец теста
     if (currentQuestionIndex >= questions.length) {
         showResults();
         return;
     }
 
     const currentQ = questions[currentQuestionIndex];
+    
+    // Обновляем номер класса и текст вопроса
+    document.querySelector('.current-class').textContent = `Класс: ${currentQ.class}`;
     questionTextElement.textContent = currentQ.question;
-    answersArea.innerHTML = ''; // Очистка предыдущих ответов
+    
+    answersArea.innerHTML = ''; 
     nextButton.disabled = true;
     userSelection = null;
 
@@ -61,27 +65,25 @@ function displayQuestion() {
 }
 
 /**
- * Обработка выбора ответа пользователем.
+ * Обработка выбора ответа пользователем и проверка.
  */
 function handleAnswerSelect(event) {
-    // 1. Фиксируем выбор
     const selectedButton = event.target;
     userSelection = parseInt(selectedButton.dataset.answerId);
 
-    // 2. Блокируем все кнопки и снимаем выделение
+    // Блокируем все кнопки после выбора
     Array.from(answersArea.children).forEach(btn => {
         btn.disabled = true;
         btn.classList.remove('selected');
     });
 
-    // 3. Выделяем выбранный ответ
     selectedButton.classList.add('selected');
     nextButton.disabled = false;
     
-    // 4. Проверяем ответ и обновляем счет (добавляем класс для стилизации)
     const currentQ = questions[currentQuestionIndex];
     const isCorrect = currentQ.answers[userSelection].isCorrect;
 
+    // Подсчет баллов и стилизация
     if (isCorrect) {
         score++;
         selectedButton.classList.add('correct');
@@ -89,4 +91,55 @@ function handleAnswerSelect(event) {
         selectedButton.classList.add('wrong');
         // Показываем правильный ответ
         const correctIndex = currentQ.answers.findIndex(a => a.isCorrect);
-        answersArea.children[correctIndex].classList
+        if (correctIndex !== -1) {
+             answersArea.children[correctIndex].classList.add('correct');
+        }
+    }
+}
+
+/**
+ * Переход к следующему вопросу.
+ */
+nextButton.addEventListener('click', () => {
+    currentQuestionIndex++;
+    displayQuestion();
+});
+
+/**
+ * Отображение финального экрана результатов.
+ */
+function showResults() {
+    quizContainer.style.display = 'none';
+    resultsScreen.style.display = 'block';
+    scoreDisplay.textContent = `${score} из ${questions.length}`;
+}
+
+
+// ===============================================
+// ЧАСТЬ 2: РЕГИСТРАЦИЯ SERVICE WORKER (PWA)
+// ===============================================
+
+/**
+ * Регистрация Service Worker для обеспечения офлайн-функциональности.
+ */
+function registerServiceWorker() {
+    if ('serviceWorker' in navigator) {
+        // Добавляем слушатель события load, чтобы Service Worker регистрировался после загрузки страницы
+        window.addEventListener('load', () => {
+            // Убедитесь, что sw.js лежит в корневой папке
+            navigator.serviceWorker.register('/sw.js') 
+                .then(registration => {
+                    console.log('ServiceWorker успешно зарегистрирован:', registration.scope);
+                })
+                .catch(error => {
+                    console.error('Ошибка регистрации ServiceWorker. Убедитесь, что sw.js существует:', error);
+                });
+        });
+    }
+}
+
+// Запуск приложения
+document.addEventListener('DOMContentLoaded', () => {
+    registerServiceWorker(); // Сначала регистрируем PWA-часть
+    loadQuestions();         // Затем загружаем тест
+});
