@@ -1,11 +1,41 @@
-<div id="start-screen">
-    <h2>Выберите класс для прохождения теста</h2>
-    
-    <div id="class-selection"> 
-        <button data-class="5">5 класс</button>
-        <button data-class="6">6 класс</button>
-        <button data-class="7">7 класс</button>
-        <button data-class="8">8 класс</button>
-        <button data-class="9">9 класс</button>
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <title>Тест по Художественному труду</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+    <div id="start-screen">
+        <h2>Выберите класс для прохождения теста</h2>
+        <div id="class-selection"> 
+            <button data-class="5">5 класс</button>
+            <button data-class="6">6 класс</button>
+            <button data-class="7">7 класс</button>
+            <button data-class="8">8 класс</button>
+            <button data-class="9">9 класс</button>
+        </div>
     </div>
-</div>
+    
+    <main id="quiz-container" style="display:none;">
+        <h3 class="current-class">Класс: </h3>
+        <p id="question-text">Текст вопроса</p>
+        
+        <div id="answers-area">
+            </div>
+        
+        <button id="next-button" disabled>Следующий вопрос</button>
+    </main>
+
+    <div id="results-screen" style="display:none;">
+        <h3>Ваш результат:</h3>
+        <p id="score">0 из 0</p>
+        <div id="report-container">
+            </div>
+        <button onclick="location.reload()">Начать заново</button>
+    </div>
+
+    <script src="script.js"></script> 
+</body>
+</html>
