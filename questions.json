@@ -11,6 +11,18 @@
       {"text": "Фольга", "isCorrect": false}
     ]
   },
+ {
+    "id": 3,
+    "class": 7,
+    "topic": "Декоративно-прикладное искусство",
+    "question": "Какой вид росписи по ткани включает использование резервирующего (непропускающего краску) состава, чаще всего на основе воска?",
+    "answers": [
+      {"text": "Гуашь", "isCorrect": false},
+      {"text": "Акварель", "isCorrect": false},
+      {"text": "Батик", "isCorrect": true},
+      {"text": "Фреска", "isCorrect": false}
+    ]
+  },
   {
     "id": 2,
     "class": 6,
@@ -25,14 +37,14 @@
   },
   {
     "id": 3,
-    "class": 7,
+    "class": 8,
     "topic": "Декоративно-прикладное искусство",
-    "question": "Какой вид росписи по ткани включает использование резервирующего (непропускающего краску) состава, чаще всего на основе воска?",
+    "question": "Что является основным языком живописи?",
     "answers": [
-      {"text": "Гуашь", "isCorrect": false},
-      {"text": "Акварель", "isCorrect": false},
-      {"text": "Батик", "isCorrect": true},
-      {"text": "Фреска", "isCorrect": false}
+      {"text": "Линия", "isCorrect": false},
+      {"text": "Объем", "isCorrect": false},
+      {"text": "Цвет", "isCorrect": true},
+      {"text": "Фактура", "isCorrect": false}
     ]
   },
   {
