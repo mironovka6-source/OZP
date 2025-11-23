@@ -1,1 +1,110 @@
+/* --- ОСНОВНЫЕ СТИЛИ КОНТЕЙНЕРА --- */
+body {
+    font-family: Arial, sans-serif;
+    background-color: #f4f4f9;
+    padding: 20px;
+}
 
+.container {
+    max-width: 600px;
+    margin: 0 auto;
+    background-color: #fff;
+    padding: 30px;
+    border-radius: 10px;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+}
+
+/* --- СТИЛИ ДЛЯ ВЫБОРА КЛАССА --- */
+#class-selection button {
+    padding: 10px 20px;
+    margin: 5px;
+    font-size: 16px;
+    cursor: pointer;
+    border: 1px solid #007bff;
+    background-color: #fff;
+    color: #007bff;
+    border-radius: 5px;
+    transition: background-color 0.2s;
+}
+
+#class-selection button:hover {
+    background-color: #007bff;
+    color: white;
+}
+
+/* --- СТИЛИ КНОПОК ОТВЕТОВ В ТЕСТЕ --- */
+#answers-area {
+    display: grid;
+    gap: 10px;
+    margin-bottom: 20px;
+}
+
+.answer-btn {
+    padding: 15px;
+    font-size: 16px;
+    border: 1px solid #ccc;
+    background-color: #f9f9f9;
+    cursor: pointer;
+    border-radius: 5px;
+    transition: background-color 0.2s, color 0.2s;
+}
+
+.answer-btn:hover:not(:disabled) {
+    background-color: #e0e0e0;
+}
+
+/* --- ЦВЕТОВАЯ ИНДИКАЦИЯ В ПРОЦЕССЕ ТЕСТА --- */
+
+/* Кнопка с правильным ответом (ВСЕГДА ЗЕЛЕНАЯ) */
+.answer-btn.correct {
+    background-color: #28a745; /* Зеленый фон */
+    color: white;
+    font-weight: bold;
+    border-color: #28a745;
+}
+
+/* Кнопка с неправильным ответом пользователя (КРАСНАЯ) */
+.answer-btn.wrong {
+    background-color: #dc3545; /* Красный фон */
+    color: white;
+    font-weight: bold;
+    border-color: #dc3545;
+}
+
+/* --- СТИЛИ ДЛЯ ДЕТАЛЬНОГО ОТЧЕТА --- */
+
+#report-container {
+    margin-top: 20px;
+    padding-top: 10px;
+    border-top: 1px solid #ddd;
+}
+
+.report-item {
+    border: 1px solid #eee;
+    padding: 15px;
+    margin-bottom: 10px;
+    border-radius: 8px;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+}
+
+/* ЦВЕТОВАЯ ИНДИКАЦИЯ В ОТЧЕТЕ */
+
+/* Текст (Правильный ответ) */
+.report-item span.correct {
+    color: #28a745; /* Зеленый текст */
+    font-weight: bold;
+}
+
+/* Текст (Ответ пользователя, если он неправильный) */
+.report-item span.wrong {
+    color: #dc3545; /* Красный текст */
+    font-weight: bold;
+}
+
+/* Общий статус в отчете */
+.report-item .status.report-correct {
+    color: #28a745;
+}
+.report-item .status.report-wrong {
+    color: #dc3545;
+}
