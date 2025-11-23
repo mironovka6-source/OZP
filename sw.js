@@ -66,4 +66,37 @@ self.addEventListener('fetch', event => {
     // Сначала пытаемся найти ответ в кэше
     caches.match(event.request)
       .then(response => {
-        //
+        // Если ответ найден в кэше, возвращаем его (ОФФЛАЙН!)
+        if (response) {
+          return response;
+        }
+
+        // Если в кэше нет, делаем обычный запрос в сеть
+        return fetch(event.request)
+          .then(networkResponse => {
+            // Проверяем, что ответ действителен (не 404, не ошибка)
+            if (!networkResponse || networkResponse.status !== 200 || networkResponse.type !== 'basic') {
+              return networkResponse;
+            }
+
+            // Клонируем ответ. Один идет в браузер, другой - в кэш.
+            const responseToCache = networkResponse.clone();
+            
+            // Если запрос GET, кэшируем его для будущих офлайн-сессий
+            if (event.request.method === 'GET') {
+                caches.open(CACHE_NAME)
+                    .then(cache => {
+                        cache.put(event.request, responseToCache);
+                    });
+            }
+
+            return networkResponse;
+          });
+      })
+      .catch(error => {
+        console.error('Fetch error:', error);
+        // Можно вернуть офлайн-страницу, если нужно
+        // return caches.match('/offline.html');
+      })
+  );
+});
