@@ -1,1 +1,45 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Тесты по Художественному Труду | PWA</title>
+    
+    <link rel="manifest" href="/manifest.json">
+    
+    <link rel="stylesheet" href="style.css">
+    
+    <meta name="theme-color" content="#007bff">
+    <link rel="apple-touch-icon" href="/icons/icon-192x192.png">
+</head>
+<body>
 
+    <header>
+        <h1>Тестирование: Художественный Труд (5-9 классы)</h1>
+    </header>
+
+    <main id="quiz-container">
+        <section id="question-area">
+            <p class="current-class">Класс: 5</p>
+            <h2 id="question-text">Загрузка вопроса...</h2>
+        </section>
+
+        <section id="answers-area">
+            <button class="answer-btn" data-answer-id="1">Вариант A</button>
+            <button class="answer-btn" data-answer-id="2">Вариант B</button>
+            <button class="answer-btn" data-answer-id="3">Вариант C</button>
+            <button class="answer-btn" data-answer-id="4">Вариант D</button>
+        </section>
+        
+        <button id="next-button" disabled>Следующий вопрос</button>
+    </main>
+
+    <div id="results-screen" style="display:none;">
+        <h3>Ваш результат:</h3>
+        <p id="score">0 из 50</p>
+        <button onclick="location.reload()">Начать заново</button>
+    </div>
+
+    <script src="script.js"></script>
+</body>
+</html>
