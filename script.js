@@ -2,6 +2,7 @@
 // ОСНОВНЫЕ ПЕРЕМЕННЫЕ И УТИЛИТЫ
 // ===============================================
 
+// Получение элементов DOM (важно: ID должны совпадать с index.html!)
 const startScreen = document.getElementById('start-screen');
 const quizContainer = document.getElementById('quiz-container');
 const questionTextElement = document.getElementById('question-text');
@@ -9,16 +10,17 @@ const answersArea = document.getElementById('answers-area');
 const nextButton = document.getElementById('next-button');
 const resultsScreen = document.getElementById('results-screen');
 const scoreDisplay = document.getElementById('score');
-const classSelectionArea = document.getElementById('class-selection');
+const classSelectionArea = document.getElementById('class-selection'); // Контейнер кнопок выбора класса
 
-let allQuestions = []; // Для хранения всех вопросов из JSON
-let questions = []; // Отфильтрованные и перемешанные вопросы
+let allQuestions = []; // Хранит все вопросы из questions.json
+let questions = []; // Отфильтрованные, перемешанные вопросы для текущего теста
 let currentQuestionIndex = 0;
 let score = 0;
-let answerHistory = []; // Для хранения истории ответов
+let answerHistory = []; // Хранит историю ответов пользователя
 
 /**
- * Утилита для случайного перемешивания массива (используется для вопросов и ответов).
+ * Утилита для случайного перемешивания массива (Fisher-Yates).
+ * Используется для перемешивания вопросов и вариантов ответов.
  */
 function shuffleArray(array) {
     for (let i = array.length - 1; i > 0; i--) {
@@ -28,35 +30,41 @@ function shuffleArray(array) {
 }
 
 // ===============================================
-// ЧАСТЬ 1: ЗАГРУЗКА И НАЧАЛО ТЕСТА
+// ЧАСТЬ 1: ЗАГРУЗКА И НАЧАЛО ТЕСТА (Выбор класса)
 // ===============================================
 
 /**
- * Загружает вопросы один раз при запуске.
+ * Асинхронно загружает все вопросы из JSON-файла.
+ * Назначает обработчики событий кнопкам выбора класса.
  */
 async function loadQuestions() {
     try {
-        const response = await fetch('questions.json');
+        const response = await fetch('questions.json'); 
         allQuestions = await response.json();
         
-        // Добавляем слушатели к кнопкам классов
-        Array.from(classSelectionArea.children).forEach(button => {
-            button.addEventListener('click', handleClassSelect);
-        });
+        // Добавляем слушатели к кнопкам классов, если контейнер найден (Fix для ошибки null)
+        if (classSelectionArea) {
+            Array.from(classSelectionArea.children).forEach(button => {
+                button.addEventListener('click', handleClassSelect);
+            });
+        }
 
     } catch (error) {
         console.error('Ошибка загрузки вопросов:', error);
-        questionTextElement.textContent = 'Не удалось загрузить вопросы.';
+        if (questionTextElement) {
+            questionTextElement.textContent = 'Не удалось загрузить вопросы. Проверьте файл questions.json.';
+        }
     }
 }
 
 /**
  * Обработка выбора класса пользователем.
+ * Фильтрует, перемешивает вопросы и запускает тест.
  */
 function handleClassSelect(event) {
     const selectedClass = parseInt(event.target.dataset.class);
     
-    // 1. Фильтруем вопросы по классу
+    // 1. Фильтруем вопросы по выбранному классу
     questions = allQuestions.filter(q => q.class === selectedClass);
     
     if (questions.length === 0) {
@@ -73,10 +81,15 @@ function handleClassSelect(event) {
     answerHistory = [];
 
     // 4. Скрываем начальный экран и показываем тест
-    startScreen.style.display = 'none';
-    quizContainer.style.display = 'block';
+    if (startScreen) startScreen.style.display = 'none';
+    if (quizContainer) quizContainer.style.display = 'block';
     
-    document.querySelector('.current-class').textContent = `Класс: ${selectedClass}`;
+    // Обновляем отображение класса
+    const classDisplay = document.querySelector('.current-class');
+    if (classDisplay) {
+        classDisplay.textContent = `Класс: ${selectedClass}`;
+    }
+    
     displayQuestion();
 }
 
@@ -99,15 +112,15 @@ function displayQuestion() {
     answersArea.innerHTML = ''; 
     nextButton.disabled = true;
 
-    // Перемешиваем варианты ответов
-    const shuffledAnswers = [...currentQ.answers]; // Клонируем массив ответов
+    // Перемешиваем варианты ответов перед отображением
+    const shuffledAnswers = [...currentQ.answers]; 
     shuffleArray(shuffledAnswers);
 
-    shuffledAnswers.forEach((answer, index) => {
+    shuffledAnswers.forEach((answer) => {
         const button = document.createElement('button');
         button.classList.add('answer-btn');
         button.textContent = answer.text;
-        // Используем текст ответа, чтобы найти его в исходном массиве при проверке
+        // Используем текст ответа, чтобы найти его при проверке
         button.dataset.answerText = answer.text; 
         button.addEventListener('click', handleAnswerSelect);
         answersArea.appendChild(button);
@@ -115,7 +128,7 @@ function displayQuestion() {
 }
 
 /**
- * Обработка выбора ответа пользователем и запись в историю.
+ * Обработка выбора ответа пользователем, стилизация и запись в историю.
  */
 function handleAnswerSelect(event) {
     const selectedButton = event.target;
@@ -132,7 +145,7 @@ function handleAnswerSelect(event) {
     
     const currentQ = questions[currentQuestionIndex];
     
-    // Находим выбранный ответ в исходном массиве для проверки isCorrect
+    // Находим выбранный ответ и правильный ответ для проверки и записи
     const selectedAnswer = currentQ.answers.find(a => a.text === selectedAnswerText);
     const isCorrect = selectedAnswer.isCorrect;
     const correctAnswerText = currentQ.answers.find(a => a.isCorrect).text;
@@ -140,9 +153,10 @@ function handleAnswerSelect(event) {
     // Стилизация выбранного ответа и правильного
     if (isCorrect) {
         score++;
-        selectedButton.classList.add('correct');
+        selectedButton.classList.add('correct'); // Зеленый
     } else {
-        selectedButton.classList.add('wrong');
+        selectedButton.classList.add('wrong'); // Красный
+        
         // Показываем правильный ответ
         const correctButton = Array.from(answersArea.children)
             .find(btn => btn.dataset.answerText === correctAnswerText);
@@ -164,10 +178,12 @@ function handleAnswerSelect(event) {
 /**
  * Переход к следующему вопросу.
  */
-nextButton.addEventListener('click', () => {
-    currentQuestionIndex++;
-    displayQuestion();
-});
+if (nextButton) {
+    nextButton.addEventListener('click', () => {
+        currentQuestionIndex++;
+        displayQuestion();
+    });
+}
 
 
 // ===============================================
@@ -178,9 +194,9 @@ nextButton.addEventListener('click', () => {
  * Отображение финального экрана результатов и детального отчета.
  */
 function showResults() {
-    quizContainer.style.display = 'none';
-    resultsScreen.style.display = 'block';
-    scoreDisplay.textContent = `${score} из ${questions.length}`;
+    if (quizContainer) quizContainer.style.display = 'none';
+    if (resultsScreen) resultsScreen.style.display = 'block';
+    if (scoreDisplay) scoreDisplay.textContent = `${score} из ${questions.length}`;
 
     generateDetailedReport(); 
 }
@@ -191,11 +207,14 @@ function showResults() {
 function generateDetailedReport() {
     let reportContainer = document.getElementById('report-container'); 
     
-    if (!reportContainer) {
+    if (!reportContainer && resultsScreen) {
+        // Создаем контейнер, если он еще не добавлен в HTML
         reportContainer = document.createElement('div');
         reportContainer.id = 'report-container';
         resultsScreen.appendChild(reportContainer);
     }
+    
+    if (!reportContainer) return; // Выход, если контейнер результатов отсутствует
     
     reportContainer.innerHTML = '<h2>Детальный отчет:</h2>';
 
@@ -218,13 +237,16 @@ function generateDetailedReport() {
 
 
 // ===============================================
-// ЧАСТЬ 4: РЕГИСТРАЦИЯ SW И ЗАПУСК
+// ЧАСТЬ 4: РЕГИСТРАЦИЯ SW И ЗАПУСК ПРИЛОЖЕНИЯ
 // ===============================================
 
+/**
+ * Регистрация Service Worker для обеспечения офлайн-функциональности.
+ */
 function registerServiceWorker() {
     if ('serviceWorker' in navigator) {
         window.addEventListener('load', () => {
-            // Используем относительный путь для совместимости с GitHub Pages
+            // Использование относительного пути ('sw.js') для совместимости с GitHub Pages
             navigator.serviceWorker.register('sw.js') 
                 .then(registration => {
                     console.log('ServiceWorker успешно зарегистрирован:', registration.scope);
@@ -236,7 +258,7 @@ function registerServiceWorker() {
     }
 }
 
-// Запуск приложения
+// Запуск приложения: регистрация Service Worker и загрузка вопросов
 document.addEventListener('DOMContentLoaded', () => {
     registerServiceWorker();
     loadQuestions();
