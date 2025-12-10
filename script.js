@@ -1,12 +1,187 @@
+// *** ВСТАВЬТЕ СЮДА ВАШУ RAW ССЫЛКУ С GITHUB ***
+const JSON_URL = "ВАША_СЫРАЯ_ССЫЛКА_НА_QUESTIONS.JSON_ЗДЕСЬ"; 
+// Пример: "https://raw.githubusercontent.com/username/repo/branch/questions.json"
+
+
+// --- Переменные состояния ---
+let quizData = {}; // Сюда загрузятся вопросы
+let currentClass = null;
+let currentQuestions = [];
+let userAnswers = [];
+let currentQuestionIndex = 0;
+
+// --- DOM Элементы (Остаются прежними) ---
+const startScreen = document.getElementById('start-screen');
+const quizContainer = document.getElementById('quiz-container');
+const resultsScreen = document.getElementById('results-screen');
+const classButtons = document.querySelectorAll('#class-selection button');
+
+const questionText = document.getElementById('question-text');
+const answersArea = document.getElementById('answers-area');
+const navigationPanel = document.getElementById('navigation-panel');
+const progressCounter = document.getElementById('progress-counter');
+const selectedClassSpan = document.getElementById('selected-class');
+
+const prevButton = document.getElementById('prev-button');
+const nextButton = document.getElementById('next-button');
+const finishButton = document.getElementById('finish-button');
+const restartButton = document.getElementById('restart-button');
+const scoreDisplay = document.getElementById('score');
+const reportContainer = document.getElementById('report-container');
+
+// --- ЗАГРУЗКА И ОБРАБОТКА ДАННЫХ С GITHUB ---
+async function loadAndProcessQuestions() {
+    try {
+        // Используем удаленный URL
+        const response = await fetch(JSON_URL);
+        
+        if (!response.ok) {
+            throw new Error(`Ошибка HTTP: ${response.status}. Не удалось загрузить данные с GitHub.`);
+        }
+
+        const rawData = await response.json();
+        
+        // Обработка данных
+        rawData.forEach(item => {
+            if (!quizData[item.class]) {
+                quizData[item.class] = [];
+            }
+            const correctIndex = item.answers.findIndex(answer => answer.isCorrect === true);
+            const answersList = item.answers.map(answer => answer.text);
+
+            quizData[item.class].push({
+                question: item.question,
+                answers: answersList,
+                correct: correctIndex,
+                topic: item.topic
+            });
+        });
+        console.log("Вопросы успешно загружены с GitHub!");
+
+    } catch (error) {
+        console.error("Ошибка загрузки вопросов:", error);
+        alert("Не удалось загрузить вопросы с GitHub! Проверьте ссылку Raw URL и консоль.");
+    }
+}
+
+// Запускаем загрузку сразу при старте страницы
+loadAndProcessQuestions();
+
+
+// --- ЛОГИКА ТЕСТА (Остается без изменений) ---
+
+function startQuiz(classNum) {
+    if (Object.keys(quizData).length === 0) {
+        alert("Данные еще не загрузились. Пожалуйста, подождите.");
+        return;
+    }
+
+    currentClass = classNum;
+    
+    if (!quizData[classNum] || quizData[classNum].length === 0) {
+        alert("Для этого класса вопросов пока нет в базе!");
+        return;
+    }
+
+    currentQuestions = quizData[classNum];
+    userAnswers = new Array(currentQuestions.length).fill(null);
+    currentQuestionIndex = 0;
+
+    selectedClassSpan.textContent = classNum;
+    startScreen.style.display = 'none';
+    quizContainer.style.display = 'block';
+    
+    finishButton.style.display = 'inline-block';
+    finishButton.disabled = false;
+
+    createNavigationPanel();
+    renderQuestion();
+}
+
+function createNavigationPanel() {
+    navigationPanel.innerHTML = '';
+    currentQuestions.forEach((_, index) => {
+        const dot = document.createElement('div');
+        dot.classList.add('nav-dot');
+        dot.textContent = index + 1;
+        dot.onclick = () => {
+            currentQuestionIndex = index;
+            renderQuestion();
+        };
+        navigationPanel.appendChild(dot);
+    });
+}
+
+function renderQuestion() {
+    const questionData = currentQuestions[currentQuestionIndex];
+    
+    let questionTitle = `${currentQuestionIndex + 1}. ${questionData.question}`;
+    if(questionData.topic) {
+        questionTitle = `<small style="color: #7f8c8d;">Тема: ${questionData.topic}</small><br>` + questionTitle;
+    }
+
+    questionText.innerHTML = questionTitle;
+
+    answersArea.innerHTML = '';
+    questionData.answers.forEach((answer, index) => {
+        const btn = document.createElement('button');
+        btn.classList.add('answer-option');
+        btn.textContent = answer;
+        
+        if (userAnswers[currentQuestionIndex] === index) {
+            btn.classList.add('selected');
+        }
+
+        btn.onclick = () => selectAnswer(index);
+        answersArea.appendChild(btn);
+    });
+
+    updateControls();
+    updateNavigationDots();
+
+    const answeredCount = userAnswers.filter(a => a !== null).length;
+    progressCounter.textContent = `Отвечено: ${answeredCount} из ${currentQuestions.length}`;
+}
+
+function selectAnswer(index) {
+    userAnswers[currentQuestionIndex] = index;
+    renderQuestion();
+}
+
+function updateControls() {
+    prevButton.disabled = currentQuestionIndex === 0;
+    nextButton.disabled = currentQuestionIndex === currentQuestions.length - 1;
+    
+    if (currentQuestionIndex === currentQuestions.length - 1) {
+        nextButton.style.display = 'none';
+        finishButton.style.display = 'inline-block';
+    } else {
+        nextButton.style.display = 'inline-block';
+        finishButton.style.display = 'inline-block';
+    }
+}
+
+function updateNavigationDots() {
+    const dots = document.querySelectorAll('.nav-dot');
+    dots.forEach((dot, index) => {
+        dot.classList.remove('active', 'answered');
+        if (index === currentQuestionIndex) {
+            dot.classList.add('active');
+        }
+        if (userAnswers[index] !== null) {
+            dot.classList.add('answered');
+        }
+    });
+}
+
 function showResults() {
     let score = 0;
-    // Убрана внешняя стилизация, чтобы отчет выглядел чище
     let reportHTML = '<div style="text-align:left; max-height: 300px; overflow-y: auto; padding: 10px;">';
     const totalQuestions = currentQuestions.length;
 
     currentQuestions.forEach((q, index) => {
         const userAnswer = userAnswers[index];
-        const isAnswered = userAnswer !== null; // Проверяем, был ли дан ответ
+        const isAnswered = userAnswer !== null; 
         const isCorrect = userAnswer === q.correct;
         
         if (isCorrect) score++;
@@ -19,11 +194,9 @@ function showResults() {
             feedbackText = '✅';
             resultClass += ' correct';
         } else if (isAnswered && !isCorrect) {
-            // Пользователь ответил, но ошибся - показываем правильный ответ
             feedbackText = `❌ (Правильно: ${q.answers[q.correct]})`;
             resultClass += ' wrong';
         } else {
-            // Пользователь не ответил - не показываем правильный ответ
             feedbackText = '— Пропущен';
             resultClass += ' skipped';
         }
@@ -38,7 +211,6 @@ function showResults() {
     });
     reportHTML += '</div>';
     
-    // Расчет процентов
     let percentage = 0;
     if (totalQuestions > 0) {
         percentage = ((score / totalQuestions) * 100).toFixed(0);
@@ -52,5 +224,3 @@ function showResults() {
     quizContainer.style.display = 'none';
     resultsScreen.style.display = 'block';
 }
-
-// *** ОСТАЛЬНАЯ ЧАСТЬ КОДА script.js ОСТАЕТСЯ БЕЗ ИЗМЕНЕНИЙ ***
