@@ -15,12 +15,49 @@ let isTestRunning = false;
 document.addEventListener('DOMContentLoaded', function() {
     console.log('🚀 DOM загружен, инициализация приложения');
     
-    // Сначала настраиваем все обработчики
+    // Создаем кнопку "Завершить" если её нет в HTML
+    ensureFinishButtonExists();
+    
+    // Создаем контейнер для отчета если его нет
+    ensureReportContainerExists();
+    
+    // Настраиваем все обработчики
     setupAllEventListeners();
     
-    // Затем загружаем вопросы
+    // Загружаем вопросы
     loadQuestions();
 });
+
+// ===============================================
+// СОЗДАНИЕ ОТСУТСТВУЮЩИХ ЭЛЕМЕНТОВ
+// ===============================================
+function ensureFinishButtonExists() {
+    const finishButton = document.getElementById('finish-button');
+    if (!finishButton) {
+        console.log('➕ Создаю кнопку "Завершить"');
+        const buttonsContainer = document.querySelector('.buttons-container');
+        if (buttonsContainer) {
+            const newFinishButton = document.createElement('button');
+            newFinishButton.id = 'finish-button';
+            newFinishButton.textContent = '🏁 Завершить тест';
+            newFinishButton.style.display = 'none';
+            buttonsContainer.appendChild(newFinishButton);
+        }
+    }
+}
+
+function ensureReportContainerExists() {
+    const reportContainer = document.getElementById('report-container');
+    if (!reportContainer) {
+        console.log('➕ Создаю контейнер для отчета');
+        const resultsScreen = document.getElementById('results-screen');
+        if (resultsScreen) {
+            const newReportContainer = document.createElement('div');
+            newReportContainer.id = 'report-container';
+            resultsScreen.appendChild(newReportContainer);
+        }
+    }
+}
 
 // ===============================================
 // НАСТРОЙКА ВСЕХ ОБРАБОТЧИКОВ СОБЫТИЙ
@@ -29,6 +66,16 @@ function setupAllEventListeners() {
     console.log('🔧 Настройка обработчиков событий...');
     
     // 1. Обработчики для кнопок классов
+    setupClassButtons();
+    
+    // 2. Обработчики для навигации
+    setupNavigationButtons();
+    
+    // 3. Обработчик для кнопки "Начать заново"
+    setupRestartButton();
+}
+
+function setupClassButtons() {
     const classButtons = document.querySelectorAll('#class-selection button');
     classButtons.forEach(button => {
         // Очищаем старые обработчики
@@ -47,8 +94,9 @@ function setupAllEventListeners() {
             startTest(classNum);
         });
     });
-    
-    // 2. Обработчики для навигации
+}
+
+function setupNavigationButtons() {
     const prevButton = document.getElementById('prev-button');
     const nextButton = document.getElementById('next-button');
     const finishButton = document.getElementById('finish-button');
@@ -63,25 +111,31 @@ function setupAllEventListeners() {
     
     if (finishButton) {
         finishButton.addEventListener('click', handleFinishButton);
-    }
-    
-    // 3. Обработчик для кнопки "Начать заново"
-    const restartButton = document.getElementById('restart-button');
-    if (restartButton) {
-        restartButton.addEventListener('click', handleRestartButton);
+        console.log('✅ Обработчик для кнопки "Завершить" настроен');
     } else {
+        console.error('❌ Кнопка "Завершить" не найдена');
+    }
+}
+
+function setupRestartButton() {
+    let restartButton = document.getElementById('restart-button');
+    
+    if (!restartButton) {
         // Создаем кнопку если её нет
         const resultsScreen = document.getElementById('results-screen');
         if (resultsScreen) {
-            const newRestartButton = document.createElement('button');
-            newRestartButton.id = 'restart-button';
-            newRestartButton.textContent = '🔄 Начать заново';
-            newRestartButton.addEventListener('click', handleRestartButton);
-            resultsScreen.appendChild(newRestartButton);
+            restartButton = document.createElement('button');
+            restartButton.id = 'restart-button';
+            restartButton.textContent = '🔄 Начать заново';
+            resultsScreen.appendChild(restartButton);
+            console.log('➕ Создана кнопка "Начать заново"');
         }
     }
     
-    console.log('✅ Обработчики событий настроены');
+    if (restartButton) {
+        restartButton.addEventListener('click', handleRestartButton);
+        console.log('✅ Обработчик для кнопки "Начать заново" настроен');
+    }
 }
 
 // ===============================================
@@ -167,7 +221,7 @@ function startTest(classNum) {
     
     // Устанавливаем состояние
     currentClass = classNum;
-    questions = [...classQuestions]; // Копируем массив
+    questions = [...classQuestions];
     currentQuestionIndex = 0;
     score = 0;
     answerHistory = new Array(questions.length).fill(null);
@@ -284,8 +338,19 @@ function displayCurrentQuestion() {
     
     // Проверяем, последний ли это вопрос
     const isLastQuestion = currentQuestionIndex === questions.length - 1;
-    document.getElementById('next-button').style.display = isLastQuestion ? 'none' : 'inline-block';
-    document.getElementById('finish-button').style.display = isLastQuestion ? 'inline-block' : 'none';
+    
+    // Получаем кнопки
+    const nextButton = document.getElementById('next-button');
+    const finishButton = document.getElementById('finish-button');
+    
+    if (nextButton) {
+        nextButton.style.display = isLastQuestion ? 'none' : 'inline-block';
+    }
+    
+    if (finishButton) {
+        finishButton.style.display = isLastQuestion ? 'inline-block' : 'none';
+        console.log(`🎯 Кнопка "Завершить": ${finishButton.style.display}`);
+    }
     
     // Создаем варианты ответов
     const letters = ['А', 'Б', 'В', 'Г'];
@@ -339,7 +404,6 @@ function handleAnswerClick(event) {
     // Показываем правильность ответа
     if (isCorrect) {
         answerElement.classList.add('correct');
-        score++;
     } else {
         answerElement.classList.add('wrong');
         
@@ -386,6 +450,7 @@ function handleNextButton() {
 }
 
 function handleFinishButton() {
+    console.log('🎯 Нажата кнопка "Завершить"');
     showResults();
 }
 
@@ -397,29 +462,62 @@ function handleRestartButton() {
 // ПОКАЗ РЕЗУЛЬТАТОВ
 // ===============================================
 function showResults() {
+    console.log('🏁 Показ результатов теста');
     isTestRunning = false;
     
-    // Подсчитываем правильные ответы (на всякий случай)
+    // Подсчитываем правильные ответы
     const correctAnswers = answerHistory.filter(answer => answer && answer.isCorrect).length;
     score = correctAnswers;
     
-    console.log(`🏁 Тест завершен. Результат: ${score}/${questions.length}`);
+    console.log(`🏆 Результат: ${score} из ${questions.length}`);
     
     // Переключаем экраны
     document.getElementById('quiz-container').style.display = 'none';
     document.getElementById('results-screen').style.display = 'block';
     
     // Обновляем счет
-    document.getElementById('score').textContent = `${score} из ${questions.length}`;
+    const scoreElement = document.getElementById('score');
+    if (scoreElement) {
+        scoreElement.textContent = `${score} из ${questions.length}`;
+    } else {
+        console.error('❌ Элемент #score не найден');
+    }
     
     // Генерируем отчет
     generateReport();
 }
 
 function generateReport() {
-    const reportContainer = document.getElementById('report-container');
-    reportContainer.innerHTML = '<h3>Детальный отчет:</h3>';
+    console.log('📊 Генерация отчета...');
     
+    const reportContainer = document.getElementById('report-container');
+    if (!reportContainer) {
+        console.error('❌ Контейнер для отчета не найден');
+        return;
+    }
+    
+    // Очищаем контейнер
+    reportContainer.innerHTML = '';
+    
+    // Добавляем заголовок
+    const title = document.createElement('h3');
+    title.textContent = 'Детальный отчет:';
+    title.style.marginBottom = '20px';
+    title.style.color = '#333';
+    reportContainer.appendChild(title);
+    
+    // Проверяем, есть ли ответы
+    if (answerHistory.length === 0) {
+        const noAnswers = document.createElement('p');
+        noAnswers.textContent = 'Нет данных для отчета';
+        noAnswers.style.color = '#666';
+        noAnswers.style.textAlign = 'center';
+        noAnswers.style.padding = '20px';
+        reportContainer.appendChild(noAnswers);
+        return;
+    }
+    
+    // Создаем элементы отчета
     answerHistory.forEach((answer, index) => {
         if (answer === null) return;
         
@@ -428,32 +526,66 @@ function generateReport() {
         
         const reportItem = document.createElement('div');
         reportItem.className = `report-item ${isCorrect ? 'correct' : 'incorrect'}`;
-        
-        reportItem.innerHTML = `
-            <div class="report-question">
-                <strong>Вопрос ${index + 1}:</strong> ${question.question}
-            </div>
-            <div class="report-answer">
-                <span class="${isCorrect ? 'correct-answer' : 'wrong-answer'}">
-                    Ваш ответ: ${answer.text} ${isCorrect ? '✅' : '❌'}
-                </span>
-            </div>
+        reportItem.style.cssText = `
+            padding: 15px;
+            margin-bottom: 15px;
+            border-radius: 8px;
+            border-left: 5px solid ${isCorrect ? '#2ecc71' : '#e74c3c'};
+            background: ${isCorrect ? '#f0fff4' : '#fff5f5'};
         `;
+        
+        // Вопрос
+        const questionDiv = document.createElement('div');
+        questionDiv.className = 'report-question';
+        questionDiv.innerHTML = `<strong>Вопрос ${index + 1}:</strong> ${question.question}`;
+        questionDiv.style.marginBottom = '10px';
+        questionDiv.style.fontSize = '16px';
+        
+        // Ответ пользователя
+        const userAnswerDiv = document.createElement('div');
+        userAnswerDiv.className = 'report-answer';
+        userAnswerDiv.innerHTML = `
+            <span style="color: ${isCorrect ? '#27ae60' : '#e74c3c'}; font-weight: bold;">
+                Ваш ответ: ${answer.text} ${isCorrect ? '✅' : '❌'}
+            </span>
+        `;
+        userAnswerDiv.style.marginBottom = '5px';
+        
+        reportItem.appendChild(questionDiv);
+        reportItem.appendChild(userAnswerDiv);
         
         // Если ответ неправильный, показываем правильный
         if (!isCorrect) {
             const correctAnswer = question.answers.find(a => a.isCorrect);
             if (correctAnswer) {
-                reportItem.innerHTML += `
-                    <div class="correct-answer">
+                const correctAnswerDiv = document.createElement('div');
+                correctAnswerDiv.className = 'correct-answer';
+                correctAnswerDiv.innerHTML = `
+                    <span style="color: #27ae60; font-weight: bold;">
                         Правильный ответ: ${correctAnswer.text} ✅
-                    </div>
+                    </span>
                 `;
+                correctAnswerDiv.style.marginTop = '5px';
+                reportItem.appendChild(correctAnswerDiv);
             }
         }
         
+        // Статистика по вопросу
+        const statsDiv = document.createElement('div');
+        statsDiv.style.cssText = `
+            margin-top: 10px;
+            padding-top: 10px;
+            border-top: 1px solid ${isCorrect ? '#d4edda' : '#f8d7da'};
+            font-size: 14px;
+            color: #666;
+        `;
+        statsDiv.innerHTML = `Статус: ${isCorrect ? '<span style="color:#27ae60">Правильно</span>' : '<span style="color:#e74c3c">Неправильно</span>'}`;
+        reportItem.appendChild(statsDiv);
+        
         reportContainer.appendChild(reportItem);
     });
+    
+    console.log(`✅ Отчет сгенерирован: ${answerHistory.filter(a => a !== null).length} ответов`);
 }
 
 // ===============================================
@@ -510,14 +642,19 @@ function debugState() {
     console.log('=== СОСТОЯНИЕ ПРИЛОЖЕНИЯ ===');
     console.log('Всего вопросов:', allQuestions.length);
     console.log('Текущий класс:', currentClass);
-    console.log('Вопросов в тесте:', questions.length);
+    console.log('Вопросов в тесте:', questions ? questions.length : 0);
     console.log('Текущий вопрос:', currentQuestionIndex);
     console.log('Счет:', score);
     console.log('История ответов:', answerHistory);
     console.log('Тест запущен:', isTestRunning);
+    
+    // Проверяем элементы DOM
+    console.log('Кнопка "Завершить" существует:', !!document.getElementById('finish-button'));
+    console.log('Контейнер отчета существует:', !!document.getElementById('report-container'));
     console.log('===========================');
 }
 
 // Экспортируем для отладки в консоли
 window.debug = debugState;
 window.restart = restartTest;
+window.showResults = showResults; // Для тестирования отчета
