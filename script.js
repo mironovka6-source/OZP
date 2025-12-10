@@ -1,6 +1,5 @@
 // ==============================================================================
 // ВАЖНО: Убедитесь, что здесь указана ваша правильная RAW-ссылка с GitHub!
-// Пример: "https://raw.githubusercontent.com/username/repo/branch/questions.json"
 const JSON_URL = "https://raw.githubusercontent.com/mironovka6-source/OZP/main/questions.json"; 
 // ==============================================================================
 
@@ -41,7 +40,7 @@ function shuffleArray(array) {
 }
 
 
-// --- ЗАГРУЗКА И ОБРАБОТКА ДАННЫХ С GITHUB (Улучшенная версия) ---
+// --- ЗАГРУЗКА И ОБРАБОТКА ДАННЫХ С GITHUB ---
 async function loadAndProcessQuestions() {
     try {
         const response = await fetch(JSON_URL);
@@ -157,7 +156,7 @@ function startQuiz(classNum) {
     userAnswers = new Array(currentQuestions.length).fill(null);
     currentQuestionIndex = 0;
 
-    // 2. Улучшенное отображение класса
+    // 2. Корректное отображение класса
     selectedClassSpan.textContent = `${classNum} класс`;
     
     startScreen.style.display = 'none';
@@ -187,10 +186,8 @@ function createNavigationPanel() {
 function renderQuestion() {
     const questionData = currentQuestions[currentQuestionIndex];
     
+    // !!! УБРАНА ЛОГИКА ОТОБРАЖЕНИЯ ТЕМЫ !!!
     let questionTitle = `${currentQuestionIndex + 1}. ${questionData.question}`;
-    if(questionData.topic) {
-        questionTitle = `<small style="color: #7f8c8d;">Тема: ${questionData.topic}</small><br>` + questionTitle;
-    }
 
     questionText.innerHTML = questionTitle;
 
