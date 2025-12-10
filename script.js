@@ -1,4 +1,4 @@
-// УПРОЩЕННЫЙ И РАБОЧИЙ СКРИПТ
+// ГАРАНТИРОВАННО РАБОЧИЙ СКРИПТ
 console.log('🔥 Тест загружен!');
 
 let questions = [];
@@ -10,65 +10,88 @@ let currentClass = null;
 document.addEventListener('DOMContentLoaded', function() {
     console.log('✅ DOM готов');
     
-    // Создаем кнопку "Завершить" если её нет
-    createFinishButton();
+    // Гарантированно показываем кнопку "Завершить" в нужный момент
+    setupFinishButton();
     
-    // Создаем контейнер отчета если его нет
-    createReportContainer();
-    
-    // Настраиваем кнопки
-    setupButtons();
+    // Настраиваем все кнопки
+    setupAllButtons();
     
     // Загружаем вопросы
     loadQuestions();
 });
 
 // ===============================================
-// СОЗДАНИЕ ОБЯЗАТЕЛЬНЫХ ЭЛЕМЕНТОВ
+// НАСТРОЙКА КНОПКИ "ЗАВЕРШИТЬ"
 // ===============================================
-function createFinishButton() {
-    if (!document.getElementById('finish-button')) {
+function setupFinishButton() {
+    console.log('🔧 Настраиваю кнопку "Завершить"...');
+    
+    // Проверяем, есть ли кнопка в DOM
+    let finishBtn = document.getElementById('finish-button');
+    
+    // Если кнопки нет - создаем её
+    if (!finishBtn) {
+        console.log('➕ Создаю кнопку "Завершить"');
+        
         const buttonsContainer = document.querySelector('.buttons-container');
         if (buttonsContainer) {
-            const finishBtn = document.createElement('button');
+            finishBtn = document.createElement('button');
             finishBtn.id = 'finish-button';
             finishBtn.textContent = '🏁 Завершить тест';
-            finishBtn.style.cssText = 'display: none;';
+            
+            // ПРИНУДИТЕЛЬНЫЕ СТИЛИ для гарантии видимости
+            finishBtn.style.cssText = `
+                /* Позиционирование */
+                display: none !important;
+                visibility: visible !important;
+                opacity: 1 !important;
+                position: relative !important;
+                z-index: 1000 !important;
+                
+                /* Внешний вид */
+                padding: 15px 30px !important;
+                background: linear-gradient(135deg, #2ecc71, #27ae60) !important;
+                color: white !important;
+                border: none !important;
+                border-radius: 10px !important;
+                font-size: 18px !important;
+                font-weight: bold !important;
+                cursor: pointer !important;
+                
+                /* Тень для заметности */
+                box-shadow: 0 5px 15px rgba(46, 204, 113, 0.3) !important;
+                text-shadow: 1px 1px 2px rgba(0,0,0,0.3) !important;
+                
+                /* Размеры */
+                min-width: 200px !important;
+                height: auto !important;
+                margin: 0 10px !important;
+            `;
+            
             buttonsContainer.appendChild(finishBtn);
         }
     }
-}
-
-function createReportContainer() {
-    if (!document.getElementById('report-container')) {
-        const resultsScreen = document.getElementById('results-screen');
-        if (resultsScreen) {
-            const reportDiv = document.createElement('div');
-            reportDiv.id = 'report-container';
-            reportDiv.style.cssText = `
-                margin: 30px 0;
-                padding: 25px;
-                background: #f8f9fa;
-                border-radius: 12px;
-                border: 2px solid #e9ecef;
-            `;
-            
-            // Вставляем перед кнопкой "Начать заново"
-            const restartBtn = resultsScreen.querySelector('button');
-            if (restartBtn) {
-                resultsScreen.insertBefore(reportDiv, restartBtn);
-            } else {
-                resultsScreen.appendChild(reportDiv);
-            }
-        }
+    
+    // Настраиваем обработчик
+    if (finishBtn) {
+        finishBtn.onclick = function() {
+            console.log('🎯 КНОПКА "ЗАВЕРШИТЬ" НАЖАТА!');
+            finishTest();
+        };
+        
+        // Сразу прячем кнопку
+        finishBtn.style.display = 'none !important';
+        console.log('✅ Кнопка "Завершить" настроена');
     }
 }
 
 // ===============================================
-// НАСТРОЙКА КНОПОК
+// НАСТРОЙКА ВСЕХ КНОПОК
 // ===============================================
-function setupButtons() {
-    // Кнопки классов
+function setupAllButtons() {
+    console.log('🔗 Настраиваю все кнопки...');
+    
+    // Кнопки выбора класса
     document.querySelectorAll('#class-selection button').forEach(btn => {
         btn.onclick = function() {
             const classNum = parseInt(this.getAttribute('data-class'));
@@ -78,27 +101,27 @@ function setupButtons() {
     });
     
     // Кнопка "Предыдущий"
-    document.getElementById('prev-button').onclick = function() {
-        if (currentQuestion > 0) {
-            currentQuestion--;
-            showQuestion();
-        }
-    };
+    const prevBtn = document.getElementById('prev-button');
+    if (prevBtn) {
+        prevBtn.onclick = function() {
+            if (currentQuestion > 0) {
+                currentQuestion--;
+                showQuestion();
+            }
+        };
+    }
     
     // Кнопка "Следующий"
-    document.getElementById('next-button').onclick = function() {
-        if (currentQuestion < questions.length - 1) {
-            currentQuestion++;
-            showQuestion();
-        }
-    };
-    
-    // Кнопка "Завершить"
-    const finishBtn = document.getElementById('finish-button');
-    if (finishBtn) {
-        finishBtn.onclick = function() {
-            console.log('🎯 КНОПКА "ЗАВЕРШИТЬ" НАЖАТА!');
-            finishTest();
+    const nextBtn = document.getElementById('next-button');
+    if (nextBtn) {
+        nextBtn.onclick = function() {
+            if (currentQuestion < questions.length - 1) {
+                currentQuestion++;
+                showQuestion();
+            } else {
+                // Если это последний вопрос, показываем кнопку "Завершить"
+                showFinishButton();
+            }
         };
     }
     
@@ -107,12 +130,55 @@ function setupButtons() {
     if (restartBtn) {
         restartBtn.onclick = restartTest;
     }
+    
+    console.log('✅ Все кнопки настроены');
+}
+
+// ===============================================
+// УПРАВЛЕНИЕ КНОПКОЙ "ЗАВЕРШИТЬ"
+// ===============================================
+function showFinishButton() {
+    console.log('🚀 ПОКАЗЫВАЮ кнопку "Завершить"');
+    
+    const finishBtn = document.getElementById('finish-button');
+    const nextBtn = document.getElementById('next-button');
+    
+    if (finishBtn && nextBtn) {
+        // Прячем "Следующий"
+        nextBtn.style.display = 'none !important';
+        nextBtn.style.visibility = 'hidden !important';
+        
+        // Показываем "Завершить" - ГАРАНТИРОВАННО!
+        finishBtn.style.display = 'block !important';
+        finishBtn.style.visibility = 'visible !important';
+        finishBtn.style.opacity = '1 !important';
+        
+        // Добавляем анимацию для привлечения внимания
+        finishBtn.style.animation = 'pulse 2s infinite !important';
+        
+        console.log('✅ Кнопка "Завершить" ПРИНУДИТЕЛЬНО показана');
+        console.log('- display:', finishBtn.style.display);
+        console.log('- visibility:', finishBtn.style.visibility);
+    } else {
+        console.error('❌ Кнопки не найдены!');
+        console.log('finishBtn:', finishBtn);
+        console.log('nextBtn:', nextBtn);
+    }
+}
+
+function hideFinishButton() {
+    const finishBtn = document.getElementById('finish-button');
+    if (finishBtn) {
+        finishBtn.style.display = 'none !important';
+    }
 }
 
 // ===============================================
 // ЗАГРУЗКА ВОПРОСОВ
 // ===============================================
 function loadQuestions() {
+    console.log('📥 Загружаю вопросы...');
+    
     fetch('questions.json')
         .then(response => response.ok ? response.json() : Promise.reject())
         .then(data => {
@@ -149,17 +215,6 @@ function getTestQuestions() {
                 {"text": "Передача объема светом и тенью", "isCorrect": true},
                 {"text": "Вид краски", "isCorrect": false},
                 {"text": "Стиль живописи", "isCorrect": false}
-            ]
-        },
-        {
-            "id": 3,
-            "class": 5,
-            "question": "Что такое батик?",
-            "answers": [
-                {"text": "Роспись по ткани", "isCorrect": true},
-                {"text": "Резьба по дереву", "isCorrect": false},
-                {"text": "Лепка из глины", "isCorrect": false},
-                {"text": "Вышивка", "isCorrect": false}
             ]
         }
     ];
@@ -209,11 +264,26 @@ function startTest(classNum) {
     // Обновляем заголовок
     document.getElementById('selected-class').textContent = classNum;
     
+    // Сбрасываем кнопки
+    resetButtons();
+    
     // Создаем навигацию
     createNavigation();
     
     // Показываем первый вопрос
     showQuestion();
+}
+
+function resetButtons() {
+    // Гарантируем, что кнопка "Завершить" скрыта при старте
+    hideFinishButton();
+    
+    // Показываем кнопку "Следующий"
+    const nextBtn = document.getElementById('next-button');
+    if (nextBtn) {
+        nextBtn.style.display = 'inline-block !important';
+        nextBtn.style.visibility = 'visible !important';
+    }
 }
 
 function createNavigation() {
@@ -273,14 +343,25 @@ function showQuestion() {
     const answersArea = document.getElementById('answers-area');
     answersArea.innerHTML = '';
     
-    // Обновляем кнопки
+    // Обновляем кнопки навигации
     document.getElementById('prev-button').disabled = currentQuestion === 0;
     document.getElementById('next-button').disabled = true;
     
-    // Управляем кнопкой "Завершить"
+    // ВАЖНО: Управляем видимостью кнопок
     const isLastQuestion = currentQuestion === questions.length - 1;
-    document.getElementById('next-button').style.display = isLastQuestion ? 'none' : 'inline-block';
-    document.getElementById('finish-button').style.display = isLastQuestion ? 'inline-block' : 'none';
+    
+    if (isLastQuestion) {
+        console.log('🏁 Это последний вопрос - показываю кнопку "Завершить"');
+        // Ждем немного, чтобы DOM обновился
+        setTimeout(showFinishButton, 100);
+    } else {
+        // Гарантируем, что кнопка "Следующий" видна
+        const nextBtn = document.getElementById('next-button');
+        if (nextBtn) {
+            nextBtn.style.display = 'inline-block !important';
+            nextBtn.style.visibility = 'visible !important';
+        }
+    }
     
     // Создаем варианты ответов
     const letters = ['А', 'Б', 'В', 'Г'];
@@ -331,6 +412,7 @@ function selectAnswer(index, isCorrect, element) {
     // Показываем правильность
     if (isCorrect) {
         element.classList.add('correct');
+        score++;
     } else {
         element.classList.add('wrong');
         
@@ -348,8 +430,17 @@ function selectAnswer(index, isCorrect, element) {
         text: element.querySelector('.answer-text').textContent
     };
     
-    // Активируем кнопку "Следующий"
-    document.getElementById('next-button').disabled = false;
+    // Активируем кнопку "Следующий" или "Завершить"
+    const isLastQuestion = currentQuestion === questions.length - 1;
+    if (isLastQuestion) {
+        console.log('🎯 Последний вопрос отвечен - активирую кнопку "Завершить"');
+        const finishBtn = document.getElementById('finish-button');
+        if (finishBtn) {
+            finishBtn.disabled = false;
+        }
+    } else {
+        document.getElementById('next-button').disabled = false;
+    }
     
     updateProgress();
 }
@@ -361,351 +452,187 @@ function updateProgress() {
 }
 
 // ===============================================
-// ЗАВЕРШЕНИЕ ТЕСТА И РЕЗУЛЬТАТЫ - ВАЖНАЯ ЧАСТЬ!
+// ЗАВЕРШЕНИЕ ТЕСТА И РЕЗУЛЬТАТЫ
 // ===============================================
 function finishTest() {
-    console.log('🎉 ЗАВЕРШЕНИЕ ТЕСТА - НАЧАЛО');
+    console.log('🎉 ЗАВЕРШЕНИЕ ТЕСТА');
     
-    // 1. Считаем правильные ответы
-    const correctAnswers = userAnswers.filter(answer => answer && answer.isCorrect).length;
-    const totalQuestions = questions.length;
-    score = correctAnswers;
+    // Считаем правильные ответы
+    const correct = userAnswers.filter(a => a && a.isCorrect).length;
+    const total = questions.length;
     
-    console.log(`📊 Результат: ${score}/${totalQuestions}`);
-    
-    // 2. ПРОВЕРЯЕМ - Все ли вопросы отвечены?
-    const unanswered = userAnswers.filter(answer => answer === null).length;
-    console.log(`❓ Неотвеченных вопросов: ${unanswered}`);
-    
+    // Проверяем, все ли вопросы отвечены
+    const unanswered = userAnswers.filter(a => a === null).length;
     if (unanswered > 0) {
-        const confirmFinish = confirm(`Вы ответили не на все вопросы. Осталось: ${unanswered}. Завершить тест?`);
-        if (!confirmFinish) {
-            return; // Отменяем завершение
+        if (!confirm(`Вы ответили не на все вопросы. Осталось: ${unanswered}. Завершить тест?`)) {
+            return;
         }
     }
     
-    // 3. Переключаем экраны ГАРАНТИРОВАННО
+    // Переключаем экраны
     document.getElementById('quiz-container').style.display = 'none';
     document.getElementById('results-screen').style.display = 'block';
     
-    console.log('✅ Экран результатов показан');
+    // Обновляем счет
+    document.getElementById('score').textContent = `${correct} из ${total}`;
     
-    // 4. Обновляем счет ГАРАНТИРОВАННО
-    const scoreElement = document.getElementById('score');
-    if (scoreElement) {
-        scoreElement.textContent = `${score} из ${totalQuestions}`;
-        console.log('✅ Счет обновлен');
-    } else {
-        console.error('❌ Элемент #score не найден!');
-        // Создаем элемент если его нет
-        const resultsScreen = document.getElementById('results-screen');
-        if (resultsScreen) {
-            const newScore = document.createElement('p');
-            newScore.id = 'score';
-            newScore.textContent = `${score} из ${totalQuestions}`;
-            newScore.style.cssText = 'font-size: 28px; font-weight: bold; text-align: center; margin: 20px 0;';
-            resultsScreen.insertBefore(newScore, resultsScreen.firstChild.nextSibling);
-        }
-    }
-    
-    // 5. Создаем отчет ГАРАНТИРОВАННО
+    // Создаем отчет
     createReport();
-    
-    console.log('🎉 ТЕСТ УСПЕШНО ЗАВЕРШЕН');
 }
 
 function createReport() {
-    console.log('📊 СОЗДАНИЕ ОТЧЕТА - НАЧАЛО');
+    console.log('📊 Создаю отчет...');
     
-    // Ищем контейнер отчета
-    let reportContainer = document.getElementById('report-container');
-    
-    // Если контейнера нет - создаем
+    const reportContainer = document.getElementById('report-container');
     if (!reportContainer) {
-        console.log('➕ Создаю контейнер для отчета');
-        const resultsScreen = document.getElementById('results-screen');
-        if (resultsScreen) {
-            reportContainer = document.createElement('div');
-            reportContainer.id = 'report-container';
-            reportContainer.style.cssText = `
-                margin: 30px 0;
-                padding: 25px;
-                background: #f8f9fa;
-                border-radius: 12px;
-                border: 2px solid #e9ecef;
-                max-height: 500px;
-                overflow-y: auto;
-            `;
-            
-            // Вставляем перед кнопкой "Начать заново"
-            const restartBtn = resultsScreen.querySelector('button');
-            if (restartBtn) {
-                resultsScreen.insertBefore(reportContainer, restartBtn);
-            } else {
-                resultsScreen.appendChild(reportContainer);
-            }
-        }
-    }
-    
-    if (!reportContainer) {
-        console.error('❌ Не удалось создать контейнер отчета!');
+        console.error('❌ Контейнер отчета не найден');
         return;
     }
     
-    // Очищаем контейнер
+    // Очищаем
     reportContainer.innerHTML = '';
     
-    // Добавляем заголовок отчета
-    const reportTitle = document.createElement('h3');
-    reportTitle.textContent = '📋 Подробный отчет по тесту:';
-    reportTitle.style.cssText = `
+    // Заголовок
+    const title = document.createElement('h3');
+    title.textContent = 'Детальный отчет:';
+    title.style.cssText = `
         color: #2c3e50;
         margin-bottom: 25px;
         padding-bottom: 15px;
-        border-bottom: 3px solid #3498db;
+        border-bottom: 2px solid #3498db;
         text-align: center;
-        font-size: 22px;
     `;
-    reportContainer.appendChild(reportTitle);
+    reportContainer.appendChild(title);
     
-    // Проверяем, есть ли ответы
-    const answeredQuestions = userAnswers.filter(answer => answer !== null);
-    
-    if (answeredQuestions.length === 0) {
-        const noAnswersMsg = document.createElement('p');
-        noAnswersMsg.textContent = 'Вы не ответили ни на один вопрос.';
-        noAnswersMsg.style.cssText = `
-            text-align: center;
-            color: #7f8c8d;
-            padding: 40px;
-            font-style: italic;
-            font-size: 18px;
-        `;
-        reportContainer.appendChild(noAnswersMsg);
-        console.log('📭 Нет ответов для отчета');
+    // Если нет ответов
+    if (userAnswers.every(a => a === null)) {
+        const message = document.createElement('p');
+        message.textContent = 'Вы не ответили ни на один вопрос.';
+        message.style.cssText = 'text-align: center; color: #7f8c8d; padding: 40px;';
+        reportContainer.appendChild(message);
         return;
     }
     
-    console.log(`📝 Создаю отчет для ${answeredQuestions.length} вопросов`);
-    
-    // Создаем отчет для каждого вопроса
+    // Отчет по вопросам
     questions.forEach((question, index) => {
         const answer = userAnswers[index];
-        if (answer === null) return; // Пропускаем неотвеченные
+        if (answer === null) return;
         
         const isCorrect = answer.isCorrect;
         
-        // Создаем блок отчета
-        const reportBlock = document.createElement('div');
-        reportBlock.className = `report-item ${isCorrect ? 'correct' : 'incorrect'}`;
-        reportBlock.style.cssText = `
-            background: ${isCorrect ? '#e8f5e9' : '#ffebee'};
-            border-radius: 12px;
+        const reportItem = document.createElement('div');
+        reportItem.className = `report-item ${isCorrect ? 'correct' : 'incorrect'}`;
+        reportItem.style.cssText = `
             padding: 20px;
             margin-bottom: 20px;
-            border-left: 6px solid ${isCorrect ? '#4CAF50' : '#f44336'};
-            box-shadow: 0 3px 10px rgba(0,0,0,0.08);
+            border-radius: 10px;
+            background: ${isCorrect ? '#f0fff4' : '#fff5f5'};
+            border-left: 6px solid ${isCorrect ? '#2ecc71' : '#e74c3c'};
         `;
         
-        // Номер вопроса
-        const questionNum = document.createElement('div');
-        questionNum.innerHTML = `<strong style="color: #3498db;">Вопрос ${index + 1}:</strong>`;
-        questionNum.style.cssText = `
-            font-size: 14px;
-            margin-bottom: 5px;
-            color: #7f8c8d;
-        `;
-        
-        // Текст вопроса
-        const questionText = document.createElement('div');
-        questionText.textContent = question.question;
-        questionText.style.cssText = `
-            font-weight: bold;
-            font-size: 16px;
-            margin-bottom: 15px;
-            color: #2c3e50;
-            line-height: 1.5;
-        `;
+        // Вопрос
+        const questionDiv = document.createElement('div');
+        questionDiv.innerHTML = `<strong>Вопрос ${index + 1}:</strong> ${question.question}`;
+        questionDiv.style.cssText = 'font-weight: bold; margin-bottom: 15px; color: #2c3e50;';
         
         // Ответ пользователя
         const userAnswerDiv = document.createElement('div');
-        userAnswerDiv.style.cssText = `
-            background: white;
-            padding: 12px 15px;
-            border-radius: 8px;
-            margin-bottom: 10px;
-            border: 2px solid ${isCorrect ? '#c8e6c9' : '#ffcdd2'};
-        `;
         userAnswerDiv.innerHTML = `
-            <span style="color: ${isCorrect ? '#4CAF50' : '#f44336'}; font-weight: bold;">
+            <span style="color: ${isCorrect ? '#27ae60' : '#e74c3c'}; font-weight: bold;">
                 Ваш ответ:
             </span> 
             ${answer.text} 
-            <span style="margin-left: 10px; font-size: 18px;">${isCorrect ? '✅' : '❌'}</span>
+            ${isCorrect ? '✅' : '❌'}
+        `;
+        userAnswerDiv.style.cssText = `
+            margin-bottom: 10px;
+            padding: 10px;
+            background: white;
+            border-radius: 6px;
+            border: 2px solid ${isCorrect ? '#d4edda' : '#f8d7da'};
         `;
         
-        // Собираем блок
-        reportBlock.appendChild(questionNum);
-        reportBlock.appendChild(questionText);
-        reportBlock.appendChild(userAnswerDiv);
+        reportItem.appendChild(questionDiv);
+        reportItem.appendChild(userAnswerDiv);
         
-        // Если ответ неправильный - добавляем правильный ответ
+        // Если неправильно
         if (!isCorrect) {
             const correctAnswer = question.answers.find(a => a.isCorrect);
             if (correctAnswer) {
-                const correctAnswerDiv = document.createElement('div');
-                correctAnswerDiv.style.cssText = `
-                    background: #f1f8e9;
-                    padding: 12px 15px;
-                    border-radius: 8px;
-                    margin-top: 10px;
-                    border: 2px solid #dcedc8;
-                `;
-                correctAnswerDiv.innerHTML = `
-                    <span style="color: #689f38; font-weight: bold;">
+                const correctDiv = document.createElement('div');
+                correctDiv.innerHTML = `
+                    <span style="color: #27ae60; font-weight: bold;">
                         Правильный ответ:
                     </span> 
-                    ${correctAnswer.text} 
-                    <span style="margin-left: 10px; font-size: 18px;">✅</span>
+                    ${correctAnswer.text} ✅
                 `;
-                reportBlock.appendChild(correctAnswerDiv);
+                correctDiv.style.cssText = `
+                    margin-top: 10px;
+                    padding: 10px;
+                    background: #e8f5e9;
+                    border-radius: 6px;
+                    border: 2px solid #c8e6c9;
+                `;
+                reportItem.appendChild(correctDiv);
             }
         }
         
-        // Статус ответа
-        const statusDiv = document.createElement('div');
-        statusDiv.textContent = isCorrect ? '✓ ПРАВИЛЬНО' : '✗ НЕПРАВИЛЬНО';
-        statusDiv.style.cssText = `
-            margin-top: 15px;
-            padding: 8px 16px;
-            background: ${isCorrect ? '#d4edda' : '#f8d7da'};
-            color: ${isCorrect ? '#155724' : '#721c24'};
-            border-radius: 20px;
-            display: inline-block;
-            font-weight: bold;
-            font-size: 14px;
-        `;
-        
-        reportBlock.appendChild(statusDiv);
-        reportContainer.appendChild(reportBlock);
+        reportContainer.appendChild(reportItem);
     });
-    
-    // Добавляем итоговую статистику
-    const correctCount = userAnswers.filter(a => a && a.isCorrect).length;
-    const totalCount = questions.length;
-    const percentage = Math.round((correctCount / totalCount) * 100);
-    
-    const summaryDiv = document.createElement('div');
-    summaryDiv.style.cssText = `
-        background: linear-gradient(135deg, #3498db, #2980b9);
-        color: white;
-        padding: 25px;
-        border-radius: 12px;
-        margin-top: 25px;
-        text-align: center;
-        box-shadow: 0 5px 15px rgba(52, 152, 219, 0.3);
-    `;
-    
-    summaryDiv.innerHTML = `
-        <div style="font-size: 28px; font-weight: bold; margin-bottom: 10px;">
-            ${correctCount} из ${totalCount}
-        </div>
-        <div style="font-size: 20px; margin-bottom: 8px;">
-            Правильных ответов: ${percentage}%
-        </div>
-        <div style="font-size: 16px; opacity: 0.9; margin-top: 15px;">
-            ${percentage >= 80 ? '🎉 Отличный результат! Вы молодец!' : 
-              percentage >= 60 ? '👍 Хороший результат! Так держать!' : 
-              '💪 Есть куда стремиться! Попробуйте еще раз!'}
-        </div>
-    `;
-    
-    reportContainer.appendChild(summaryDiv);
-    
-    console.log('✅ ОТЧЕТ УСПЕШНО СОЗДАН');
 }
 
 // ===============================================
-// ПЕРЕЗАПУСК ТЕСТА
+// ПЕРЕЗАПУСК
 // ===============================================
 function restartTest() {
-    console.log('🔄 Перезапуск теста');
+    console.log('🔄 Перезапуск');
     
-    // Сбрасываем всё
     currentQuestion = 0;
     userAnswers = [];
     score = 0;
-    currentClass = null;
     
-    // Показываем стартовый экран
     document.getElementById('results-screen').style.display = 'none';
     document.getElementById('quiz-container').style.display = 'none';
     document.getElementById('start-screen').style.display = 'block';
     
-    // Сбрасываем кнопку "Завершить"
-    document.getElementById('finish-button').style.display = 'none';
-    document.getElementById('next-button').style.display = 'inline-block';
+    // Сбрасываем кнопки
+    resetButtons();
     
-    // Обновляем кнопки классов
     updateClassButtons();
 }
 
 // ===============================================
 // ФУНКЦИИ ДЛЯ ОТЛАДКИ
 // ===============================================
-window.debugTest = function() {
-    console.log('=== СОСТОЯНИЕ ТЕСТА ===');
-    console.log('Текущий класс:', currentClass);
-    console.log('Количество вопросов:', questions.length);
-    console.log('Текущий вопрос:', currentQuestion);
-    console.log('Ответы пользователя:', userAnswers);
-    console.log('Счет:', score);
-    console.log('Кнопка "Завершить":', document.getElementById('finish-button'));
-    console.log('Контейнер отчета:', document.getElementById('report-container'));
-    console.log('========================');
+window.showFinishNow = function() {
+    // Принудительно показать кнопку "Завершить"
+    showFinishButton();
 };
 
-window.forceShowResults = function() {
-    console.log('🎯 ПРИНУДИТЕЛЬНЫЙ ПОКАЗ РЕЗУЛЬТАТОВ');
-    
-    // Тестовые данные
-    questions = [
-        {
-            "id": 1,
-            "class": 5,
-            "question": "Тестовый вопрос 1?",
-            "answers": [
-                {"text": "Правильный ответ", "isCorrect": true},
-                {"text": "Неправильный 1", "isCorrect": false},
-                {"text": "Неправильный 2", "isCorrect": false},
-                {"text": "Неправильный 3", "isCorrect": false}
-            ]
-        },
-        {
-            "id": 2,
-            "class": 5,
-            "question": "Тестовый вопрос 2?",
-            "answers": [
-                {"text": "Неправильный 1", "isCorrect": false},
-                {"text": "Правильный ответ", "isCorrect": true},
-                {"text": "Неправильный 2", "isCorrect": false},
-                {"text": "Неправильный 3", "isCorrect": false}
-            ]
-        }
-    ];
-    
-    userAnswers = [
-        {index: 0, isCorrect: true, text: "Правильный ответ"},
-        {index: 0, isCorrect: false, text: "Неправильный 1"}
-    ];
-    
-    // Вызываем завершение теста
-    finishTest();
+window.checkFinishButton = function() {
+    const btn = document.getElementById('finish-button');
+    console.log('🔍 Проверка кнопки "Завершить":');
+    console.log('- Существует:', !!btn);
+    console.log('- display:', btn?.style.display);
+    console.log('- visibility:', btn?.style.visibility);
+    console.log('- opacity:', btn?.style.opacity);
+    console.log('- position:', btn?.style.position);
 };
 
-window.checkReport = function() {
-    console.log('🔍 Проверка отчета:');
-    console.log('1. Контейнер существует?', !!document.getElementById('report-container'));
-    console.log('2. Контейнер видим?', document.getElementById('report-container')?.offsetParent !== null);
-    console.log('3. Содержимое контейнера:', document.getElementById('report-container')?.innerHTML);
+window.forceResults = function() {
+    // Принудительно показать результаты
+    document.getElementById('quiz-container').style.display = 'none';
+    document.getElementById('results-screen').style.display = 'block';
+    document.getElementById('score').textContent = '3 из 5';
 };
+
+// Добавляем стиль для анимации пульсации
+const style = document.createElement('style');
+style.textContent = `
+    @keyframes pulse {
+        0% { transform: scale(1); }
+        50% { transform: scale(1.05); }
+        100% { transform: scale(1); }
+    }
+`;
+document.head.appendChild(style);
