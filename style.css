@@ -201,3 +201,42 @@
         background: linear-gradient(145deg, #2c3e50, #34495e);
     }
 }
+/* Дополнительные стили для внутренних элементов */
+.answer-letter {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 28px;
+    height: 28px;
+    background: #ecf0f1;
+    border-radius: 50%;
+    font-weight: 600;
+    color: #7f8c8d;
+    flex-shrink: 0;
+    transition: all 0.3s ease;
+}
+
+.answer-text {
+    flex: 1;
+    line-height: 1.4;
+}
+
+.answer-option:hover .answer-letter {
+    background: #3498db;
+    color: white;
+}
+
+.answer-option.selected .answer-letter {
+    background: #3498db;
+    color: white;
+}
+
+.answer-option.correct .answer-letter {
+    background: #2ecc71;
+    color: white;
+}
+
+.answer-option.wrong .answer-letter {
+    background: #e74c3c;
+    color: white;
+}
