@@ -24,56 +24,48 @@ const restartButton = document.getElementById('restart-button');
 const scoreDisplay = document.getElementById('score');
 const reportContainer = document.getElementById('report-container');
 
-// --- ЗАГРУЗКА ДАННЫХ ИЗ JSON ---
-async function loadQuestions() {
+// --- ЗАГРУЗКА И ОБРАБОТКА ДАННЫХ ИЗ JSON ---
+async function loadAndProcessQuestions() {
     try {
-        // Запрашиваем файл questions.json
         const response = await fetch('questions.json');
         
-        // Проверяем, нашелся ли файл
         if (!response.ok) {
-            throw new Error(`Ошибка HTTP: ${response.status}`);
+            throw new Error(`Ошибка HTTP: ${response.status}. Проверьте наличие файла 'questions.json' и использование локального сервера.`);
         }
 
         const rawData = await response.json();
-        processData(rawData); // Обрабатываем данные после загрузки
+        
+        // Обработка "сырых" данных из JSON в формат, удобный для игры
+        rawData.forEach(item => {
+            // 1. Создаем массив для класса, если его еще нет
+            if (!quizData[item.class]) {
+                quizData[item.class] = [];
+            }
+
+            // 2. Находим индекс правильного ответа
+            const correctIndex = item.answers.findIndex(answer => answer.isCorrect === true);
+
+            // 3. Формируем массив текстов ответов
+            const answersList = item.answers.map(answer => answer.text);
+
+            // 4. Добавляем в итоговую базу
+            quizData[item.class].push({
+                question: item.question,
+                answers: answersList,
+                correct: correctIndex,
+                topic: item.topic
+            });
+        });
 
     } catch (error) {
         console.error("Ошибка загрузки вопросов:", error);
-        alert("Не удалось загрузить вопросы! \n\nВАЖНО: Если вы открыли файл просто двойным кликом, браузер заблокирует JSON. Используйте 'Live Server' в VS Code или локальный сервер.");
+        alert("Не удалось загрузить вопросы! (Проверьте консоль для деталей).\n\nВозможно, нужно запустить локальный сервер.");
     }
 }
 
-// Функция обработки "сырых" данных из JSON в формат игры
-function processData(data) {
-    quizData = {}; // Очищаем
-
-    data.forEach(item => {
-        // 1. Создаем массив для класса, если его еще нет
-        if (!quizData[item.class]) {
-            quizData[item.class] = [];
-        }
-
-        // 2. Находим индекс правильного ответа
-        const correctIndex = item.answers.findIndex(answer => answer.isCorrect === true);
-
-        // 3. Формируем массив текстов ответов
-        const answersList = item.answers.map(answer => answer.text);
-
-        // 4. Добавляем в итоговую базу
-        quizData[item.class].push({
-            question: item.question,
-            answers: answersList,
-            correct: correctIndex,
-            topic: item.topic
-        });
-    });
-    
-    console.log("Вопросы успешно загружены и обработаны!");
-}
-
 // Запускаем загрузку сразу при старте страницы
-loadQuestions();
+loadAndProcessQuestions();
+
 
 // --- ИНИЦИАЛИЗАЦИЯ СОБЫТИЙ ---
 
@@ -106,12 +98,11 @@ nextButton.addEventListener('click', () => {
 finishButton.addEventListener('click', showResults);
 
 
-// --- ЛОГИКА ИГРЫ ---
+// --- ЛОГИКА ТЕСТА ---
 
 function startQuiz(classNum) {
-    // Проверка: загрузились ли данные?
     if (Object.keys(quizData).length === 0) {
-        alert("Данные еще не загрузились или произошла ошибка загрузки.");
+        alert("Данные еще не загрузились. Пожалуйста, подождите или проверьте ошибки.");
         return;
     }
 
@@ -129,6 +120,10 @@ function startQuiz(classNum) {
     selectedClassSpan.textContent = classNum;
     startScreen.style.display = 'none';
     quizContainer.style.display = 'block';
+    
+    // **ИЗМЕНЕНИЕ ДЛЯ ЗАВЕРШЕНИЯ В ЛЮБОЙ МОМЕНТ:** // Кнопка "Завершить" становится видна сразу
+    finishButton.style.display = 'inline-block';
+    finishButton.disabled = false;
 
     createNavigationPanel();
     renderQuestion();
@@ -185,18 +180,21 @@ function selectAnswer(index) {
 }
 
 function updateControls() {
+    // Кнопка "Назад"
     prevButton.disabled = currentQuestionIndex === 0;
 
-    const isAnswered = userAnswers[currentQuestionIndex] !== null;
+    // Кнопка "Вперед"
+    // Снимаем блокировку по ответу, чтобы разрешить свободное перемещение
+    nextButton.disabled = currentQuestionIndex === currentQuestions.length - 1;
     
+    // Управление видимостью кнопки "Завершить"
+    // Кнопка "Завершить" всегда видна, кроме последней страницы, где она остается одна
     if (currentQuestionIndex === currentQuestions.length - 1) {
         nextButton.style.display = 'none';
         finishButton.style.display = 'inline-block';
-        finishButton.disabled = !isAnswered;
     } else {
         nextButton.style.display = 'inline-block';
-        finishButton.style.display = 'none';
-        nextButton.disabled = !isAnswered;
+        finishButton.style.display = 'inline-block';
     }
 }
 
@@ -216,6 +214,7 @@ function updateNavigationDots() {
 function showResults() {
     let score = 0;
     let reportHTML = '<div style="text-align:left; max-height: 300px; overflow-y: auto;">';
+    const totalQuestions = currentQuestions.length;
 
     currentQuestions.forEach((q, index) => {
         const userAnswer = userAnswers[index];
@@ -233,8 +232,16 @@ function showResults() {
         `;
     });
     reportHTML += '</div>';
+    
+    // **ИЗМЕНЕНИЕ ДЛЯ ПРОЦЕНТОВ:**
+    let percentage = 0;
+    if (totalQuestions > 0) {
+        percentage = ((score / totalQuestions) * 100).toFixed(0);
+        scoreDisplay.textContent = `${score} из ${totalQuestions} (${percentage}%)`;
+    } else {
+        scoreDisplay.textContent = `0 из 0`;
+    }
 
-    scoreDisplay.textContent = `${score} из ${currentQuestions.length}`;
     reportContainer.innerHTML = reportHTML;
 
     quizContainer.style.display = 'none';
