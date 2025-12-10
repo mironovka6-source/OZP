@@ -1,5 +1,5 @@
 // *** ВСТАВЬТЕ СЮДА ВАШУ RAW ССЫЛКУ С GITHUB ***
-const JSON_URL = "ВАША_СЫРАЯ_ССЫЛКА_НА_QUESTIONS.JSON_ЗДЕСЬ"; 
+const JSON_URL = "https://raw.githubusercontent.com/mironovka6-source/OZP/refs/heads/main/manifest.json"; 
 // Пример: "https://raw.githubusercontent.com/username/repo/branch/questions.json"
 
 
