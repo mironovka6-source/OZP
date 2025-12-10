@@ -1,16 +1,16 @@
-// *** ВСТАВЬТЕ СЮДА ВАШУ RAW ССЫЛКУ С GITHUB ***
-const JSON_URL = "https://raw.githubusercontent.com/mironovka6-source/OZP/refs/heads/main/questions.json"; 
-// Пример: "https://raw.githubusercontent.com/username/repo/branch/questions.json"
+// *** ИСПРАВЛЕННЫЙ RAW URL С GITHUB ***
+// Убрано лишнее '/refs/heads/'
+const JSON_URL = "https://raw.githubusercontent.com/mironovka6-source/OZP/main/questions.json"; 
 
 
 // --- Переменные состояния ---
-let quizData = {}; // Сюда загрузятся вопросы
+let quizData = {}; 
 let currentClass = null;
 let currentQuestions = [];
 let userAnswers = [];
 let currentQuestionIndex = 0;
 
-// --- DOM Элементы (Остаются прежними) ---
+// --- DOM Элементы ---
 const startScreen = document.getElementById('start-screen');
 const quizContainer = document.getElementById('quiz-container');
 const resultsScreen = document.getElementById('results-screen');
@@ -29,19 +29,40 @@ const restartButton = document.getElementById('restart-button');
 const scoreDisplay = document.getElementById('score');
 const reportContainer = document.getElementById('report-container');
 
-// --- ЗАГРУЗКА И ОБРАБОТКА ДАННЫХ С GITHUB ---
+// --- ЗАГРУЗКА И ОБРАБОТКА ДАННЫХ С GITHUB (Улучшенная версия) ---
 async function loadAndProcessQuestions() {
     try {
-        // Используем удаленный URL
         const response = await fetch(JSON_URL);
         
         if (!response.ok) {
-            throw new Error(`Ошибка HTTP: ${response.status}. Не удалось загрузить данные с GitHub.`);
+            throw new Error(`Ошибка HTTP: ${response.status}. Не удалось загрузить данные с GitHub. Проверьте ссылку!`);
         }
 
-        const rawData = await response.json();
+        let rawData = await response.json();
         
-        // Обработка данных
+        // *** АНТИ-КРАШ КОД: Убеждаемся, что rawData является массивом ***
+        // Этот блок решает проблему 'rawData.forEach is not a function'
+        if (typeof rawData === 'object' && rawData !== null && !Array.isArray(rawData)) {
+            // Если это объект, пытаемся найти массив вопросов внутри него
+            if (rawData.questions) { 
+                rawData = rawData.questions;
+            } else if (rawData.Questions) { 
+                rawData = rawData.Questions;
+            } else {
+                // Если массив вопросов лежит прямо в корне объекта (например, под первым ключом)
+                const keys = Object.keys(rawData);
+                if (keys.length === 1 && Array.isArray(rawData[keys[0]])) {
+                    rawData = rawData[keys[0]];
+                }
+            }
+        }
+        
+        // Окончательная проверка: если это все еще не массив
+        if (!Array.isArray(rawData)) {
+            throw new Error(`Файл вопросов не содержит массива. Тип данных: ${typeof rawData}.`);
+        }
+        
+        // --- Логика обработки массива вопросов ---
         rawData.forEach(item => {
             if (!quizData[item.class]) {
                 quizData[item.class] = [];
@@ -56,11 +77,11 @@ async function loadAndProcessQuestions() {
                 topic: item.topic
             });
         });
-        console.log("Вопросы успешно загружены с GitHub!");
+        console.log(`Вопросы успешно загружены с GitHub! Всего ${rawData.length} вопросов.`);
 
     } catch (error) {
-        console.error("Ошибка загрузки вопросов:", error);
-        alert("Не удалось загрузить вопросы с GitHub! Проверьте ссылку Raw URL и консоль.");
+        console.error("КРИТИЧЕСКАЯ ОШИБКА загрузки:", error);
+        alert(`Не удалось загрузить или обработать вопросы. Проверьте консоль (F12) и JSON-файл. Ошибка: ${error.message}`);
     }
 }
 
@@ -68,7 +89,38 @@ async function loadAndProcessQuestions() {
 loadAndProcessQuestions();
 
 
-// --- ЛОГИКА ТЕСТА (Остается без изменений) ---
+// --- ИНИЦИАЛИЗАЦИЯ СОБЫТИЙ ---
+
+classButtons.forEach(btn => {
+    btn.addEventListener('click', () => {
+        const selected = parseInt(btn.getAttribute('data-class'));
+        startQuiz(selected);
+    });
+});
+
+restartButton.addEventListener('click', () => {
+    resultsScreen.style.display = 'none';
+    startScreen.style.display = 'block';
+});
+
+prevButton.addEventListener('click', () => {
+    if (currentQuestionIndex > 0) {
+        currentQuestionIndex--;
+        renderQuestion();
+    }
+});
+
+nextButton.addEventListener('click', () => {
+    if (currentQuestionIndex < currentQuestions.length - 1) {
+        currentQuestionIndex++;
+        renderQuestion();
+    }
+});
+
+finishButton.addEventListener('click', showResults);
+
+
+// --- ЛОГИКА ТЕСТА ---
 
 function startQuiz(classNum) {
     if (Object.keys(quizData).length === 0) {
