@@ -1,5 +1,4 @@
-// *** ИСПРАВЛЕННЫЙ RAW URL С GITHUB ***
-// Убрано лишнее '/refs/heads/'
+// *** Не забудьте, что JSON_URL должен быть корректной RAW ссылкой с GitHub! ***
 const JSON_URL = "https://raw.githubusercontent.com/mironovka6-source/OZP/main/questions.json"; 
 
 
@@ -29,8 +28,20 @@ const restartButton = document.getElementById('restart-button');
 const scoreDisplay = document.getElementById('score');
 const reportContainer = document.getElementById('report-container');
 
-// --- ЗАГРУЗКА И ОБРАБОТКА ДАННЫХ С GITHUB (Улучшенная версия) ---
+
+// --- 1. НОВАЯ ВСПОМОГАТЕЛЬНАЯ ФУНКЦИЯ ДЛЯ ПЕРЕМЕШИВАНИЯ ---
+// Алгоритм Фишера-Йейтса для случайного перемешивания массива
+function shuffleArray(array) {
+    for (let i = array.length - 1; i > 0; i--) {
+        const j = Math.floor(Math.random() * (i + 1));
+        [array[i], array[j]] = [array[j], array[i]];
+    }
+}
+
+
+// --- ЗАГРУЗКА И ОБРАБОТКА ДАННЫХ С GITHUB ---
 async function loadAndProcessQuestions() {
+    // ... (Логика загрузки остается той же)
     try {
         const response = await fetch(JSON_URL);
         
@@ -40,16 +51,11 @@ async function loadAndProcessQuestions() {
 
         let rawData = await response.json();
         
-        // *** АНТИ-КРАШ КОД: Убеждаемся, что rawData является массивом ***
-        // Этот блок решает проблему 'rawData.forEach is not a function'
+        // Анти-краш код для обработки "обертки" JSON
         if (typeof rawData === 'object' && rawData !== null && !Array.isArray(rawData)) {
-            // Если это объект, пытаемся найти массив вопросов внутри него
-            if (rawData.questions) { 
-                rawData = rawData.questions;
-            } else if (rawData.Questions) { 
-                rawData = rawData.Questions;
-            } else {
-                // Если массив вопросов лежит прямо в корне объекта (например, под первым ключом)
+            if (rawData.questions) { rawData = rawData.questions; } 
+            else if (rawData.Questions) { rawData = rawData.Questions; } 
+            else {
                 const keys = Object.keys(rawData);
                 if (keys.length === 1 && Array.isArray(rawData[keys[0]])) {
                     rawData = rawData[keys[0]];
@@ -57,23 +63,31 @@ async function loadAndProcessQuestions() {
             }
         }
         
-        // Окончательная проверка: если это все еще не массив
         if (!Array.isArray(rawData)) {
             throw new Error(`Файл вопросов не содержит массива. Тип данных: ${typeof rawData}.`);
         }
         
-        // --- Логика обработки массива вопросов ---
+        // Логика обработки массива вопросов
         rawData.forEach(item => {
             if (!quizData[item.class]) {
                 quizData[item.class] = [];
             }
-            const correctIndex = item.answers.findIndex(answer => answer.isCorrect === true);
+            
+            // Запоминаем правильный ответ (индекс до перемешивания)
+            const originalCorrectIndex = item.answers.findIndex(answer => answer.isCorrect === true);
+            
+            // Перемешиваем варианты ответов
+            shuffleArray(item.answers); 
+
+            // Находим новый индекс правильного ответа после перемешивания
+            const newCorrectIndex = item.answers.findIndex(answer => answer.isCorrect === true);
+            
             const answersList = item.answers.map(answer => answer.text);
 
             quizData[item.class].push({
                 question: item.question,
                 answers: answersList,
-                correct: correctIndex,
+                correct: newCorrectIndex, // !!! Сохраняем НОВЫЙ индекс
                 topic: item.topic
             });
         });
@@ -81,7 +95,7 @@ async function loadAndProcessQuestions() {
 
     } catch (error) {
         console.error("КРИТИЧЕСКАЯ ОШИБКА загрузки:", error);
-        alert(`Не удалось загрузить или обработать вопросы. Проверьте консоль (F12) и JSON-файл. Ошибка: ${error.message}`);
+        alert(`Не удалось загрузить или обработать вопросы. Ошибка: ${error.message}`);
     }
 }
 
@@ -89,7 +103,7 @@ async function loadAndProcessQuestions() {
 loadAndProcessQuestions();
 
 
-// --- ИНИЦИАЛИЗАЦИЯ СОБЫТИЙ ---
+// --- ИНИЦИАЛИЗАЦИЯ СОБЫТИЙ (Без изменений) ---
 
 classButtons.forEach(btn => {
     btn.addEventListener('click', () => {
@@ -135,7 +149,11 @@ function startQuiz(classNum) {
         return;
     }
 
-    currentQuestions = quizData[classNum];
+    // 2. ПЕРЕМЕШИВАНИЕ ВОПРОСОВ ПРИ СТАРТЕ ТЕСТА
+    let questionsForClass = [...quizData[classNum]]; // Копируем массив, чтобы не менять quizData
+    shuffleArray(questionsForClass);
+    currentQuestions = questionsForClass;
+
     userAnswers = new Array(currentQuestions.length).fill(null);
     currentQuestionIndex = 0;
 
@@ -149,6 +167,11 @@ function startQuiz(classNum) {
     createNavigationPanel();
     renderQuestion();
 }
+
+// ... Остальные функции (renderQuestion, showResults и т.д.) без изменений, 
+// так как перемешивание ответов происходит один раз в loadAndProcessQuestions.
+// ... (Вставьте весь остальной код из вашего рабочего скрипта сюда) ...
+
 
 function createNavigationPanel() {
     navigationPanel.innerHTML = '';
