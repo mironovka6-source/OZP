@@ -1,187 +1,100 @@
-// --- ВАШИ ДАННЫЕ (Вопросы) ---
-// Я вставил сюда весь список, который вы прислали.
-const rawData = [
-  {
-    "id": 1,
-    "class": 5,
-    "topic": "Бумага и Оригами",
-    "question": "Какой материал традиционно используется для создания фигурок в технике оригами?",
-    "answers": [
-      {"text": "Картон", "isCorrect": false},
-      {"text": "Пластилин", "isCorrect": false},
-      {"text": "Бумага", "isCorrect": true},
-      {"text": "Фольга", "isCorrect": false}
+// --- База данных вопросов (примеры) ---
+// Вы можете легко заменить вопросы на свои
+const quizData = {
+    5: [
+        {
+            question: "Какой инструмент используется для резки бумаги?",
+            answers: ["Молоток", "Ножницы", "Пила", "Отвертка"],
+            correct: 1 // Индекс правильного ответа (начинается с 0)
+        },
+        {
+            question: "Что относится к природным материалам?",
+            answers: ["Пластик", "Железо", "Шишки", "Стекло"],
+            correct: 2
+        },
+        {
+            question: "Основной цвет в живописи - это...",
+            answers: ["Оранжевый", "Красный", "Фиолетовый", "Зеленый"],
+            correct: 1
+        }
+    ],
+    6: [
+        {
+            question: "Что такое натюрморт?",
+            answers: ["Изображение человека", "Изображение природы", "Изображение неодушевленных предметов", "Изображение зданий"],
+            correct: 2
+        },
+        {
+            question: "Какой материал получают из древесины?",
+            answers: ["Металл", "Бумага", "Бетон", "Керамика"],
+            correct: 1
+        },
+        {
+            question: "Инструмент для выпиливания из фанеры:",
+            answers: ["Лобзик", "Рубанок", "Стамеска", "Топор"],
+            correct: 0
+        }
+    ],
+    7: [
+        {
+            question: "Вид декоративно-прикладного искусства, роспись по ткани:",
+            answers: ["Гравюра", "Батик", "Мозаика", "Фреска"],
+            correct: 1
+        },
+        {
+            question: "Какой металл обладает магнитными свойствами?",
+            answers: ["Алюминий", "Медь", "Железо", "Золото"],
+            correct: 2
+        },
+        {
+            question: "Что такое перспектива в рисунке?",
+            answers: ["Толщина линий", "Изображение пространства", "Выбор красок", "Размер холста"],
+            correct: 1
+        }
+    ],
+    8: [
+        {
+            question: "Стиль в архитектуре, отличающийся стрельчатыми арками:",
+            answers: ["Барокко", "Классицизм", "Готика", "Модерн"],
+            correct: 2
+        },
+        {
+            question: "Устройство для преобразования переменного тока:",
+            answers: ["Трансформатор", "Резистор", "Конденсатор", "Диод"],
+            correct: 0
+        },
+        {
+            question: "Какое волокно является искусственным?",
+            answers: ["Хлопок", "Вискоза", "Шерсть", "Лен"],
+            correct: 1
+        }
+    ],
+    9: [
+        {
+            question: "Что такое эргономика?",
+            answers: ["Наука о красоте", "Наука об удобстве и безопасности", "Наука о цвете", "Наука о материалах"],
+            correct: 1
+        },
+        {
+            question: "Авангардизм - это...",
+            answers: ["Стремление к старине", "Отказ от классических канонов", "Религиозное искусство", "Народное творчество"],
+            correct: 1
+        },
+        {
+            question: "Маркетинг в технологии нужен для:",
+            answers: ["Создания чертежа", "Изучения спроса и продвижения", "Распила материала", "Покраски изделия"],
+            correct: 1
+        }
     ]
-  },
-  {
-    "id": 2,
-    "class": 6,
-    "topic": "Изобразительное искусство",
-    "question": "Как называется художественный прием, когда художник передает объем предмета с помощью света и тени?",
-    "answers": [
-      {"text": "Перса", "isCorrect": false},
-      {"text": "Колор", "isCorrect": false},
-      {"text": "Штрих", "isCorrect": false},
-      {"text": "Свет", "isCorrect": true}
-    ]
-  },
-  {
-    "id": 2,
-    "class": 6,
-    "topic": "Изобразительное искусство",
-    "question": "Как называется художественный прием, когда художник передает объем предмета с помощью света и тени?",
-    "answers": [
-      {"text": "Перспектива", "isCorrect": false},
-      {"text": "Колорит", "isCorrect": false},
-      {"text": "Штриховка", "isCorrect": false},
-      {"text": "Светотень", "isCorrect": true}
-    ]
-  },
-  {
-    "id": 3,
-    "class": 7,
-    "topic": "Декоративно-прикладное искусство",
-    "question": "Какой вид росписи по ткани включает использование резервирующего (непропускающего краску) состава, чаще всего на основе воска?",
-    "answers": [
-      {"text": "Гуашь", "isCorrect": false},
-      {"text": "Акварель", "isCorrect": false},
-      {"text": "Батик", "isCorrect": true},
-      {"text": "Фреска", "isCorrect": false}
-    ]
-  },
-  {
-    "id": 3,
-    "class": 8,
-    "topic": "Декоративно-прикладное искусство",
-    "question": "Что является основным языком живописи?",
-    "answers": [
-      {"text": "Линия", "isCorrect": false},
-      {"text": "Объем", "isCorrect": false},
-      {"text": "Цвет", "isCorrect": true},
-      {"text": "Фактура", "isCorrect": false}
-    ]
-  },
-  {
-    "id": 4,
-    "class": 9,
-    "topic": "Графика и Дизайн",
-    "question": "Что в графическом дизайне означает аббревиатура 'CMYK'?",
-    "answers": [
-      {"text": "Цвет, Металл, Желтый, Кварц", "isCorrect": false},
-      {"text": "Голубой, Пурпурный, Желтый, Черный", "isCorrect": true},
-      {"text": "Хром, Магний, Желтый, Кадмий", "isCorrect": false},
-      {"text": "Циан, Маджента, Йеллоу, Ки", "isCorrect": false}
-    ]
-  },
-  {
-    "id": 1,
-    "class": 5,
-    "topic": "Бумага и Оригами",
-    "question": "Что является основным языком живописи?",
-    "answers": [
-      {"text": "Линия", "isCorrect": false},
-      {"text": "Объем", "isCorrect": false},
-      {"text": "Цвет", "isCorrect": true},
-      {"text": "Фактура", "isCorrect": false}
-    ]
-  },
-  {
-    "id": 1,
-    "class": 5,
-    "topic": "Декоративно-прикладное искусство",
-    "question": "Как называется вид пластического искусства, где художественные произведения создаются путем резьбы, лепки или отливки?",
-    "answers": [
-      {"text": "Живопись", "isCorrect": false},
-      {"text": "Графика", "isCorrect": false},
-      {"text": "Скульптура", "isCorrect": true},
-      {"text": "Архитектура", "isCorrect": false}
-    ]
-  },
-  {
-    "id": 1,
-    "class": 5,
-    "topic": "Изобразительное искусство",
-    "question": "Что означает термин Графика?",
-    "answers": [
-      {"text": "Произведение, выполненное красками", "isCorrect": false},
-      {"text": "Искусство проектировать здания", "isCorrect": false},
-      {"text": "Создание художественных изделий в быту", "isCorrect": false},
-      {"text": "Рисунок, основанный на сочетании черного и белого", "isCorrect": true}
-    ]
-  },
-  {
-    "id": 1,
-    "class": 5,
-    "topic": "Декоративно-прикладное искусство",
-    "question": "Какой жанр изобразительного искусства отражает повседневную жизнь людей?",
-    "answers": [
-      {"text": "Исторический", "isCorrect": false},
-      {"text": "Батальный", "isCorrect": false},
-      {"text": "Бытовой (Жанровая картина)", "isCorrect": true},
-      {"text": "Мифологический", "isCorrect": false}
-    ]
-  },
-  {
-    "id": 1,
-    "class": 5,
-    "topic": "Графика и Дизайн",
-    "question": "Что такое Пейзаж?",
-    "answers": [
-      {"text": "Изображение человека", "isCorrect": false},
-      {"text": "Изображение природы", "isCorrect": true},
-      {"text": "Изображение неодушевленных предметов", "isCorrect": false},
-      {"text": "Изображение битв", "isCorrect": false}
-    ]
-  },
-  // Остальные вопросы-заполнители из вашего списка также включены для примера:
-  {
-    "id": 1,
-    "class": 5,
-    "topic": "Тест",
-    "question": "Пример вопроса №12",
-    "answers": [
-      {"text": "Ответ 1", "isCorrect": false},
-      {"text": "Правильный ответ", "isCorrect": true},
-      {"text": "Ответ 3", "isCorrect": false},
-      {"text": "Ответ 4", "isCorrect": false}
-    ]
-  }
-];
+};
 
-// --- АВТОМАТИЧЕСКАЯ ОБРАБОТКА ДАННЫХ ---
-// Эта функция превращает ваш JSON в структуру, понятную игре
-const quizData = {};
-
-rawData.forEach(item => {
-    // 1. Создаем массив для класса, если его еще нет
-    if (!quizData[item.class]) {
-        quizData[item.class] = [];
-    }
-
-    // 2. Находим индекс правильного ответа
-    const correctIndex = item.answers.findIndex(answer => answer.isCorrect === true);
-
-    // 3. Формируем массив текстов ответов
-    const answersList = item.answers.map(answer => answer.text);
-
-    // 4. Добавляем в итоговую базу
-    quizData[item.class].push({
-        question: item.question,
-        answers: answersList,
-        correct: correctIndex,
-        topic: item.topic // Сохраняем тему на будущее
-    });
-});
-
-
-// --- ЛОГИКА ИГРЫ (Осталась прежней) ---
-
+// --- Переменные состояния ---
 let currentClass = null;
 let currentQuestions = [];
-let userAnswers = [];
+let userAnswers = []; // Массив для хранения ответов пользователя
 let currentQuestionIndex = 0;
 
-// DOM Элементы
+// --- DOM Элементы ---
 const startScreen = document.getElementById('start-screen');
 const quizContainer = document.getElementById('quiz-container');
 const resultsScreen = document.getElementById('results-screen');
@@ -200,10 +113,10 @@ const restartButton = document.getElementById('restart-button');
 const scoreDisplay = document.getElementById('score');
 const reportContainer = document.getElementById('report-container');
 
-// Инициализация кнопок классов
+// --- Инициализация ---
 classButtons.forEach(btn => {
     btn.addEventListener('click', () => {
-        const selected = parseInt(btn.getAttribute('data-class'));
+        const selected = btn.getAttribute('data-class');
         startQuiz(selected);
     });
 });
@@ -229,20 +142,22 @@ nextButton.addEventListener('click', () => {
 
 finishButton.addEventListener('click', showResults);
 
-// Функции логики
+// --- Логика Теста ---
 
 function startQuiz(classNum) {
     currentClass = classNum;
     
-    if (!quizData[classNum] || quizData[classNum].length === 0) {
-        alert("Для этого класса вопросов пока нет в базе!");
+    // Проверка, есть ли вопросы для выбранного класса
+    if (!quizData[classNum]) {
+        alert("Вопросы для этого класса еще не добавлены!");
         return;
     }
 
     currentQuestions = quizData[classNum];
-    userAnswers = new Array(currentQuestions.length).fill(null);
+    userAnswers = new Array(currentQuestions.length).fill(null); // Сброс ответов
     currentQuestionIndex = 0;
 
+    // Обновление UI
     selectedClassSpan.textContent = classNum;
     startScreen.style.display = 'none';
     quizContainer.style.display = 'block';
@@ -268,20 +183,17 @@ function createNavigationPanel() {
 function renderQuestion() {
     const questionData = currentQuestions[currentQuestionIndex];
     
-    // Добавил отображение темы вопроса, если она есть
-    let questionTitle = `${currentQuestionIndex + 1}. ${questionData.question}`;
-    if(questionData.topic) {
-        questionTitle = `<small style="color: #7f8c8d;">Тема: ${questionData.topic}</small><br>` + questionTitle;
-    }
+    // 1. Отображение текста вопроса
+    questionText.textContent = `${currentQuestionIndex + 1}. ${questionData.question}`;
 
-    questionText.innerHTML = questionTitle;
-
+    // 2. Отображение вариантов ответов
     answersArea.innerHTML = '';
     questionData.answers.forEach((answer, index) => {
         const btn = document.createElement('button');
         btn.classList.add('answer-option');
         btn.textContent = answer;
         
+        // Если этот ответ был выбран ранее, подсвечиваем его
         if (userAnswers[currentQuestionIndex] === index) {
             btn.classList.add('selected');
         }
@@ -290,31 +202,39 @@ function renderQuestion() {
         answersArea.appendChild(btn);
     });
 
+    // 3. Обновление кнопок навигации
     updateControls();
+    
+    // 4. Обновление панели навигации (точки)
     updateNavigationDots();
 
+    // 5. Счетчик
     const answeredCount = userAnswers.filter(a => a !== null).length;
     progressCounter.textContent = `Отвечено: ${answeredCount} из ${currentQuestions.length}`;
 }
 
 function selectAnswer(index) {
     userAnswers[currentQuestionIndex] = index;
-    renderQuestion();
+    renderQuestion(); // Перерисовываем, чтобы показать выделение
 }
 
 function updateControls() {
+    // Кнопка "Назад"
     prevButton.disabled = currentQuestionIndex === 0;
 
+    // Логика для кнопки "Вперед" и "Завершить"
+    // Разрешаем идти дальше только если дан ответ (опционально)
     const isAnswered = userAnswers[currentQuestionIndex] !== null;
     
+    // Кнопка "Вперед"
     if (currentQuestionIndex === currentQuestions.length - 1) {
         nextButton.style.display = 'none';
         finishButton.style.display = 'inline-block';
-        finishButton.disabled = !isAnswered;
+        finishButton.disabled = !isAnswered; // Блокируем финиш, если не ответил на последний
     } else {
         nextButton.style.display = 'inline-block';
         finishButton.style.display = 'none';
-        nextButton.disabled = !isAnswered;
+        nextButton.disabled = !isAnswered; // Блокируем, пока не ответит
     }
 }
 
@@ -333,7 +253,7 @@ function updateNavigationDots() {
 
 function showResults() {
     let score = 0;
-    let reportHTML = '<div style="text-align:left; max-height: 300px; overflow-y: auto;">';
+    let reportHTML = '';
 
     currentQuestions.forEach((q, index) => {
         const userAnswer = userAnswers[index];
@@ -341,20 +261,22 @@ function showResults() {
         
         if (isCorrect) score++;
 
-        // Формируем отчет о результатах
+        // Формируем детальный отчет (для интереса)
+        // Можно убрать этот блок, если отчет не нужен
+        /*
         reportHTML += `
-            <div class="result-item ${isCorrect ? 'correct' : 'wrong'}" style="margin-bottom: 10px; padding: 10px; background: #fff; border: 1px solid #eee;">
-                <strong>${index + 1}. ${q.question}</strong><br>
-                Ваш ответ: ${userAnswer !== null ? q.answers[userAnswer] : 'Нет ответа'} 
-                ${isCorrect ? '✅' : '❌'}<br>
-                ${!isCorrect ? `<span style="color:green">Правильно: ${q.answers[q.correct]}</span>` : ''}
+            <div class="result-item ${isCorrect ? 'correct' : 'wrong'}">
+                <strong>Вопрос ${index + 1}:</strong> ${q.question}<br>
+                Ваш ответ: ${q.answers[userAnswer] || 'Нет ответа'} <br>
+                ${!isCorrect ? `Правильный ответ: ${q.answers[q.correct]}` : ''}
             </div>
         `;
+        */
     });
-    reportHTML += '</div>';
 
+    // Отображение
     scoreDisplay.textContent = `${score} из ${currentQuestions.length}`;
-    reportContainer.innerHTML = reportHTML; // Вставляем детальный отчет
+    reportContainer.innerHTML = reportHTML;
 
     quizContainer.style.display = 'none';
     resultsScreen.style.display = 'block';
