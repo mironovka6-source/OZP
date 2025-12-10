@@ -23,20 +23,39 @@
         </div>
         
         <main id="quiz-container" style="display:none;">
-            <h3 class="current-class">Класс: </h3>
-            <p id="question-text">Текст вопроса</p>
-            
-            <div id="answers-area">
+            <div class="quiz-header">
+                <h3 class="current-class">Класс: <span id="selected-class">5</span></h3>
+                <div class="progress-info">
+                    <span id="progress-counter">Отвечено: 0 из 0</span>
                 </div>
+            </div>
             
-            <button id="next-button" disabled>Следующий вопрос</button>
+            <!-- НАВИГАЦИОННАЯ ПАНЕЛЬ С КНОПКАМИ ВОПРОСОВ -->
+            <div id="navigation-panel">
+                <!-- Кнопки вопросов будут генерироваться здесь -->
+            </div>
+            
+            <div class="question-area">
+                <p id="question-text">Текст вопроса</p>
+                
+                <div id="answers-area">
+                    <!-- Варианты ответов будут здесь -->
+                </div>
+            </div>
+            
+            <div class="buttons-container">
+                <button id="prev-button" disabled>Предыдущий</button>
+                <button id="next-button" disabled>Следующий вопрос</button>
+                <button id="finish-button" style="display:none;">Завершить тест</button>
+            </div>
         </main>
 
         <div id="results-screen" style="display:none;">
             <h3>Ваш результат:</h3>
             <p id="score">0 из 0</p>
             <div id="report-container">
-                </div>
+                <!-- Детальный отчет будет здесь -->
+            </div>
             <button onclick="location.reload()">Начать заново</button>
         </div>
     </div>
