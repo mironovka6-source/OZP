@@ -1,51 +1,50 @@
 // ===============================================
-// ГЛОБАЛЬНЫЕ ПЕРЕМЕННЫЕ
+// УЛЬТРА-ПРОСТОЙ РАБОЧИЙ ТЕСТ
 // ===============================================
-let allQuestions = [];
-let questions = [];
-let currentQuestionIndex = 0;
-let score = 0;
-let answerHistory = [];
-let currentClass = null;
 
-// ===============================================
-// ИНИЦИАЛИЗАЦИЯ - ГЛАВНАЯ ФУНКЦИЯ
-// ===============================================
+// Глобальные переменные
+let questions = [];
+let currentQuestion = 0;
+let userAnswers = [];
+let score = 0;
+
+// Главная функция - запускается при загрузке страницы
 document.addEventListener('DOMContentLoaded', function() {
-    console.log('🚀 Тест инициализирован');
+    console.log('🎮 Тест загружен');
     
-    // 1. Сначала создаем все необходимые элементы
-    createMissingElements();
+    // 1. СРАЗУ создаем все необходимые элементы
+    createEssentialElements();
     
-    // 2. Настраиваем все обработчики событий
-    setupEventListeners();
+    // 2. Настраиваем все кнопки
+    setupAllButtons();
     
-    // 3. Загружаем вопросы
-    loadQuestions();
-    
-    // 4. Тестовый запуск
-    console.log('✅ Все готово к работе');
+    // 3. Загружаем тестовые вопросы
+    loadTestQuestions();
 });
 
 // ===============================================
-// 1. СОЗДАНИЕ ОТСУТСТВУЮЩИХ ЭЛЕМЕНТОВ
+// 1. СОЗДАНИЕ ОБЯЗАТЕЛЬНЫХ ЭЛЕМЕНТОВ
 // ===============================================
-function createMissingElements() {
-    console.log('🔧 Проверяю и создаю недостающие элементы...');
+function createEssentialElements() {
+    console.log('🛠️ Создаю обязательные элементы...');
     
-    // 1.1. КНОПКА "ЗАВЕРШИТЬ ТЕСТ" - ОБЯЗАТЕЛЬНО!
-    let finishButton = document.getElementById('finish-button');
-    if (!finishButton) {
-        console.log('➕ Создаю кнопку "Завершить тест"');
+    // ===== КНОПКА "ЗАВЕРШИТЬ" =====
+    if (!document.getElementById('finish-button')) {
+        console.log('➕ Создаю кнопку "Завершить"');
+        
+        // Ищем контейнер для кнопок
         const buttonsContainer = document.querySelector('.buttons-container');
         if (buttonsContainer) {
-            finishButton = document.createElement('button');
-            finishButton.id = 'finish-button';
-            finishButton.textContent = '🏁 Завершить тест';
-            finishButton.style.cssText = `
+            // Создаем кнопку
+            const finishBtn = document.createElement('button');
+            finishBtn.id = 'finish-button';
+            finishBtn.textContent = '🏁 Завершить тест';
+            
+            // Стили для кнопки (inline стили для гарантии)
+            finishBtn.style.cssText = `
                 display: none;
                 padding: 12px 24px;
-                background-color: #2ecc71;
+                background: linear-gradient(135deg, #2ecc71, #27ae60);
                 color: white;
                 border: none;
                 border-radius: 8px;
@@ -53,55 +52,88 @@ function createMissingElements() {
                 font-weight: 600;
                 cursor: pointer;
                 transition: all 0.3s;
-                margin: 0 10px;
+                box-shadow: 0 4px 6px rgba(46, 204, 113, 0.2);
+                margin-left: 10px;
+                min-width: 160px;
             `;
-            buttonsContainer.appendChild(finishButton);
+            
+            // Эффекты при наведении
+            finishBtn.onmouseover = function() {
+                this.style.transform = 'translateY(-2px)';
+                this.style.boxShadow = '0 6px 12px rgba(46, 204, 113, 0.3)';
+            };
+            finishBtn.onmouseout = function() {
+                this.style.transform = 'translateY(0)';
+                this.style.boxShadow = '0 4px 6px rgba(46, 204, 113, 0.2)';
+            };
+            
+            // Добавляем в контейнер
+            buttonsContainer.appendChild(finishBtn);
+            console.log('✅ Кнопка "Завершить" создана');
+        } else {
+            console.error('❌ Не найден .buttons-container');
         }
     } else {
         console.log('✅ Кнопка "Завершить" уже существует');
     }
     
-    // 1.2. КОНТЕЙНЕР ДЛЯ ОТЧЕТА - ОБЯЗАТЕЛЬНО!
-    let reportContainer = document.getElementById('report-container');
-    if (!reportContainer) {
+    // ===== КОНТЕЙНЕР ДЛЯ ОТЧЕТА =====
+    if (!document.getElementById('report-container')) {
         console.log('➕ Создаю контейнер для отчета');
+        
         const resultsScreen = document.getElementById('results-screen');
         if (resultsScreen) {
-            reportContainer = document.createElement('div');
-            reportContainer.id = 'report-container';
-            reportContainer.style.cssText = `
-                margin: 30px 0;
+            const reportDiv = document.createElement('div');
+            reportDiv.id = 'report-container';
+            
+            // Стили для контейнера отчета
+            reportDiv.style.cssText = `
+                margin: 25px 0;
                 padding: 25px;
-                background-color: #f8f9fa;
+                background: white;
                 border-radius: 12px;
-                border: 2px solid #e9ecef;
+                border: 2px solid #e0e0e0;
                 max-height: 500px;
                 overflow-y: auto;
+                box-shadow: inset 0 2px 4px rgba(0,0,0,0.05);
             `;
-            resultsScreen.insertBefore(reportContainer, resultsScreen.querySelector('button'));
+            
+            // Добавляем перед кнопкой "Начать заново"
+            const restartBtn = resultsScreen.querySelector('button');
+            if (restartBtn) {
+                resultsScreen.insertBefore(reportDiv, restartBtn);
+            } else {
+                resultsScreen.appendChild(reportDiv);
+            }
+            
+            console.log('✅ Контейнер отчета создан');
+        } else {
+            console.error('❌ Не найден results-screen');
         }
     } else {
         console.log('✅ Контейнер отчета уже существует');
     }
     
-    // 1.3. КНОПКА "НАЧАТЬ ЗАНОВО" - если её нет
-    let restartButton = document.getElementById('restart-button');
-    if (!restartButton) {
+    // ===== КНОПКА "НАЧАТЬ ЗАНОВО" =====
+    if (!document.getElementById('restart-button')) {
         console.log('➕ Создаю кнопку "Начать заново"');
+        
         const resultsScreen = document.getElementById('results-screen');
         if (resultsScreen) {
-            const existingButton = resultsScreen.querySelector('button');
-            if (existingButton) {
-                existingButton.id = 'restart-button';
-                restartButton = existingButton;
-                console.log('✅ Переименовал существующую кнопку в "restart-button"');
+            // Проверяем, есть ли уже кнопка без ID
+            const existingBtn = resultsScreen.querySelector('button');
+            if (existingBtn && !existingBtn.id) {
+                existingBtn.id = 'restart-button';
+                console.log('✅ Назначил ID существующей кнопке');
             } else {
-                restartButton = document.createElement('button');
-                restartButton.id = 'restart-button';
-                restartButton.textContent = '🔄 Начать заново';
-                restartButton.style.cssText = `
+                // Создаем новую кнопку
+                const restartBtn = document.createElement('button');
+                restartBtn.id = 'restart-button';
+                restartBtn.textContent = '🔄 Начать заново';
+                
+                restartBtn.style.cssText = `
                     padding: 15px 40px;
-                    background-color: #9b59b6;
+                    background: linear-gradient(135deg, #9b59b6, #8e44ad);
                     color: white;
                     border: none;
                     border-radius: 10px;
@@ -109,8 +141,15 @@ function createMissingElements() {
                     font-weight: 600;
                     cursor: pointer;
                     margin-top: 20px;
+                    transition: all 0.3s;
+                    display: block;
+                    margin-left: auto;
+                    margin-right: auto;
+                    min-width: 200px;
                 `;
-                resultsScreen.appendChild(restartButton);
+                
+                resultsScreen.appendChild(restartBtn);
+                console.log('✅ Кнопка "Начать заново" создана');
             }
         }
     } else {
@@ -119,156 +158,143 @@ function createMissingElements() {
 }
 
 // ===============================================
-// 2. НАСТРОЙКА ВСЕХ ОБРАБОТЧИКОВ
+// 2. НАСТРОЙКА ВСЕХ КНОПОК
 // ===============================================
-function setupEventListeners() {
-    console.log('🔗 Настраиваю обработчики событий...');
+function setupAllButtons() {
+    console.log('🔗 Настраиваю кнопки...');
     
-    // 2.1. КНОПКИ ВЫБОРА КЛАССА
+    // ===== КНОПКИ КЛАССОВ =====
     const classButtons = document.querySelectorAll('#class-selection button');
-    classButtons.forEach(button => {
-        // Удаляем старые обработчики
-        const newButton = button.cloneNode(true);
-        button.parentNode.replaceChild(newButton, button);
-    });
-    
-    // Обновленные кнопки
-    const updatedButtons = document.querySelectorAll('#class-selection button');
-    updatedButtons.forEach(button => {
-        button.addEventListener('click', function(e) {
-            e.preventDefault();
+    classButtons.forEach(btn => {
+        // Очищаем старые обработчики
+        btn.onclick = null;
+        
+        // Добавляем новый обработчик
+        btn.addEventListener('click', function() {
             const classNum = parseInt(this.getAttribute('data-class'));
-            console.log(`🎯 Выбран ${classNum} класс`);
-            startTest(classNum);
+            console.log(`🎓 Выбран ${classNum} класс`);
+            startTestForClass(classNum);
         });
     });
     
-    // 2.2. КНОПКИ НАВИГАЦИИ В ТЕСТЕ
-    // Предыдущий вопрос
-    const prevButton = document.getElementById('prev-button');
-    if (prevButton) {
-        prevButton.addEventListener('click', function() {
-            if (currentQuestionIndex > 0) {
-                currentQuestionIndex--;
-                displayCurrentQuestion();
+    // ===== КНОПКА "ПРЕДЫДУЩИЙ" =====
+    const prevBtn = document.getElementById('prev-button');
+    if (prevBtn) {
+        prevBtn.onclick = function() {
+            if (currentQuestion > 0) {
+                currentQuestion--;
+                showQuestion();
             }
-        });
+        };
     }
     
-    // Следующий вопрос
-    const nextButton = document.getElementById('next-button');
-    if (nextButton) {
-        nextButton.addEventListener('click', function() {
-            if (currentQuestionIndex < questions.length - 1) {
-                currentQuestionIndex++;
-                displayCurrentQuestion();
+    // ===== КНОПКА "СЛЕДУЮЩИЙ" =====
+    const nextBtn = document.getElementById('next-button');
+    if (nextBtn) {
+        nextBtn.onclick = function() {
+            if (currentQuestion < questions.length - 1) {
+                currentQuestion++;
+                showQuestion();
             }
-        });
+        };
     }
     
-    // Завершить тест - ВАЖНО! Проверяем существование кнопки
-    const finishButton = document.getElementById('finish-button');
-    if (finishButton) {
-        finishButton.addEventListener('click', function() {
-            console.log('🏁 Нажата кнопка "Завершить тест"');
-            showResults();
-        });
-        console.log('✅ Обработчик для кнопки "Завершить" установлен');
-    } else {
-        console.error('❌ Кнопка "Завершить" не найдена после создания!');
+    // ===== КНОПКА "ЗАВЕРШИТЬ" =====
+    const finishBtn = document.getElementById('finish-button');
+    if (finishBtn) {
+        finishBtn.onclick = function() {
+            console.log('🏁 Завершаю тест...');
+            finishTest();
+        };
+        console.log('✅ Кнопка "Завершить" настроена');
     }
     
-    // Начать заново
-    const restartButton = document.getElementById('restart-button');
-    if (restartButton) {
-        restartButton.addEventListener('click', function() {
-            console.log('🔄 Начало нового теста');
+    // ===== КНОПКА "НАЧАТЬ ЗАНОВО" =====
+    const restartBtn = document.getElementById('restart-button');
+    if (restartBtn) {
+        restartBtn.onclick = function() {
+            console.log('🔄 Начинаю заново...');
             restartTest();
-        });
+        };
     }
     
-    console.log('✅ Все обработчики настроены');
+    console.log('✅ Все кнопки настроены');
 }
 
 // ===============================================
 // 3. ЗАГРУЗКА ВОПРОСОВ
 // ===============================================
-async function loadQuestions() {
-    try {
-        console.log('📥 Загружаю вопросы из questions.json...');
-        const response = await fetch('questions.json');
-        
-        if (!response.ok) {
-            throw new Error(`Ошибка ${response.status}: ${response.statusText}`);
-        }
-        
-        allQuestions = await response.json();
-        console.log(`✅ Загружено ${allQuestions.length} вопросов`);
-        
-        // Обновляем кнопки классов
-        updateClassButtons();
-        
-    } catch (error) {
-        console.error('❌ Ошибка загрузки вопросов:', error);
-        
-        // Показываем тестовые вопросы если файл не найден
-        allQuestions = [
-            {
-                "id": 1,
-                "class": 5,
-                "question": "Тестовый вопрос для 5 класса?",
-                "answers": [
-                    {"text": "Правильный ответ", "isCorrect": true},
-                    {"text": "Неправильный ответ 1", "isCorrect": false},
-                    {"text": "Неправильный ответ 2", "isCorrect": false},
-                    {"text": "Неправильный ответ 3", "isCorrect": false}
-                ]
-            },
-            {
-                "id": 2,
-                "class": 5,
-                "question": "Второй тестовый вопрос?",
-                "answers": [
-                    {"text": "Неправильный ответ 1", "isCorrect": false},
-                    {"text": "Правильный ответ", "isCorrect": true},
-                    {"text": "Неправильный ответ 2", "isCorrect": false},
-                    {"text": "Неправильный ответ 3", "isCorrect": false}
-                ]
-            }
-        ];
-        
-        console.log('📋 Использую тестовые вопросы');
-        updateClassButtons();
-    }
+function loadTestQuestions() {
+    // Сначала пробуем загрузить из questions.json
+    fetch('questions.json')
+        .then(response => {
+            if (response.ok) return response.json();
+            throw new Error('Файл не найден');
+        })
+        .then(data => {
+            questions = data;
+            console.log(`✅ Загружено ${questions.length} вопросов из JSON`);
+            updateClassButtons();
+        })
+        .catch(error => {
+            console.log('📋 Использую тестовые вопросы');
+            
+            // Тестовые вопросы на случай отсутствия файла
+            questions = [
+                {
+                    "id": 1,
+                    "class": 5,
+                    "question": "Какой материал используется в оригами?",
+                    "answers": [
+                        {"text": "Картон", "isCorrect": false},
+                        {"text": "Бумага", "isCorrect": true},
+                        {"text": "Глина", "isCorrect": false},
+                        {"text": "Ткань", "isCorrect": false}
+                    ]
+                },
+                {
+                    "id": 2,
+                    "class": 5,
+                    "question": "Что такое светотень?",
+                    "answers": [
+                        {"text": "Техника рисования", "isCorrect": false},
+                        {"text": "Передача объема светом и тенью", "isCorrect": true},
+                        {"text": "Вид краски", "isCorrect": false},
+                        {"text": "Стиль живописи", "isCorrect": false}
+                    ]
+                },
+                {
+                    "id": 3,
+                    "class": 5,
+                    "question": "Что такое батик?",
+                    "answers": [
+                        {"text": "Роспись по ткани", "isCorrect": true},
+                        {"text": "Резьба по дереву", "isCorrect": false},
+                        {"text": "Лепка из глины", "isCorrect": false},
+                        {"text": "Вышивка", "isCorrect": false}
+                    ]
+                }
+            ];
+            
+            updateClassButtons();
+        });
 }
 
 function updateClassButtons() {
-    const classButtons = document.querySelectorAll('#class-selection button');
-    const classCounts = {};
+    const buttons = document.querySelectorAll('#class-selection button');
     
-    // Считаем вопросы по классам
-    allQuestions.forEach(q => {
-        if (!classCounts[q.class]) classCounts[q.class] = 0;
-        classCounts[q.class]++;
-    });
-    
-    // Обновляем кнопки
-    classButtons.forEach(button => {
-        const classNum = parseInt(button.getAttribute('data-class'));
-        const count = classCounts[classNum] || 0;
+    buttons.forEach(btn => {
+        const classNum = parseInt(btn.getAttribute('data-class'));
+        const count = questions.filter(q => q.class === classNum).length;
         
         if (count > 0) {
-            button.disabled = false;
-            button.style.opacity = '1';
-            button.style.cursor = 'pointer';
-            button.innerHTML = `${classNum} класс <span style="font-size:0.8em; opacity:0.7">(${count})</span>`;
-            button.title = `${count} вопросов`;
+            btn.disabled = false;
+            btn.style.opacity = '1';
+            btn.innerHTML = `${classNum} класс <span style="font-size:0.8em">(${count})</span>`;
         } else {
-            button.disabled = true;
-            button.style.opacity = '0.5';
-            button.style.cursor = 'not-allowed';
-            button.innerHTML = `${classNum} класс`;
-            button.title = 'Нет вопросов';
+            btn.disabled = true;
+            btn.style.opacity = '0.5';
+            btn.innerHTML = `${classNum} класс`;
         }
     });
 }
@@ -276,160 +302,144 @@ function updateClassButtons() {
 // ===============================================
 // 4. ЗАПУСК ТЕСТА
 // ===============================================
-function startTest(classNum) {
-    console.log(`🚀 Запускаю тест для ${classNum} класса`);
+function startTestForClass(classNum) {
+    console.log(`🚀 Начинаю тест для ${classNum} класса`);
     
-    // Фильтруем вопросы
-    questions = allQuestions.filter(q => q.class === classNum);
+    // Фильтруем вопросы по классу
+    const classQuestions = questions.filter(q => q.class === classNum);
     
-    if (questions.length === 0) {
-        alert(`Для ${classNum} класса нет вопросов!`);
+    if (classQuestions.length === 0) {
+        alert('Для этого класса пока нет вопросов');
         return;
     }
     
-    // Сбрасываем состояние
-    currentClass = classNum;
-    currentQuestionIndex = 0;
+    // Сохраняем вопросы для теста
+    questions = classQuestions;
+    currentQuestion = 0;
+    userAnswers = new Array(questions.length).fill(null);
     score = 0;
-    answerHistory = new Array(questions.length).fill(null);
     
-    // Перемешиваем вопросы
-    shuffleArray(questions);
-    
-    // Переключаем экраны
+    // Показываем экран теста
     document.getElementById('start-screen').style.display = 'none';
     document.getElementById('quiz-container').style.display = 'block';
     document.getElementById('results-screen').style.display = 'none';
     
-    // Обновляем информацию
+    // Обновляем заголовок
     document.getElementById('selected-class').textContent = classNum;
     
-    // Создаем навигационные кнопки
-    createNavigationButtons();
+    // Создаем кнопки навигации
+    createNavButtons();
     
     // Показываем первый вопрос
-    displayCurrentQuestion();
+    showQuestion();
 }
 
-// ===============================================
-// 5. ОТОБРАЖЕНИЕ ВОПРОСОВ И ОТВЕТОВ
-// ===============================================
-function shuffleArray(array) {
-    for (let i = array.length - 1; i > 0; i--) {
-        const j = Math.floor(Math.random() * (i + 1));
-        [array[i], array[j]] = [array[j], array[i]];
-    }
-}
-
-function createNavigationButtons() {
+function createNavButtons() {
     const navPanel = document.getElementById('navigation-panel');
     if (!navPanel) return;
     
     navPanel.innerHTML = '';
     
     for (let i = 0; i < questions.length; i++) {
-        const button = document.createElement('button');
-        button.className = 'nav-btn';
-        button.textContent = i + 1;
-        button.dataset.index = i;
-        
-        button.addEventListener('click', function() {
-            const index = parseInt(this.dataset.index);
-            currentQuestionIndex = index;
-            displayCurrentQuestion();
-        });
-        
-        navPanel.appendChild(button);
+        const btn = document.createElement('button');
+        btn.className = 'nav-btn';
+        btn.textContent = i + 1;
+        btn.onclick = function() {
+            currentQuestion = i;
+            showQuestion();
+        };
+        navPanel.appendChild(btn);
     }
     
-    updateNavigationButtons();
+    updateNavButtons();
 }
 
-function updateNavigationButtons() {
-    const navButtons = document.querySelectorAll('.nav-btn');
+function updateNavButtons() {
+    const navBtns = document.querySelectorAll('.nav-btn');
     
-    navButtons.forEach((button, index) => {
-        button.classList.remove('current', 'answered');
+    navBtns.forEach((btn, index) => {
+        btn.classList.remove('current', 'answered');
         
-        if (index === currentQuestionIndex) {
-            button.classList.add('current');
+        if (index === currentQuestion) {
+            btn.classList.add('current');
         }
         
-        if (answerHistory[index] !== null) {
-            button.classList.add('answered');
+        if (userAnswers[index] !== null) {
+            btn.classList.add('answered');
         }
     });
 }
 
-function displayCurrentQuestion() {
-    if (currentQuestionIndex >= questions.length) {
-        showResults();
-        return;
-    }
+// ===============================================
+// 5. ПОКАЗ ВОПРОСОВ
+// ===============================================
+function showQuestion() {
+    console.log(`📝 Показываю вопрос ${currentQuestion + 1} из ${questions.length}`);
     
-    const question = questions[currentQuestionIndex];
+    const question = questions[currentQuestion];
     
     // Текст вопроса
     document.getElementById('question-text').textContent = 
-        `${currentQuestionIndex + 1}. ${question.question}`;
+        `Вопрос ${currentQuestion + 1}: ${question.question}`;
     
     // Очищаем старые ответы
     const answersArea = document.getElementById('answers-area');
     answersArea.innerHTML = '';
     
     // Обновляем кнопки навигации
-    document.getElementById('prev-button').disabled = currentQuestionIndex === 0;
+    document.getElementById('prev-button').disabled = currentQuestion === 0;
     document.getElementById('next-button').disabled = true;
     
-    // Проверяем последний ли вопрос - ВАЖНО ДЛЯ КНОПКИ "ЗАВЕРШИТЬ"
-    const isLastQuestion = currentQuestionIndex === questions.length - 1;
-    const nextButton = document.getElementById('next-button');
-    const finishButton = document.getElementById('finish-button');
+    // ===== ВАЖНО: КНОПКА "ЗАВЕРШИТЬ" =====
+    const nextBtn = document.getElementById('next-button');
+    const finishBtn = document.getElementById('finish-button');
     
-    if (nextButton && finishButton) {
-        nextButton.style.display = isLastQuestion ? 'none' : 'inline-block';
-        finishButton.style.display = isLastQuestion ? 'inline-block' : 'none';
-        console.log(`📊 Вопрос ${currentQuestionIndex + 1}/${questions.length}, кнопка "Завершить": ${finishButton.style.display}`);
+    // Проверяем последний ли это вопрос
+    const isLastQuestion = currentQuestion === questions.length - 1;
+    
+    if (nextBtn) nextBtn.style.display = isLastQuestion ? 'none' : 'inline-block';
+    if (finishBtn) {
+        finishBtn.style.display = isLastQuestion ? 'inline-block' : 'none';
+        console.log(`🏁 Кнопка "Завершить" видима: ${finishBtn.style.display}`);
     }
     
     // Создаем варианты ответов
     const letters = ['А', 'Б', 'В', 'Г'];
     question.answers.forEach((answer, index) => {
-        const answerElement = document.createElement('div');
-        answerElement.className = 'answer-option';
-        answerElement.dataset.index = index;
-        answerElement.dataset.correct = answer.isCorrect;
+        const answerDiv = document.createElement('div');
+        answerDiv.className = 'answer-option';
+        answerDiv.dataset.index = index;
+        answerDiv.dataset.correct = answer.isCorrect;
         
-        answerElement.innerHTML = `
+        answerDiv.innerHTML = `
             <span class="answer-letter">${letters[index]}</span>
             <span class="answer-text">${answer.text}</span>
         `;
         
-        // Если уже отвечали на этот вопрос
-        const userAnswer = answerHistory[currentQuestionIndex];
-        if (userAnswer && userAnswer.index === index) {
-            answerElement.classList.add('selected');
+        // Если уже отвечали
+        const userAnswer = userAnswers[currentQuestion];
+        if (userAnswer !== null && userAnswer.index === index) {
+            answerDiv.classList.add('selected');
             if (userAnswer.isCorrect) {
-                answerElement.classList.add('correct');
+                answerDiv.classList.add('correct');
             } else {
-                answerElement.classList.add('wrong');
+                answerDiv.classList.add('wrong');
             }
         }
         
-        // Обработчик выбора
-        answerElement.addEventListener('click', handleAnswerSelect);
-        answersArea.appendChild(answerElement);
+        // Обработчик клика
+        answerDiv.onclick = function() {
+            selectAnswer(index, answer.isCorrect, this);
+        };
+        
+        answersArea.appendChild(answerDiv);
     });
     
     updateProgress();
-    updateNavigationButtons();
+    updateNavButtons();
 }
 
-function handleAnswerSelect(event) {
-    const answerElement = event.currentTarget;
-    const answerIndex = parseInt(answerElement.dataset.index);
-    const isCorrect = answerElement.dataset.correct === 'true';
-    
+function selectAnswer(index, isCorrect, element) {
     // Блокируем все варианты
     document.querySelectorAll('.answer-option').forEach(opt => {
         opt.style.pointerEvents = 'none';
@@ -437,14 +447,14 @@ function handleAnswerSelect(event) {
     });
     
     // Выделяем выбранный
-    answerElement.classList.add('selected');
+    element.classList.add('selected');
     
     // Показываем правильность
     if (isCorrect) {
-        answerElement.classList.add('correct');
+        element.classList.add('correct');
         score++;
     } else {
-        answerElement.classList.add('wrong');
+        element.classList.add('wrong');
         
         // Показываем правильный ответ
         const correctAnswer = document.querySelector('.answer-option[data-correct="true"]');
@@ -454,10 +464,10 @@ function handleAnswerSelect(event) {
     }
     
     // Сохраняем ответ
-    answerHistory[currentQuestionIndex] = {
-        index: answerIndex,
+    userAnswers[currentQuestion] = {
+        index: index,
         isCorrect: isCorrect,
-        text: answerElement.querySelector('.answer-text').textContent
+        text: element.querySelector('.answer-text').textContent
     };
     
     // Активируем кнопку "Следующий"
@@ -467,31 +477,34 @@ function handleAnswerSelect(event) {
 }
 
 function updateProgress() {
-    const answered = answerHistory.filter(a => a !== null).length;
+    const answered = userAnswers.filter(a => a !== null).length;
     document.getElementById('progress-counter').textContent = 
         `Отвечено: ${answered} из ${questions.length}`;
 }
 
 // ===============================================
-// 6. РЕЗУЛЬТАТЫ И ОТЧЕТ - ВАЖНАЯ ЧАСТЬ!
+// 6. ЗАВЕРШЕНИЕ ТЕСТА И РЕЗУЛЬТАТЫ
 // ===============================================
-function showResults() {
-    console.log('📊 Показываю результаты теста...');
+function finishTest() {
+    console.log('🎉 Завершаю тест, показываю результаты!');
     
-    // Переключаем экраны
+    // Считаем правильные ответы
+    const correct = userAnswers.filter(a => a && a.isCorrect).length;
+    const total = questions.length;
+    
+    // Показываем экран результатов
     document.getElementById('quiz-container').style.display = 'none';
     document.getElementById('results-screen').style.display = 'block';
     
     // Обновляем счет
-    const correctAnswers = answerHistory.filter(a => a && a.isCorrect).length;
-    document.getElementById('score').textContent = `${correctAnswers} из ${questions.length}`;
+    document.getElementById('score').textContent = `${correct} из ${total}`;
     
-    // Генерируем отчет - ВАЖНО!
-    generateReport();
+    // ===== ВАЖНО: СОЗДАЕМ ОТЧЕТ =====
+    createReport();
 }
 
-function generateReport() {
-    console.log('📋 Генерирую подробный отчет...');
+function createReport() {
+    console.log('📊 Создаю подробный отчет...');
     
     const reportContainer = document.getElementById('report-container');
     if (!reportContainer) {
@@ -502,28 +515,27 @@ function generateReport() {
     // Очищаем контейнер
     reportContainer.innerHTML = '';
     
-    // Добавляем заголовок
+    // Заголовок отчета
     const title = document.createElement('h3');
-    title.textContent = 'Детальный отчет по вопросам:';
+    title.textContent = '📋 Подробный отчет по тесту';
     title.style.cssText = `
         color: #2c3e50;
         margin-bottom: 25px;
         padding-bottom: 15px;
-        border-bottom: 2px solid #ecf0f1;
+        border-bottom: 3px solid #3498db;
         text-align: center;
+        font-size: 22px;
     `;
     reportContainer.appendChild(title);
     
-    // Проверяем, есть ли ответы
-    const answeredQuestions = answerHistory.filter(a => a !== null);
-    if (answeredQuestions.length === 0) {
-        const message = document.createElement('p');
-        message.textContent = 'Вы не ответили ни на один вопрос.';
-        message.style.cssText = `
-            text-align: center;
-            color: #7f8c8d;
-            padding: 30px;
-            font-style: italic;
+    // Если нет ответов
+    if (userAnswers.every(a => a === null)) {
+        const message = document.createElement('div');
+        message.innerHTML = `
+            <p style="text-align: center; color: #7f8c8d; padding: 40px;">
+                Вы не ответили ни на один вопрос.<br>
+                Пройдите тест заново и дайте ответы!
+            </p>
         `;
         reportContainer.appendChild(message);
         return;
@@ -531,66 +543,87 @@ function generateReport() {
     
     // Создаем отчет для каждого вопроса
     questions.forEach((question, index) => {
-        const userAnswer = answerHistory[index];
-        if (userAnswer === null) return; // Пропускаем неотвеченные
+        const answer = userAnswers[index];
+        if (answer === null) return; // Пропускаем неотвеченные
         
-        const isCorrect = userAnswer.isCorrect;
+        const isCorrect = answer.isCorrect;
         
-        // Создаем элемент отчета
-        const reportItem = document.createElement('div');
-        reportItem.className = `report-item ${isCorrect ? 'correct' : 'incorrect'}`;
-        reportItem.style.cssText = `
+        // Создаем блок отчета
+        const reportBlock = document.createElement('div');
+        reportBlock.className = 'report-block';
+        reportBlock.style.cssText = `
+            background: ${isCorrect ? '#e8f5e9' : '#ffebee'};
+            border-radius: 12px;
             padding: 20px;
             margin-bottom: 20px;
-            border-radius: 10px;
-            background: ${isCorrect ? '#f0fff4' : '#fff5f5'};
-            border-left: 6px solid ${isCorrect ? '#2ecc71' : '#e74c3c'};
+            border-left: 6px solid ${isCorrect ? '#4CAF50' : '#f44336'};
+            box-shadow: 0 3px 10px rgba(0,0,0,0.08);
             transition: transform 0.3s;
         `;
         
-        reportItem.onmouseover = function() { this.style.transform = 'translateX(5px)'; };
-        reportItem.onmouseout = function() { this.style.transform = 'translateX(0)'; };
+        // Эффект при наведении
+        reportBlock.onmouseover = function() {
+            this.style.transform = 'translateY(-5px)';
+            this.style.boxShadow = '0 5px 15px rgba(0,0,0,0.1)';
+        };
+        reportBlock.onmouseout = function() {
+            this.style.transform = 'translateY(0)';
+            this.style.boxShadow = '0 3px 10px rgba(0,0,0,0.08)';
+        };
         
-        // Вопрос
-        const questionDiv = document.createElement('div');
-        questionDiv.style.cssText = `
+        // Номер вопроса
+        const questionNum = document.createElement('div');
+        questionNum.innerHTML = `<strong style="color: #3498db;">Вопрос ${index + 1}:</strong>`;
+        questionNum.style.fontSize = '14px';
+        questionNum.style.marginBottom = '5px';
+        questionNum.style.color = '#7f8c8d';
+        
+        // Текст вопроса
+        const questionText = document.createElement('div');
+        questionText.textContent = question.question;
+        questionText.style.cssText = `
             font-weight: bold;
             font-size: 16px;
-            color: #2c3e50;
             margin-bottom: 15px;
+            color: #2c3e50;
+            line-height: 1.5;
         `;
-        questionDiv.innerHTML = `<span style="color: #3498db;">Вопрос ${index + 1}:</span> ${question.question}`;
         
         // Ответ пользователя
         const userAnswerDiv = document.createElement('div');
         userAnswerDiv.style.cssText = `
-            margin-bottom: 10px;
-            padding: 10px;
             background: white;
-            border-radius: 6px;
-            border: 2px solid ${isCorrect ? '#d4edda' : '#f8d7da'};
+            padding: 12px 15px;
+            border-radius: 8px;
+            margin-bottom: 10px;
+            border: 2px solid ${isCorrect ? '#c8e6c9' : '#ffcdd2'};
         `;
         userAnswerDiv.innerHTML = `
-            <strong style="color: ${isCorrect ? '#27ae60' : '#e74c3c'};">Ваш ответ:</strong> 
-            ${userAnswer.text} 
-            ${isCorrect ? '✅' : '❌'}
+            <span style="color: ${isCorrect ? '#4CAF50' : '#f44336'}; font-weight: bold;">
+                Ваш ответ:
+            </span> 
+            ${answer.text} 
+            <span style="margin-left: 10px;">${isCorrect ? '✅' : '❌'}</span>
         `;
         
-        // Если ответ неправильный - показываем правильный
+        // Правильный ответ (если неправильно)
         let correctAnswerDiv = '';
         if (!isCorrect) {
-            const correctAnswer = question.answers.find(a => a.isCorrect);
-            if (correctAnswer) {
+            const correct = question.answers.find(a => a.isCorrect);
+            if (correct) {
                 correctAnswerDiv = `
                     <div style="
+                        background: #f1f8e9;
+                        padding: 12px 15px;
+                        border-radius: 8px;
                         margin-top: 10px;
-                        padding: 10px;
-                        background: #e8f5e9;
-                        border-radius: 6px;
-                        border: 2px solid #c8e6c9;
+                        border: 2px solid #dcedc8;
                     ">
-                        <strong style="color: #27ae60;">Правильный ответ:</strong> 
-                        ${correctAnswer.text} ✅
+                        <span style="color: #689f38; font-weight: bold;">
+                            Правильный ответ:
+                        </span> 
+                        ${correct.text} 
+                        <span style="margin-left: 10px;">✅</span>
                     </div>
                 `;
             }
@@ -600,7 +633,7 @@ function generateReport() {
         const statusDiv = document.createElement('div');
         statusDiv.style.cssText = `
             margin-top: 15px;
-            padding: 8px 15px;
+            padding: 8px 16px;
             background: ${isCorrect ? '#d4edda' : '#f8d7da'};
             color: ${isCorrect ? '#155724' : '#721c24'};
             border-radius: 20px;
@@ -608,36 +641,65 @@ function generateReport() {
             font-weight: bold;
             font-size: 14px;
         `;
-        statusDiv.textContent = isCorrect ? '✓ Правильно' : '✗ Неправильно';
+        statusDiv.textContent = isCorrect ? '✓ ПРАВИЛЬНО' : '✗ НЕПРАВИЛЬНО';
         
-        // Собираем все вместе
-        reportItem.appendChild(questionDiv);
-        reportItem.appendChild(userAnswerDiv);
+        // Собираем всё вместе
+        reportBlock.appendChild(questionNum);
+        reportBlock.appendChild(questionText);
+        reportBlock.appendChild(userAnswerDiv);
         if (correctAnswerDiv) {
-            reportItem.innerHTML += correctAnswerDiv;
+            reportBlock.innerHTML += correctAnswerDiv;
         }
-        reportItem.appendChild(statusDiv);
+        reportBlock.appendChild(statusDiv);
         
-        reportContainer.appendChild(reportItem);
+        reportContainer.appendChild(reportBlock);
     });
     
-    console.log(`✅ Отчет сгенерирован: ${answeredQuestions.length} вопросов`);
+    // Итоговая статистика
+    const correctCount = userAnswers.filter(a => a && a.isCorrect).length;
+    const totalCount = questions.length;
+    const percentage = Math.round((correctCount / totalCount) * 100);
+    
+    const summary = document.createElement('div');
+    summary.style.cssText = `
+        background: linear-gradient(135deg, #3498db, #2980b9);
+        color: white;
+        padding: 20px;
+        border-radius: 12px;
+        margin-top: 20px;
+        text-align: center;
+    `;
+    summary.innerHTML = `
+        <div style="font-size: 24px; font-weight: bold; margin-bottom: 10px;">
+            ${correctCount} из ${totalCount}
+        </div>
+        <div style="font-size: 18px; margin-bottom: 5px;">
+            Правильных ответов: ${percentage}%
+        </div>
+        <div style="font-size: 14px; opacity: 0.9;">
+            ${percentage >= 80 ? 'Отличный результат! 🎉' : 
+              percentage >= 60 ? 'Хороший результат! 👍' : 
+              'Попробуйте еще раз! 💪'}
+        </div>
+    `;
+    
+    reportContainer.appendChild(summary);
+    
+    console.log(`✅ Отчет создан: ${correctCount}/${totalCount} правильных ответов`);
 }
 
 // ===============================================
-// 7. ПЕРЕЗАПУСК ТЕСТА
+// 7. ПЕРЕЗАПУСК
 // ===============================================
 function restartTest() {
     console.log('🔄 Перезапускаю тест...');
     
-    // Сбрасываем все переменные
-    currentQuestionIndex = 0;
+    // Сбрасываем всё
+    currentQuestion = 0;
+    userAnswers = [];
     score = 0;
-    answerHistory = [];
-    currentClass = null;
-    questions = [];
     
-    // Переключаем экраны
+    // Показываем стартовый экран
     document.getElementById('results-screen').style.display = 'none';
     document.getElementById('quiz-container').style.display = 'none';
     document.getElementById('start-screen').style.display = 'block';
@@ -647,43 +709,81 @@ function restartTest() {
 }
 
 // ===============================================
-// 8. ФУНКЦИИ ДЛЯ ОТЛАДКИ
+// 8. ФУНКЦИИ ДЛЯ ОТЛАДКИ (вызываются из консоли)
 // ===============================================
-function checkElements() {
-    console.log('🔍 Проверяю элементы DOM:');
-    console.log('- Кнопка "Завершить":', document.getElementById('finish-button'));
-    console.log('- Контейнер отчета:', document.getElementById('report-container'));
-    console.log('- Кнопка "Начать заново":', document.getElementById('restart-button'));
-    console.log('- Экран теста:', document.getElementById('quiz-container'));
-    console.log('- Экран результатов:', document.getElementById('results-screen'));
-}
 
-function forceShowResults() {
-    // Принудительно показываем результаты (для теста)
-    console.log('🔄 Принудительный показ результатов');
-    document.getElementById('quiz-container').style.display = 'none';
-    document.getElementById('results-screen').style.display = 'block';
-    document.getElementById('score').textContent = '3 из 5';
+// Проверить все элементы
+window.checkAll = function() {
+    console.log('🔍 Проверяю все элементы:');
+    console.log('1. Кнопка "Завершить":', document.getElementById('finish-button'));
+    console.log('2. Контейнер отчета:', document.getElementById('report-container'));
+    console.log('3. Кнопка "Начать заново":', document.getElementById('restart-button'));
+    console.log('4. Экран теста:', document.getElementById('quiz-container'));
+    console.log('5. Экран результатов:', document.getElementById('results-screen'));
+    console.log('6. Кнопки классов:', document.querySelectorAll('#class-selection button').length);
+};
+
+// Принудительно показать результаты (для теста)
+window.showTestResults = function() {
+    console.log('🎯 Принудительно показываю результаты');
     
-    // Создаем тестовый отчет
-    const reportContainer = document.getElementById('report-container');
-    if (reportContainer) {
-        reportContainer.innerHTML = `
-            <h3 style="color: #2c3e50; margin-bottom: 20px;">Тестовый отчет</h3>
-            <div style="background: #f0fff4; padding: 15px; border-radius: 8px; margin-bottom: 15px; border-left: 5px solid #2ecc71;">
-                <div style="font-weight: bold; margin-bottom: 5px;">Вопрос 1: Тестовый вопрос?</div>
-                <div style="color: #27ae60;">✅ Ваш ответ: Правильный</div>
-            </div>
-            <div style="background: #fff5f5; padding: 15px; border-radius: 8px; border-left: 5px solid #e74c3c;">
-                <div style="font-weight: bold; margin-bottom: 5px;">Вопрос 2: Другой вопрос?</div>
-                <div style="color: #e74c3c;">❌ Ваш ответ: Неправильный</div>
-                <div style="color: #27ae60; margin-top: 5px;">✅ Правильный ответ: Правильный вариант</div>
-            </div>
-        `;
-    }
-}
+    // Создаем тестовые данные
+    questions = [
+        {
+            id: 1,
+            class: 5,
+            question: "Тестовый вопрос 1?",
+            answers: [
+                {text: "Правильный ответ", isCorrect: true},
+                {text: "Неправильный 1", isCorrect: false},
+                {text: "Неправильный 2", isCorrect: false},
+                {text: "Неправильный 3", isCorrect: false}
+            ]
+        },
+        {
+            id: 2,
+            class: 5,
+            question: "Тестовый вопрос 2?",
+            answers: [
+                {text: "Неправильный 1", isCorrect: false},
+                {text: "Правильный ответ", isCorrect: true},
+                {text: "Неправильный 2", isCorrect: false},
+                {text: "Неправильный 3", isCorrect: false}
+            ]
+        }
+    ];
+    
+    userAnswers = [
+        {index: 0, isCorrect: true, text: "Правильный ответ"},
+        {index: 0, isCorrect: false, text: "Неправильный 1"}
+    ];
+    
+    // Показываем результаты
+    finishTest();
+};
 
-// Экспортируем функции для отладки в консоли
-window.debug = checkElements;
-window.testResults = forceShowResults;
-window.restart = restartTest;
+// Перезапустить тест
+window.restartApp = restartTest;
+
+// Проверить видимость кнопки "Завершить"
+window.checkFinishButton = function() {
+    const btn = document.getElementById('finish-button');
+    if (btn) {
+        console.log('✅ Кнопка найдена');
+        console.log('- display:', btn.style.display);
+        console.log('- visibility:', btn.style.visibility);
+        console.log('- opacity:', btn.style.opacity);
+        console.log('- position:', btn.style.position);
+        console.log('- z-index:', btn.style.zIndex);
+        
+        // Принудительно показываем кнопку
+        btn.style.display = 'block !important';
+        btn.style.visibility = 'visible !important';
+        btn.style.opacity = '1 !important';
+        btn.style.position = 'relative !important';
+        btn.style.zIndex = '1000 !important';
+        console.log('🚀 Кнопка принудительно показана!');
+    } else {
+        console.error('❌ Кнопка не найдена!');
+    }
+};
