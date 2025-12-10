@@ -5,55 +5,49 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Тест по Художественному труду</title>
     <link rel="stylesheet" href="style.css">
-    <link rel="icon" href="favicon.ico" type="image/x-icon">
 </head>
 <body>
-
     <div class="container">
         <!-- Начальный экран -->
         <div id="start-screen">
             <h2>Выберите класс для прохождения теста</h2>
             <div id="class-selection">
-                <button id="class-5" data-class="5">5 класс</button>
-                <button id="class-6" data-class="6">6 класс</button>
-                <button id="class-7" data-class="7">7 класс</button>
-                <button id="class-8" data-class="8">8 класс</button>
-                <button id="class-9" data-class="9">9 класс</button>
+                <button data-class="5">5 класс</button>
+                <button data-class="6">6 класс</button>
+                <button data-class="7">7 класс</button>
+                <button data-class="8">8 класс</button>
+                <button data-class="9">9 класс</button>
             </div>
         </div>
         
         <!-- Экран теста -->
-        <main id="quiz-container" style="display:none;">
+        <div id="quiz-container" style="display:none;">
             <div class="quiz-header">
-                <h3 class="current-class">Класс: <span id="selected-class">5</span></h3>
-                <div class="progress-info">
-                    <span id="progress-counter">Отвечено: 0 из 0</span>
-                </div>
+                <h3 id="selected-class">Класс: <span>5</span></h3>
+                <div id="progress-counter">Отвечено: 0 из 0</div>
             </div>
             
-            <!-- Навигационная панель -->
+            <!-- Панель навигации -->
             <div id="navigation-panel"></div>
             
+            <!-- Область вопроса -->
             <div class="question-area">
                 <p id="question-text">Текст вопроса</p>
-                
-                <div id="answers-area">
-                    <!-- Варианты ответов будут здесь -->
-                </div>
+                <div id="answers-area"></div>
             </div>
             
             <!-- Кнопки управления -->
             <div class="buttons-container">
                 <button id="prev-button" disabled>← Предыдущий</button>
                 <button id="next-button" disabled>Следующий →</button>
-                <button id="finish-button" style="display:none;">🏁 Завершить тест</button>
+                <button id="finish-button">🏁 Завершить тест</button>
             </div>
-        </main>
-
+        </div>
+        
         <!-- Экран результатов -->
         <div id="results-screen" style="display:none;">
-            <h3>Ваш результат:</h3>
-            <p id="score">0 из 0</p>
+            <h2>Результаты теста</h2>
+            <div id="score">0 из 0</div>
             <div id="report-container"></div>
             <button id="restart-button">🔄 Начать заново</button>
         </div>
