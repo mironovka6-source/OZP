@@ -1,5 +1,5 @@
 // *** ВСТАВЬТЕ СЮДА ВАШУ RAW ССЫЛКУ С GITHUB ***
-const JSON_URL = "https://raw.githubusercontent.com/mironovka6-source/OZP/refs/heads/main/manifest.json"; 
+const JSON_URL = "https://raw.githubusercontent.com/mironovka6-source/OZP/refs/heads/main/questions.json"; 
 // Пример: "https://raw.githubusercontent.com/username/repo/branch/questions.json"
 
 
