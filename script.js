@@ -7,122 +7,148 @@ let currentQuestionIndex = 0;
 let score = 0;
 let answerHistory = [];
 let currentClass = null;
-
-// Буквы для вариантов ответов
-const answerLetters = ['А', 'Б', 'В', 'Г'];
+let isTestRunning = false;
 
 // ===============================================
 // ИНИЦИАЛИЗАЦИЯ ПРИЛОЖЕНИЯ
 // ===============================================
 document.addEventListener('DOMContentLoaded', function() {
-    console.log('🚀 Приложение инициализировано');
+    console.log('🚀 DOM загружен, инициализация приложения');
     
-    // Загружаем вопросы из JSON файла
-    loadQuestionsFromJSON();
+    // Сначала настраиваем все обработчики
+    setupAllEventListeners();
+    
+    // Затем загружаем вопросы
+    loadQuestions();
 });
 
 // ===============================================
-// ЗАГРУЗКА ВОПРОСОВ ИЗ JSON ФАЙЛА
+// НАСТРОЙКА ВСЕХ ОБРАБОТЧИКОВ СОБЫТИЙ
 // ===============================================
-async function loadQuestionsFromJSON() {
+function setupAllEventListeners() {
+    console.log('🔧 Настройка обработчиков событий...');
+    
+    // 1. Обработчики для кнопок классов
+    const classButtons = document.querySelectorAll('#class-selection button');
+    classButtons.forEach(button => {
+        // Очищаем старые обработчики
+        const newButton = button.cloneNode(true);
+        button.parentNode.replaceChild(newButton, button);
+    });
+    
+    // Получаем обновленные кнопки
+    const updatedButtons = document.querySelectorAll('#class-selection button');
+    updatedButtons.forEach(button => {
+        button.addEventListener('click', function(e) {
+            e.preventDefault();
+            e.stopPropagation();
+            const classNum = parseInt(this.getAttribute('data-class'));
+            console.log(`🎯 Нажата кнопка класса: ${classNum}`);
+            startTest(classNum);
+        });
+    });
+    
+    // 2. Обработчики для навигации
+    const prevButton = document.getElementById('prev-button');
+    const nextButton = document.getElementById('next-button');
+    const finishButton = document.getElementById('finish-button');
+    
+    if (prevButton) {
+        prevButton.addEventListener('click', handlePrevButton);
+    }
+    
+    if (nextButton) {
+        nextButton.addEventListener('click', handleNextButton);
+    }
+    
+    if (finishButton) {
+        finishButton.addEventListener('click', handleFinishButton);
+    }
+    
+    // 3. Обработчик для кнопки "Начать заново"
+    const restartButton = document.getElementById('restart-button');
+    if (restartButton) {
+        restartButton.addEventListener('click', handleRestartButton);
+    } else {
+        // Создаем кнопку если её нет
+        const resultsScreen = document.getElementById('results-screen');
+        if (resultsScreen) {
+            const newRestartButton = document.createElement('button');
+            newRestartButton.id = 'restart-button';
+            newRestartButton.textContent = '🔄 Начать заново';
+            newRestartButton.addEventListener('click', handleRestartButton);
+            resultsScreen.appendChild(newRestartButton);
+        }
+    }
+    
+    console.log('✅ Обработчики событий настроены');
+}
+
+// ===============================================
+// ЗАГРУЗКА ВОПРОСОВ ИЗ JSON
+// ===============================================
+async function loadQuestions() {
     try {
         console.log('📥 Загрузка вопросов из questions.json...');
         
         const response = await fetch('questions.json');
         
         if (!response.ok) {
-            throw new Error(`HTTP error! status: ${response.status}`);
+            throw new Error(`Ошибка HTTP: ${response.status}`);
         }
         
         allQuestions = await response.json();
-        console.log(`✅ Успешно загружено ${allQuestions.length} вопросов`);
+        console.log(`✅ Загружено ${allQuestions.length} вопросов`);
         
-        // Настраиваем кнопки классов
-        setupClassButtons();
+        // Обновляем кнопки классов после загрузки вопросов
+        updateClassButtons();
         
     } catch (error) {
         console.error('❌ Ошибка загрузки вопросов:', error);
-        
-        // Показываем сообщение об ошибке
-        const startScreen = document.getElementById('start-screen');
-        if (startScreen) {
-            const errorDiv = document.createElement('div');
-            errorDiv.style.color = 'red';
-            errorDiv.style.padding = '20px';
-            errorDiv.style.marginTop = '20px';
-            errorDiv.style.border = '1px solid red';
-            errorDiv.style.borderRadius = '8px';
-            errorDiv.innerHTML = `
-                <h4>⚠️ Ошибка загрузки вопросов</h4>
-                <p>${error.message}</p>
-                <p>Проверьте наличие файла questions.json в той же папке</p>
-            `;
-            startScreen.appendChild(errorDiv);
-        }
+        showError('Не удалось загрузить вопросы. Проверьте файл questions.json');
     }
 }
 
 // ===============================================
-// НАСТРОЙКА КНОПОК КЛАССОВ
+// ОБНОВЛЕНИЕ КНОПОК КЛАССОВ
 // ===============================================
-function setupClassButtons() {
-    console.log('🔘 Настройка кнопок классов...');
+function updateClassButtons() {
+    console.log('🔘 Обновление кнопок классов...');
     
-    const classSelection = document.getElementById('class-selection');
-    if (!classSelection) {
-        console.error('❌ Не найден элемент #class-selection');
-        return;
-    }
+    const classButtons = document.querySelectorAll('#class-selection button');
+    const availableClasses = {};
     
-    // Очищаем все старые обработчики
-    const buttons = classSelection.querySelectorAll('button');
-    buttons.forEach(button => {
-        // Клонируем кнопку чтобы сбросить все обработчики
-        const newButton = button.cloneNode(true);
-        button.parentNode.replaceChild(newButton, button);
+    // Считаем вопросы по классам
+    allQuestions.forEach(question => {
+        if (!availableClasses[question.class]) {
+            availableClasses[question.class] = 0;
+        }
+        availableClasses[question.class]++;
     });
     
-    // Получаем обновленные кнопки
-    const updatedButtons = classSelection.querySelectorAll('button');
-    
-    updatedButtons.forEach(button => {
+    // Обновляем каждую кнопку
+    classButtons.forEach(button => {
         const classNum = parseInt(button.getAttribute('data-class'));
+        const questionCount = availableClasses[classNum] || 0;
         
-        // Проверяем, есть ли вопросы для этого класса
-        const classQuestions = allQuestions.filter(q => q.class === classNum);
-        
-        if (classQuestions.length > 0) {
-            // Кнопка активна
+        if (questionCount > 0) {
+            // Класс доступен
             button.disabled = false;
             button.style.opacity = '1';
             button.style.cursor = 'pointer';
-            
-            // Добавляем счетчик вопросов
-            const countSpan = document.createElement('span');
-            countSpan.className = 'question-count';
-            countSpan.textContent = ` (${classQuestions.length})`;
-            countSpan.style.fontSize = '0.8em';
-            countSpan.style.opacity = '0.7';
-            button.appendChild(countSpan);
-            
-            // Добавляем обработчик с правильным binding
-            button.addEventListener('click', function(event) {
-                event.preventDefault();
-                console.log(`🎯 Выбран класс: ${classNum}`);
-                startTest(classNum);
-            });
-            
-            console.log(`✅ Кнопка ${classNum} класса активна (${classQuestions.length} вопросов)`);
+            button.innerHTML = `${classNum} класс <span style="font-size:0.8em;opacity:0.7">(${questionCount})</span>`;
+            button.title = `Пройти тест (${questionCount} вопросов)`;
         } else {
-            // Кнопка неактивна
+            // Класс недоступен
             button.disabled = true;
             button.style.opacity = '0.5';
             button.style.cursor = 'not-allowed';
-            button.title = 'Нет вопросов для этого класса';
-            
-            console.log(`❌ Кнопка ${classNum} класса неактивна`);
+            button.innerHTML = `${classNum} класс`;
+            button.title = 'Вопросы не найдены';
         }
     });
+    
+    console.log('✅ Кнопки классов обновлены');
 }
 
 // ===============================================
@@ -131,29 +157,31 @@ function setupClassButtons() {
 function startTest(classNum) {
     console.log(`🚀 Запуск теста для ${classNum} класса`);
     
-    currentClass = classNum;
+    // Проверяем, есть ли вопросы для этого класса
+    const classQuestions = allQuestions.filter(q => q.class === classNum);
     
-    // Фильтруем вопросы по классу
-    questions = allQuestions.filter(q => q.class === classNum);
-    
-    console.log(`📊 Найдено вопросов: ${questions.length}`);
-    
-    if (questions.length === 0) {
+    if (classQuestions.length === 0) {
         alert(`Для ${classNum} класса нет вопросов!`);
         return;
     }
     
-    // Перемешиваем вопросы
-    shuffleArray(questions);
-    
-    // Сбрасываем состояние
+    // Устанавливаем состояние
+    currentClass = classNum;
+    questions = [...classQuestions]; // Копируем массив
     currentQuestionIndex = 0;
     score = 0;
     answerHistory = new Array(questions.length).fill(null);
+    isTestRunning = true;
+    
+    console.log(`📊 Найдено ${questions.length} вопросов`);
+    
+    // Перемешиваем вопросы
+    shuffleArray(questions);
     
     // Переключаем экраны
     document.getElementById('start-screen').style.display = 'none';
     document.getElementById('quiz-container').style.display = 'block';
+    document.getElementById('results-screen').style.display = 'none';
     
     // Обновляем информацию о классе
     document.getElementById('selected-class').textContent = classNum;
@@ -162,10 +190,7 @@ function startTest(classNum) {
     createNavigationButtons();
     
     // Показываем первый вопрос
-    displayQuestion();
-    
-    // Настраиваем обработчики навигации (если еще не настроены)
-    setupNavigationHandlers();
+    displayCurrentQuestion();
 }
 
 // ===============================================
@@ -184,13 +209,15 @@ function shuffleArray(array) {
 // ===============================================
 function createNavigationButtons() {
     const navigationPanel = document.getElementById('navigation-panel');
+    if (!navigationPanel) return;
+    
     navigationPanel.innerHTML = '';
     
-    questions.forEach((_, index) => {
+    for (let i = 0; i < questions.length; i++) {
         const button = document.createElement('button');
         button.className = 'nav-btn';
-        button.textContent = index + 1;
-        button.dataset.index = index;
+        button.textContent = i + 1;
+        button.dataset.index = i;
         
         button.addEventListener('click', function() {
             const index = parseInt(this.dataset.index);
@@ -198,7 +225,7 @@ function createNavigationButtons() {
         });
         
         navigationPanel.appendChild(button);
-    });
+    }
     
     updateNavigationButtons();
 }
@@ -221,9 +248,7 @@ function updateNavigationButtons() {
 
 function goToQuestion(index) {
     currentQuestionIndex = index;
-    displayQuestion();
-    updateNavigationButtons();
-    updateProgress();
+    displayCurrentQuestion();
 }
 
 function updateProgress() {
@@ -235,8 +260,10 @@ function updateProgress() {
 // ===============================================
 // ОТОБРАЖЕНИЕ ВОПРОСА
 // ===============================================
-function displayQuestion() {
-    if (currentQuestionIndex >= questions.length) {
+function displayCurrentQuestion() {
+    console.log(`📝 Показ вопроса ${currentQuestionIndex + 1} из ${questions.length}`);
+    
+    if (!isTestRunning || currentQuestionIndex >= questions.length) {
         showResults();
         return;
     }
@@ -256,31 +283,26 @@ function displayQuestion() {
     document.getElementById('next-button').disabled = true;
     
     // Проверяем, последний ли это вопрос
-    if (currentQuestionIndex === questions.length - 1) {
-        document.getElementById('next-button').style.display = 'none';
-        document.getElementById('finish-button').style.display = 'inline-block';
-    } else {
-        document.getElementById('next-button').style.display = 'inline-block';
-        document.getElementById('finish-button').style.display = 'none';
-    }
+    const isLastQuestion = currentQuestionIndex === questions.length - 1;
+    document.getElementById('next-button').style.display = isLastQuestion ? 'none' : 'inline-block';
+    document.getElementById('finish-button').style.display = isLastQuestion ? 'inline-block' : 'none';
     
     // Создаем варианты ответов
+    const letters = ['А', 'Б', 'В', 'Г'];
     currentQ.answers.forEach((answer, index) => {
         const answerElement = document.createElement('div');
         answerElement.className = 'answer-option';
+        answerElement.dataset.index = index;
+        answerElement.dataset.correct = answer.isCorrect;
         
-        // Добавляем букву и текст
         answerElement.innerHTML = `
-            <span class="answer-letter">${answerLetters[index]}</span>
+            <span class="answer-letter">${letters[index]}</span>
             <span class="answer-text">${answer.text}</span>
         `;
         
-        answerElement.dataset.answerIndex = index;
-        answerElement.dataset.isCorrect = answer.isCorrect;
-        
         // Если уже есть ответ на этот вопрос, отмечаем его
         const userAnswer = answerHistory[currentQuestionIndex];
-        if (userAnswer && userAnswer.answerIndex === index) {
+        if (userAnswer && userAnswer.index === index) {
             answerElement.classList.add('selected');
             if (userAnswer.isCorrect) {
                 answerElement.classList.add('correct');
@@ -290,7 +312,7 @@ function displayQuestion() {
         }
         
         // Добавляем обработчик клика
-        answerElement.addEventListener('click', handleAnswerSelect);
+        answerElement.addEventListener('click', handleAnswerClick);
         answersArea.appendChild(answerElement);
     });
     
@@ -301,101 +323,87 @@ function displayQuestion() {
 // ===============================================
 // ОБРАБОТКА ВЫБОРА ОТВЕТА
 // ===============================================
-function handleAnswerSelect(event) {
+function handleAnswerClick(event) {
     const answerElement = event.currentTarget;
-    const answerIndex = parseInt(answerElement.dataset.answerIndex);
-    const isCorrect = answerElement.dataset.isCorrect === 'true';
+    const answerIndex = parseInt(answerElement.dataset.index);
+    const isCorrect = answerElement.dataset.correct === 'true';
     
-    // Блокируем все варианты ответов
+    // Снимаем выделение со всех вариантов
     document.querySelectorAll('.answer-option').forEach(option => {
-        option.style.pointerEvents = 'none';
         option.classList.remove('selected');
     });
     
-    // Отмечаем выбранный вариант
+    // Выделяем выбранный вариант
     answerElement.classList.add('selected');
     
     // Показываем правильность ответа
     if (isCorrect) {
         answerElement.classList.add('correct');
+        score++;
     } else {
         answerElement.classList.add('wrong');
         
         // Показываем правильный ответ
-        const correctOption = document.querySelector('.answer-option[data-is-correct="true"]');
+        const correctOption = document.querySelector('.answer-option[data-correct="true"]');
         if (correctOption) {
             correctOption.classList.add('correct');
         }
     }
     
-    // Сохраняем ответ в историю
+    // Сохраняем ответ
     answerHistory[currentQuestionIndex] = {
-        answerIndex: answerIndex,
+        index: answerIndex,
         isCorrect: isCorrect,
-        answerText: answerElement.querySelector('.answer-text').textContent
+        text: answerElement.querySelector('.answer-text').textContent
     };
+    
+    // Блокируем все варианты
+    document.querySelectorAll('.answer-option').forEach(option => {
+        option.style.pointerEvents = 'none';
+    });
     
     // Активируем кнопку "Следующий"
     document.getElementById('next-button').disabled = false;
     
-    updateNavigationButtons();
     updateProgress();
 }
 
 // ===============================================
-// НАСТРОЙКА ОБРАБОТЧИКОВ НАВИГАЦИИ
+// ОБРАБОТЧИКИ КНОПОК НАВИГАЦИИ
 // ===============================================
-function setupNavigationHandlers() {
-    // Кнопка "Предыдущий"
-    document.getElementById('prev-button').addEventListener('click', function() {
-        if (currentQuestionIndex > 0) {
-            currentQuestionIndex--;
-            displayQuestion();
-        }
-    });
-    
-    // Кнопка "Следующий"
-    const nextButton = document.getElementById('next-button');
-    if (nextButton) {
-        nextButton.addEventListener('click', function() {
-            if (currentQuestionIndex < questions.length - 1) {
-                currentQuestionIndex++;
-                displayQuestion();
-            }
-        });
+function handlePrevButton() {
+    if (currentQuestionIndex > 0) {
+        currentQuestionIndex--;
+        displayCurrentQuestion();
     }
-    
-    // Кнопка "Завершить"
-    const finishButton = document.getElementById('finish-button');
-    if (finishButton) {
-        finishButton.addEventListener('click', function() {
-            showResults();
-        });
+}
+
+function handleNextButton() {
+    if (currentQuestionIndex < questions.length - 1) {
+        currentQuestionIndex++;
+        displayCurrentQuestion();
     }
-    
-    // Кнопка "Начать заново"
-    const restartButton = document.getElementById('restart-button');
-    if (!restartButton) {
-        // Создаем кнопку если её нет
-        const resultsScreen = document.getElementById('results-screen');
-        if (resultsScreen) {
-            const newRestartButton = document.createElement('button');
-            newRestartButton.id = 'restart-button';
-            newRestartButton.textContent = '🔄 Начать заново';
-            newRestartButton.addEventListener('click', restartTest);
-            resultsScreen.appendChild(newRestartButton);
-        }
-    } else {
-        restartButton.addEventListener('click', restartTest);
-    }
+}
+
+function handleFinishButton() {
+    showResults();
+}
+
+function handleRestartButton() {
+    restartTest();
 }
 
 // ===============================================
 // ПОКАЗ РЕЗУЛЬТАТОВ
 // ===============================================
 function showResults() {
-    // Подсчитываем правильные ответы
-    score = answerHistory.filter(answer => answer && answer.isCorrect).length;
+    isTestRunning = false;
+    
+    // Подсчитываем правильные ответы (на всякий случай)
+    const correctAnswers = answerHistory.filter(answer => answer && answer.isCorrect).length;
+    score = correctAnswers;
+    
+    console.log(`🏁 Тест завершен. Результат: ${score}/${questions.length}`);
     
     // Переключаем экраны
     document.getElementById('quiz-container').style.display = 'none';
@@ -404,14 +412,11 @@ function showResults() {
     // Обновляем счет
     document.getElementById('score').textContent = `${score} из ${questions.length}`;
     
-    // Генерируем детальный отчет
-    generateDetailedReport();
+    // Генерируем отчет
+    generateReport();
 }
 
-// ===============================================
-// ГЕНЕРАЦИЯ ДЕТАЛЬНОГО ОТЧЕТА
-// ===============================================
-function generateDetailedReport() {
+function generateReport() {
     const reportContainer = document.getElementById('report-container');
     reportContainer.innerHTML = '<h3>Детальный отчет:</h3>';
     
@@ -429,20 +434,21 @@ function generateDetailedReport() {
                 <strong>Вопрос ${index + 1}:</strong> ${question.question}
             </div>
             <div class="report-answer">
-                <span class="user-answer ${isCorrect ? 'correct' : 'incorrect'}">
-                    Ваш ответ: ${answer.answerText} ${isCorrect ? '✅' : '❌'}
+                <span class="${isCorrect ? 'correct-answer' : 'wrong-answer'}">
+                    Ваш ответ: ${answer.text} ${isCorrect ? '✅' : '❌'}
                 </span>
             </div>
         `;
         
-        // Если ответ неправильный, показываем правильный ответ
+        // Если ответ неправильный, показываем правильный
         if (!isCorrect) {
             const correctAnswer = question.answers.find(a => a.isCorrect);
             if (correctAnswer) {
-                const correctDiv = document.createElement('div');
-                correctDiv.className = 'correct-answer';
-                correctDiv.innerHTML = `Правильный ответ: ${correctAnswer.text} ✅`;
-                reportItem.appendChild(correctDiv);
+                reportItem.innerHTML += `
+                    <div class="correct-answer">
+                        Правильный ответ: ${correctAnswer.text} ✅
+                    </div>
+                `;
             }
         }
         
@@ -454,9 +460,7 @@ function generateDetailedReport() {
 // ПЕРЕЗАПУСК ТЕСТА
 // ===============================================
 function restartTest() {
-    // Переключаем экраны
-    document.getElementById('results-screen').style.display = 'none';
-    document.getElementById('start-screen').style.display = 'block';
+    console.log('🔄 Перезапуск теста');
     
     // Сбрасываем состояние
     currentQuestionIndex = 0;
@@ -464,7 +468,56 @@ function restartTest() {
     answerHistory = [];
     currentClass = null;
     questions = [];
+    isTestRunning = false;
+    
+    // Переключаем экраны
+    document.getElementById('results-screen').style.display = 'none';
+    document.getElementById('quiz-container').style.display = 'none';
+    document.getElementById('start-screen').style.display = 'block';
     
     // Обновляем кнопки классов
-    setupClassButtons();
+    updateClassButtons();
 }
+
+// ===============================================
+// ПОКАЗ ОШИБОК
+// ===============================================
+function showError(message) {
+    const startScreen = document.getElementById('start-screen');
+    if (startScreen) {
+        const errorDiv = document.createElement('div');
+        errorDiv.style.cssText = `
+            background: #ffebee;
+            color: #c62828;
+            padding: 20px;
+            margin: 20px 0;
+            border-radius: 8px;
+            border: 1px solid #ef9a9a;
+        `;
+        errorDiv.innerHTML = `
+            <h4>⚠️ Ошибка</h4>
+            <p>${message}</p>
+            <p>Проверьте консоль браузера (F12) для подробностей</p>
+        `;
+        startScreen.appendChild(errorDiv);
+    }
+}
+
+// ===============================================
+// ДЕБАГ-ФУНКЦИИ
+// ===============================================
+function debugState() {
+    console.log('=== СОСТОЯНИЕ ПРИЛОЖЕНИЯ ===');
+    console.log('Всего вопросов:', allQuestions.length);
+    console.log('Текущий класс:', currentClass);
+    console.log('Вопросов в тесте:', questions.length);
+    console.log('Текущий вопрос:', currentQuestionIndex);
+    console.log('Счет:', score);
+    console.log('История ответов:', answerHistory);
+    console.log('Тест запущен:', isTestRunning);
+    console.log('===========================');
+}
+
+// Экспортируем для отладки в консоли
+window.debug = debugState;
+window.restart = restartTest;
