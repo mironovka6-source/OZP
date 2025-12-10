@@ -118,6 +118,125 @@
 {"text": " Изображение неодушевленных предметов ", "isCorrect": false},
 {"text": " Изображение битв ", "isCorrect": false}
 ]
+},
+{
+"id": 1,
+"class": 5,
+"topic": "Графика и Дизайн",
+"question": "11 Вопрос",
+"answers": [
+{"text": " Первый ответ", "isCorrect": false},
+{"text": " Второй ответ ", "isCorrect": true},
+{"text": " Третий ответ ", "isCorrect": false},
+{"text": " Четвертый ответ ", "isCorrect": false}
+]
+},
+  {
+"id": 1,
+"class": 5,
+"topic": "Графика и Дизайн",
+"question": "12 Вопрос",
+"answers": [
+{"text": " Первый ответ", "isCorrect": false},
+{"text": " Второй ответ ", "isCorrect": true},
+{"text": " Третий ответ ", "isCorrect": false},
+{"text": " Четвертый ответ ", "isCorrect": false}
+]
+},
+  {
+"id": 1,
+"class": 5,
+"topic": "Графика и Дизайн",
+"question": "13 Вопрос",
+"answers": [
+{"text": " Первый ответ", "isCorrect": false},
+{"text": " Второй ответ ", "isCorrect": true},
+{"text": " Третий ответ ", "isCorrect": false},
+{"text": " Четвертый ответ ", "isCorrect": false}
+]
+},
+  {
+"id": 1,
+"class": 5,
+"topic": "Графика и Дизайн",
+"question": "14 Вопрос",
+"answers": [
+{"text": " Первый ответ", "isCorrect": false},
+{"text": " Второй ответ ", "isCorrect": true},
+{"text": " Третий ответ ", "isCorrect": false},
+{"text": " Четвертый ответ ", "isCorrect": false}
+]
+},
+  {
+"id": 1,
+"class": 5,
+"topic": "Графика и Дизайн",
+"question": "15 Вопрос",
+"answers": [
+{"text": " Первый ответ", "isCorrect": false},
+{"text": " Второй ответ ", "isCorrect": true},
+{"text": " Третий ответ ", "isCorrect": false},
+{"text": " Четвертый ответ ", "isCorrect": false}
+]
+},
+  {
+"id": 1,
+"class": 5,
+"topic": "Графика и Дизайн",
+"question": "16 Вопрос",
+"answers": [
+{"text": " Первый ответ", "isCorrect": false},
+{"text": " Второй ответ ", "isCorrect": true},
+{"text": " Третий ответ ", "isCorrect": false},
+{"text": " Четвертый ответ ", "isCorrect": false}
+]
+},
+  {
+"id": 1,
+"class": 5,
+"topic": "Графика и Дизайн",
+"question": "17 Вопрос",
+"answers": [
+{"text": " Первый ответ", "isCorrect": false},
+{"text": " Второй ответ ", "isCorrect": true},
+{"text": " Третий ответ ", "isCorrect": false},
+{"text": " Четвертый ответ ", "isCorrect": false}
+]
+},
+  {
+"id": 1,
+"class": 5,
+"topic": "Графика и Дизайн",
+"question": "18 Вопрос",
+"answers": [
+{"text": " Первый ответ", "isCorrect": false},
+{"text": " Второй ответ ", "isCorrect": true},
+{"text": " Третий ответ ", "isCorrect": false},
+{"text": " Четвертый ответ ", "isCorrect": false}
+]
+},
+  {
+"id": 1,
+"class": 5,
+"topic": "Графика и Дизайн",
+"question": "19 Вопрос",
+"answers": [
+{"text": " Первый ответ", "isCorrect": false},
+{"text": " Второй ответ ", "isCorrect": true},
+{"text": " Третий ответ ", "isCorrect": false},
+{"text": " Четвертый ответ ", "isCorrect": false}
+]
+},
+  {
+"id": 1,
+"class": 5,
+"topic": "Графика и Дизайн",
+"question": "20 Вопрос",
+"answers": [
+{"text": " Первый ответ", "isCorrect": false},
+{"text": " Второй ответ ", "isCorrect": true},
+{"text": " Третий ответ ", "isCorrect": false},
+{"text": " Четвертый ответ ", "isCorrect": false}
+]
 }
-
 ]
