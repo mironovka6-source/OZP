@@ -47,23 +47,23 @@ body {
     gap: 15px;
 }
 
-/* Обновленный Блок: #class-selection button (Современный вид: закругления и тень) */
+/* Обновленный Блок: #class-selection button (Усиленный цвет и тень) */
 #class-selection button {
     padding: 15px;
     font-size: 18px;
-    background-color: #3498db;
+    background-color: #6610f2; /* Яркий Индиго */
     color: white;
     border: none;
-    border-radius: 12px; /* Увеличено с 8px */
+    border-radius: 12px;
     cursor: pointer;
     transition: all 0.2s, box-shadow 0.3s;
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); /* Легкая тень по умолчанию */
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
 }
 
 #class-selection button:hover {
-    background-color: #2980b9;
+    background-color: #4c0cc3; /* Темный Индиго */
     transform: translateY(-3px);
-    box-shadow: 0 8px 16px rgba(0, 0, 0, 0.2); /* Тень усиливается при наведении */
+    box-shadow: 0 8px 16px rgba(0, 0, 0, 0.2);
 }
 
 /* Экран теста */
@@ -100,15 +100,15 @@ body {
 }
 
 .nav-dot.active {
-    border-color: #3498db;
-    box-shadow: 0 0 5px #3498db;
+    border-color: #6610f2; /* Новый Индиго */
+    box-shadow: 0 0 5px #6610f2;
     font-weight: bold;
 }
 
 .nav-dot.answered {
-    background-color: #3498db;
+    background-color: #6610f2; /* Новый Индиго */
     color: white;
-    border-color: #3498db;
+    border-color: #6610f2;
 }
 
 /* Область вопроса и ответов */
@@ -123,33 +123,33 @@ body {
     line-height: 1.5;
 }
 
-/* Обновленный Блок: .answer-option (Современный вид: эффект "Карточек") */
+/* Обновленный Блок: .answer-option (Эффект "Карточек" с новым цветом) */
 .answer-option {
     display: block;
     width: 100%;
     padding: 12px 15px;
     margin-bottom: 10px;
     background: #f8f9fa;
-    border: none; /* Убираем жесткий бордер */
-    border-radius: 10px; /* Увеличиваем с 8px */
+    border: none;
+    border-radius: 10px;
     text-align: left;
     cursor: pointer;
     transition: all 0.2s, box-shadow 0.3s;
     font-size: 1em;
-    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05); /* Легкая тень, чтобы выглядело как карточка */
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
 }
 
 .answer-option:hover {
     background: #e2e6ea;
-    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1); /* Тень усиливается при наведении */
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
 }
 
 .answer-option.selected {
-    background: #d4e6f1;
-    border: 2px solid #3498db; /* Делаем бордер только при выборе */
+    background: #e0e7ff; /* Очень светлый фон для контраста */
+    border: 2px solid #6610f2; /* Новый Индиго */
     color: #2c3e50;
     font-weight: 500;
-    box-shadow: 0 0 10px rgba(52, 152, 219, 0.5); /* Добавляем сияние при выборе */
+    box-shadow: 0 0 10px rgba(102, 16, 242, 0.5); /* Новое сияние */
 }
 
 /* Кнопки управления (Контейнер) */
@@ -160,9 +160,9 @@ body {
 
 /* Обновленный Блок: .buttons-container button (Мягче и с тенью) */
 .buttons-container button {
-    padding: 12px 22px; /* Немного увеличим для красоты */
+    padding: 12px 22px;
     border: none;
-    border-radius: 10px; /* Увеличено с 6px */
+    border-radius: 10px;
     cursor: pointer;
     font-size: 16px;
     transition: background 0.3s, box-shadow 0.3s;
@@ -175,12 +175,12 @@ body {
 }
 
 #next-button {
-    background-color: #3498db;
+    background-color: #6610f2; /* Новый Индиго */
     color: white;
 }
 
 #finish-button {
-    background-color: #27ae60;
+    background-color: #1abc9c; /* Глубокий Бирюзовый */
     color: white;
 }
 
@@ -188,7 +188,7 @@ button:disabled {
     background-color: #ecf0f1 !important;
     color: #bdc3c7 !important;
     cursor: not-allowed;
-    box-shadow: none; /* Убираем тень у неактивных кнопок */
+    box-shadow: none;
 }
 
 /* Экран результатов */
@@ -198,7 +198,7 @@ button:disabled {
 
 #score {
     font-size: 2em;
-    color: #27ae60;
+    color: #1abc9c; /* Глубокий Бирюзовый */
     font-weight: bold;
     margin: 20px 0;
 }
@@ -206,15 +206,67 @@ button:disabled {
 /* Обновленный Блок: #restart-button (Больше закруглений и тень) */
 #restart-button {
     margin-top: 20px;
-    padding: 14px 30px; /* Увеличим кнопку перезапуска */
-    background-color: #e67e22;
+    padding: 14px 30px;
+    background-color: #f39c12; /* Сочный Оранжевый */
     color: white;
     border: none;
-    border-radius: 12px; /* Увеличено с 8px */
+    border-radius: 12px;
     font-size: 1.1em;
     cursor: pointer;
-    box-shadow: 0 5px 15px rgba(230, 126, 34, 0.4);
+    box-shadow: 0 5px 15px rgba(243, 156, 18, 0.4);
 }
 
 #restart-button:hover {
-    background-color: #d35400;
+    background-color: #e67e22;
+}
+
+/* Отчет по ошибкам (опционально) */
+.result-item {
+    text-align: left;
+    padding: 10px;
+    border-bottom: 1px solid #eee;
+    font-size: 0.9em;
+}
+.result-item.correct { color: #1abc9c; } /* Глубокий Бирюзовый */
+.result-item.wrong { color: #c0392b; }
+
+
+/* ========================================================= */
+/* 2. АДАПТИВНОСТЬ: ИСПРАВЛЕНИЕ ДЛЯ МОБИЛЬНЫХ УСТРОЙСТВ */
+/* ========================================================= */
+
+@media (max-width: 600px) {
+
+    /* Делаем кнопки навигации компактными и равномерно распределенными */
+    .buttons-container button {
+        flex-grow: 1;
+        margin: 0 4px;
+        padding: 10px 5px;
+        font-size: 14px;
+        white-space: nowrap;
+        min-width: 70px;
+    }
+    
+    /* Убираем отступ с крайних кнопок */
+    .buttons-container button:first-child {
+        margin-left: 0;
+    }
+    .buttons-container button:last-child {
+        margin-right: 0;
+    }
+
+    /* Уменьшаем отступы для всего контейнера */
+    .container {
+        padding: 20px 15px;
+    }
+    
+    /* Уменьшаем отступы между точками навигации */
+    #navigation-panel {
+        gap: 5px;
+    }
+    
+    .nav-dot {
+        width: 25px;
+        height: 25px;
+    }
+}
