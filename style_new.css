@@ -6,11 +6,12 @@
 }
 
 /* ======================================= */
-/* 1. ГЛОБАЛЬНЫЕ ПРАВИЛА ДЛЯ УСТРАНЕНИЯ ГОРИЗОНТАЛЬНОЙ ПРОКРУТКИ */
+/* 1. ГЛОБАЛЬНЫЕ ПРАВИЛА И СБРОС КЭША */
 /* ======================================= */
 html, body {
-    overflow-x: hidden; /* Запрещает горизонтальную прокрутку */
-    width: 100%;
+    /* Запрещает горизонтальную прокрутку */
+    overflow-x: hidden;
+    width: 100%;
 }
 
 body {
@@ -29,9 +30,9 @@ body {
     width: 90%;
     max-width: 600px;
     padding: 30px;
-    border-radius: 20px; /* Увеличено с 15px */
-    box-shadow: 0 15px 40px rgba(0,0,0,0.15); /* Тень сделана более выраженной и мягкой */
-    box-sizing: border-box;
+    border-radius: 20px;
+    box-shadow: 0 15px 40px rgba(0,0,0,0.15); 
+    box-sizing: border-box;
 }
 
 /* Экран выбора класса */
@@ -47,23 +48,23 @@ body {
     gap: 15px;
 }
 
-/* Обновленный Блок: #class-selection button (Усиленный цвет и тень) */
+/* Обновленный Блок: #class-selection button (Яркий Индиго) */
 #class-selection button {
     padding: 15px;
     font-size: 18px;
-    background-color: #6610f2; /* Яркий Индиго */
+    background-color: #6610f2;
     color: white;
     border: none;
     border-radius: 12px;
     cursor: pointer;
     transition: all 0.2s, box-shadow 0.3s;
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
 }
 
 #class-selection button:hover {
-    background-color: #4c0cc3; /* Темный Индиго */
+    background-color: #4c0cc3;
     transform: translateY(-3px);
-    box-shadow: 0 8px 16px rgba(0, 0, 0, 0.2);
+    box-shadow: 0 8px 16px rgba(0, 0, 0, 0.2);
 }
 
 /* Экран теста */
@@ -100,13 +101,13 @@ body {
 }
 
 .nav-dot.active {
-    border-color: #6610f2; /* Новый Индиго */
+    border-color: #6610f2;
     box-shadow: 0 0 5px #6610f2;
     font-weight: bold;
 }
 
 .nav-dot.answered {
-    background-color: #6610f2; /* Новый Индиго */
+    background-color: #6610f2;
     color: white;
     border-color: #6610f2;
 }
@@ -136,20 +137,20 @@ body {
     cursor: pointer;
     transition: all 0.2s, box-shadow 0.3s;
     font-size: 1em;
-    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
 }
 
 .answer-option:hover {
     background: #e2e6ea;
-    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
 }
 
 .answer-option.selected {
     background: #e0e7ff; /* Очень светлый фон для контраста */
-    border: 2px solid #6610f2; /* Новый Индиго */
+    border: 2px solid #6610f2;
     color: #2c3e50;
     font-weight: 500;
-    box-shadow: 0 0 10px rgba(102, 16, 242, 0.5); /* Новое сияние */
+    box-shadow: 0 0 10px rgba(102, 16, 242, 0.5);
 }
 
 /* Кнопки управления (Контейнер) */
@@ -166,7 +167,7 @@ body {
     cursor: pointer;
     font-size: 16px;
     transition: background 0.3s, box-shadow 0.3s;
-    box-shadow: 0 3px 6px rgba(0,0,0,0.1);
+    box-shadow: 0 3px 6px rgba(0,0,0,0.1);
 }
 
 #prev-button {
@@ -175,12 +176,12 @@ body {
 }
 
 #next-button {
-    background-color: #6610f2; /* Новый Индиго */
+    background-color: #6610f2;
     color: white;
 }
 
 #finish-button {
-    background-color: #1abc9c; /* Глубокий Бирюзовый */
+    background-color: #1abc9c;
     color: white;
 }
 
@@ -188,7 +189,7 @@ button:disabled {
     background-color: #ecf0f1 !important;
     color: #bdc3c7 !important;
     cursor: not-allowed;
-    box-shadow: none;
+    box-shadow: none;
 }
 
 /* Экран результатов */
@@ -198,7 +199,7 @@ button:disabled {
 
 #score {
     font-size: 2em;
-    color: #1abc9c; /* Глубокий Бирюзовый */
+    color: #1abc9c;
     font-weight: bold;
     margin: 20px 0;
 }
@@ -213,7 +214,7 @@ button:disabled {
     border-radius: 12px;
     font-size: 1.1em;
     cursor: pointer;
-    box-shadow: 0 5px 15px rgba(243, 156, 18, 0.4);
+    box-shadow: 0 5px 15px rgba(243, 156, 18, 0.4);
 }
 
 #restart-button:hover {
@@ -227,46 +228,47 @@ button:disabled {
     border-bottom: 1px solid #eee;
     font-size: 0.9em;
 }
-.result-item.correct { color: #1abc9c; } /* Глубокий Бирюзовый */
+.result-item.correct { color: #1abc9c; }
 .result-item.wrong { color: #c0392b; }
 
 
 /* ========================================================= */
 /* 2. АДАПТИВНОСТЬ: ИСПРАВЛЕНИЕ ДЛЯ МОБИЛЬНЫХ УСТРОЙСТВ */
+/* (Это гарантирует видимость кнопки "Завершить тест") */
 /* ========================================================= */
 
 @media (max-width: 600px) {
 
-    /* Делаем кнопки навигации компактными и равномерно распределенными */
-    .buttons-container button {
-        flex-grow: 1;
-        margin: 0 4px;
-        padding: 10px 5px;
-        font-size: 14px;
-        white-space: nowrap;
-        min-width: 70px;
-    }
-    
-    /* Убираем отступ с крайних кнопок */
-    .buttons-container button:first-child {
-        margin-left: 0;
-    }
-    .buttons-container button:last-child {
-        margin-right: 0;
-    }
+    /* Убеждаемся, что кнопки равномерно распределяются и не выходят за экран */
+    .buttons-container button {
+        flex-grow: 1;
+        margin: 0 4px;
+        padding: 10px 5px;
+        font-size: 14px;
+        white-space: nowrap;
+        min-width: 70px;
+    }
+    
+    /* Убираем отступ с крайних кнопок, чтобы сэкономить место */
+    .buttons-container button:first-child {
+        margin-left: 0;
+    }
+    .buttons-container button:last-child {
+        margin-right: 0;
+    }
 
-    /* Уменьшаем отступы для всего контейнера */
-    .container {
-        padding: 20px 15px;
-    }
-    
-    /* Уменьшаем отступы между точками навигации */
-    #navigation-panel {
-        gap: 5px;
-    }
-    
-    .nav-dot {
-        width: 25px;
-        height: 25px;
-    }
+    /* Делаем отступы контейнера меньше на телефоне */
+    .container {
+        padding: 20px 15px;
+    }
+    
+    /* Делаем точки навигации компактнее */
+    #navigation-panel {
+        gap: 5px;
+    }
+    
+    .nav-dot {
+        width: 25px;
+        height: 25px;
+    }
 }
