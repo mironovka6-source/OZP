@@ -1,209 +1,261 @@
 /* Общие настройки */
 * {
-    box-sizing: border-box;
-    margin: 0;
-    padding: 0;
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+}
+
+/* ======================================= */
+/* 1. ГЛОБАЛЬНЫЕ ПРАВИЛА ДЛЯ УСТРАНЕНИЯ ГОРИЗОНТАЛЬНОЙ ПРОКРУТКИ */
+/* ======================================= */
+html, body {
+    overflow-x: hidden; /* Запрещает горизонтальную прокрутку */
+    width: 100%;
 }
 
 body {
-    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-    background-color: #f0f4f8;
-    color: #333;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    min-height: 100vh;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    background-color: #f0f4f8;
+    color: #333;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 100vh;
 }
 
 .container {
-    background: #ffffff;
-    width: 90%;
-    max-width: 600px;
-    padding: 30px;
-    border-radius: 15px;
-    box-shadow: 0 10px 25px rgba(0,0,0,0.1);
+    background: #ffffff;
+    width: 90%;
+    max-width: 600px;
+    padding: 30px;
+    border-radius: 15px;
+    box-shadow: 0 10px 25px rgba(0,0,0,0.1);
+    /* Добавляем box-sizing: border-box; в общие правила выше, но дублируем здесь для уверенности */
+    box-sizing: border-box;
 }
 
 /* Экран выбора класса */
 #start-screen h2 {
-    text-align: center;
-    margin-bottom: 25px;
-    color: #2c3e50;
+    text-align: center;
+    margin-bottom: 25px;
+    color: #2c3e50;
 }
 
 #class-selection {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(100px, 1fr));
-    gap: 15px;
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(100px, 1fr));
+    gap: 15px;
 }
 
 #class-selection button {
-    padding: 15px;
-    font-size: 18px;
-    background-color: #3498db;
-    color: white;
-    border: none;
-    border-radius: 8px;
-    cursor: pointer;
-    transition: transform 0.2s, background 0.2s;
+    padding: 15px;
+    font-size: 18px;
+    background-color: #3498db;
+    color: white;
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: transform 0.2s, background 0.2s;
 }
 
 #class-selection button:hover {
-    background-color: #2980b9;
-    transform: translateY(-3px);
+    background-color: #2980b9;
+    transform: translateY(-3px);
 }
 
 /* Экран теста */
 .quiz-header {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    margin-bottom: 20px;
-    padding-bottom: 10px;
-    border-bottom: 2px solid #ecf0f1;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 20px;
+    padding-bottom: 10px;
+    border-bottom: 2px solid #ecf0f1;
 }
 
 /* Панель навигации (кружочки с номерами) */
 #navigation-panel {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 8px;
-    margin-bottom: 20px;
-    justify-content: center;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    margin-bottom: 20px;
+    justify-content: center;
 }
 
 .nav-dot {
-    width: 30px;
-    height: 30px;
-    border-radius: 50%;
-    border: 1px solid #bdc3c7;
-    background: #fff;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    font-size: 12px;
-    cursor: pointer;
-    transition: all 0.3s;
+    width: 30px;
+    height: 30px;
+    border-radius: 50%;
+    border: 1px solid #bdc3c7;
+    background: #fff;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 12px;
+    cursor: pointer;
+    transition: all 0.3s;
 }
 
 .nav-dot.active {
-    border-color: #3498db;
-    box-shadow: 0 0 5px #3498db;
-    font-weight: bold;
+    border-color: #3498db;
+    box-shadow: 0 0 5px #3498db;
+    font-weight: bold;
 }
 
 .nav-dot.answered {
-    background-color: #3498db;
-    color: white;
-    border-color: #3498db;
+    background-color: #3498db;
+    color: white;
+    border-color: #3498db;
 }
 
 /* Область вопроса и ответов */
 .question-area {
-    margin-bottom: 30px;
+    margin-bottom: 30px;
 }
 
 #question-text {
-    font-size: 1.2em;
-    font-weight: 600;
-    margin-bottom: 20px;
-    line-height: 1.5;
+    font-size: 1.2em;
+    font-weight: 600;
+    margin-bottom: 20px;
+    line-height: 1.5;
 }
 
 .answer-option {
-    display: block;
-    width: 100%;
-    padding: 12px 15px;
-    margin-bottom: 10px;
-    background: #f8f9fa;
-    border: 2px solid #e9ecef;
-    border-radius: 8px;
-    text-align: left;
-    cursor: pointer;
-    transition: all 0.2s;
-    font-size: 1em;
+    display: block;
+    width: 100%;
+    padding: 12px 15px;
+    margin-bottom: 10px;
+    background: #f8f9fa;
+    border: 2px solid #e9ecef;
+    border-radius: 8px;
+    text-align: left;
+    cursor: pointer;
+    transition: all 0.2s;
+    font-size: 1em;
 }
 
 .answer-option:hover {
-    background: #e2e6ea;
+    background: #e2e6ea;
 }
 
 .answer-option.selected {
-    background: #d4e6f1;
-    border-color: #3498db;
-    color: #2c3e50;
-    font-weight: 500;
+    background: #d4e6f1;
+    border-color: #3498db;
+    color: #2c3e50;
+    font-weight: 500;
 }
 
-/* Кнопки управления */
-.buttons-container {
-    display: flex;
-    justify-content: space-between;
+/* Кнопки управления (Контейнер) */
+.buttons-container { /* Используется для flex-контейнера кнопок */
+    display: flex;
+    justify-content: space-between;
 }
 
 .buttons-container button {
-    padding: 10px 20px;
-    border: none;
-    border-radius: 6px;
-    cursor: pointer;
-    font-size: 16px;
-    transition: background 0.3s;
+    padding: 10px 20px;
+    border: none;
+    border-radius: 6px;
+    cursor: pointer;
+    font-size: 16px;
+    transition: background 0.3s;
 }
 
 #prev-button {
-    background-color: #95a5a6;
-    color: white;
+    background-color: #95a5a6;
+    color: white;
 }
 
 #next-button {
-    background-color: #3498db;
-    color: white;
+    background-color: #3498db;
+    color: white;
 }
 
 #finish-button {
-    background-color: #27ae60;
-    color: white;
+    background-color: #27ae60;
+    color: white;
 }
 
 button:disabled {
-    background-color: #ecf0f1 !important;
-    color: #bdc3c7 !important;
-    cursor: not-allowed;
+    background-color: #ecf0f1 !important;
+    color: #bdc3c7 !important;
+    cursor: not-allowed;
 }
 
 /* Экран результатов */
 #results-screen {
-    text-align: center;
+    text-align: center;
 }
 
 #score {
-    font-size: 2em;
-    color: #27ae60;
-    font-weight: bold;
-    margin: 20px 0;
+    font-size: 2em;
+    color: #27ae60;
+    font-weight: bold;
+    margin: 20px 0;
 }
 
 #restart-button {
-    margin-top: 20px;
-    padding: 12px 25px;
-    background-color: #e67e22;
-    color: white;
-    border: none;
-    border-radius: 8px;
-    font-size: 1.1em;
-    cursor: pointer;
+    margin-top: 20px;
+    padding: 12px 25px;
+    background-color: #e67e22;
+    color: white;
+    border: none;
+    border-radius: 8px;
+    font-size: 1.1em;
+    cursor: pointer;
 }
 
 #restart-button:hover {
-    background-color: #d35400;
+    background-color: #d35400;
 }
 
 /* Отчет по ошибкам (опционально) */
 .result-item {
-    text-align: left;
-    padding: 10px;
-    border-bottom: 1px solid #eee;
-    font-size: 0.9em;
+    text-align: left;
+    padding: 10px;
+    border-bottom: 1px solid #eee;
+    font-size: 0.9em;
 }
 .result-item.correct { color: #27ae60; }
 .result-item.wrong { color: #c0392b; }
+
+
+/* ========================================================= */
+/* 2. АДАПТИВНОСТЬ: ИСПРАВЛЕНИЕ ДЛЯ МОБИЛЬНЫХ УСТРОЙСТВ */
+/* (Устраняет проблему с невидимой кнопкой "Завершить тест") */
+/* ========================================================= */
+
+@media (max-width: 600px) {
+
+    /* Делаем кнопки навигации компактными и равномерно распределенными */
+    .buttons-container button {
+        flex-grow: 1; /* Кнопки занимают равное доступное пространство */
+        margin: 0 4px; /* Уменьшаем горизонтальные отступы между кнопками */
+        padding: 10px 5px; /* Уменьшаем внутренние отступы, чтобы текст влез */
+        font-size: 14px; /* Делаем шрифт меньше */
+        white-space: nowrap; /* Запрещаем перенос текста (например, "Завершить тест") */
+        min-width: 70px;
+    }
+    
+    /* Убираем отступ с крайних кнопок, чтобы они не выталкивали контейнер */
+    .buttons-container button:first-child {
+        margin-left: 0;
+    }
+    .buttons-container button:last-child {
+        margin-right: 0;
+    }
+
+    /* Уменьшаем отступы для всего контейнера */
+    .container {
+        padding: 20px 15px;
+    }
+    
+    /* Уменьшаем отступы между точками навигации */
+    #navigation-panel {
+        gap: 5px;
+    }
+    
+    .nav-dot {
+        width: 25px;
+        height: 25px;
+    }
+}
