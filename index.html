@@ -148,6 +148,7 @@
             font-size: 1.3em;
             margin-bottom: 20px;
             color: #2c3e50;
+            line-height: 1.5;
         }
 
         .answer-option {
@@ -162,11 +163,13 @@
             cursor: pointer;
             transition: all 0.3s;
             font-size: 1em;
+            line-height: 1.4;
         }
 
         .answer-option:hover {
             border-color: #667eea;
             background: #f0f2ff;
+            transform: translateX(5px);
         }
 
         .answer-option.selected {
@@ -205,6 +208,7 @@
 
         #prev-button:hover {
             background: #5a6268;
+            transform: translateY(-2px);
         }
 
         #next-button {
@@ -214,6 +218,7 @@
 
         #next-button:hover {
             background: #5a67d8;
+            transform: translateY(-2px);
         }
 
         #finish-button, #finish-anytime-button {
@@ -223,6 +228,7 @@
 
         #finish-button:hover, #finish-anytime-button:hover {
             background: #0da271;
+            transform: translateY(-2px);
         }
 
         #finish-anytime-button {
@@ -236,10 +242,12 @@
             background: #ccc !important;
             cursor: not-allowed;
             opacity: 0.6;
+            transform: none !important;
         }
 
         button:disabled:hover {
             background: #ccc !important;
+            transform: none !important;
         }
 
         /* ЭКРАН РЕЗУЛЬТАТОВ */
@@ -310,6 +318,10 @@
                 order: 3;
                 margin-top: 10px;
             }
+            
+            #question-text {
+                font-size: 1.1em;
+            }
         }
     </style>
 </head>
@@ -323,6 +335,7 @@
             <div class="welcome-text">
                 <p>Выберите ваш класс для начала тестирования</p>
                 <p>Тест проверяет знания по основам изобразительного искусства и дизайна</p>
+                <p><strong>Вопросы и варианты ответов отображаются в случайном порядке</strong></p>
             </div>
             
             <div id="loading" class="loading">
@@ -419,6 +432,43 @@
         let score = 0;
 
         // =============================================
+        // ВСПОМОГАТЕЛЬНЫЕ ФУНКЦИИ
+        // =============================================
+        
+        // Функция для перемешивания массива (алгоритм Фишера-Йетса)
+        function shuffleArray(array) {
+            const newArray = [...array];
+            for (let i = newArray.length - 1; i > 0; i--) {
+                const j = Math.floor(Math.random() * (i + 1));
+                [newArray[i], newArray[j]] = [newArray[j], newArray[i]];
+            }
+            return newArray;
+        }
+
+        // Функция для перемешивания ответов с сохранением правильного
+        function shuffleAnswers(answers) {
+            // Находим правильный ответ
+            const correctIndex = answers.findIndex(a => a.isCorrect);
+            if (correctIndex === -1) return answers;
+            
+            // Создаем копию массива ответов
+            const shuffledAnswers = [...answers];
+            const correctAnswer = shuffledAnswers[correctIndex];
+            
+            // Удаляем правильный ответ из массива
+            shuffledAnswers.splice(correctIndex, 1);
+            
+            // Перемешиваем оставшиеся ответы
+            const shuffledWrongAnswers = shuffleArray(shuffledAnswers);
+            
+            // Вставляем правильный ответ на случайную позицию
+            const randomPosition = Math.floor(Math.random() * (shuffledWrongAnswers.length + 1));
+            shuffledWrongAnswers.splice(randomPosition, 0, correctAnswer);
+            
+            return shuffledWrongAnswers;
+        }
+
+        // =============================================
         // ИНИЦИАЛИЗАЦИЯ ПРИ ЗАГРУЗКЕ
         // =============================================
         document.addEventListener('DOMContentLoaded', function() {
@@ -442,9 +492,8 @@
                 const data = await response.json();
                 console.log("Вопросы успешно загружены:", data.length, "вопросов");
                 
-                // Очищаем данные от дубликатов
-                allQuestions = cleanQuestionsData(data);
-                console.log("После очистки:", allQuestions.length, "уникальных вопросов");
+                // Просто сохраняем вопросы без очистки от дубликатов
+                allQuestions = data;
                 
                 // Показываем выбор класса
                 showClassSelection();
@@ -453,59 +502,6 @@
                 console.error("Ошибка загрузки вопросов:", error);
                 showError(`Не удалось загрузить вопросы: ${error.message}`);
             }
-        }
-
-        function cleanQuestionsData(questions) {
-            if (!Array.isArray(questions)) return [];
-            
-            const uniqueQuestions = [];
-            const seen = new Set();
-            
-            questions.forEach(question => {
-                if (!question || typeof question !== 'object') return;
-                
-                // Создаем уникальный ключ
-                const key = `${question.id || ''}-${question.class || ''}-${question.question || ''}`;
-                
-                if (!seen.has(key)) {
-                    seen.add(key);
-                    
-                    // Нормализуем вопрос
-                    const cleanedQuestion = {
-                        id: question.id || Date.now() + Math.random(),
-                        class: question.class || 5,
-                        topic: question.topic || 'Без темы',
-                        question: question.question || 'Вопрос без текста',
-                        answers: []
-                    };
-                    
-                    // Обрабатываем варианты ответов
-                    if (Array.isArray(question.answers)) {
-                        question.answers.forEach((answer, index) => {
-                            if (answer && typeof answer === 'object') {
-                                cleanedQuestion.answers.push({
-                                    text: answer.text || `Вариант ${index + 1}`,
-                                    isCorrect: Boolean(answer.isCorrect)
-                                });
-                            }
-                        });
-                    }
-                    
-                    // Если нет ответов, создаем стандартные
-                    if (cleanedQuestion.answers.length === 0) {
-                        cleanedQuestion.answers = [
-                            { text: 'Первый ответ', isCorrect: false },
-                            { text: 'Второй ответ', isCorrect: true },
-                            { text: 'Третий ответ', isCorrect: false },
-                            { text: 'Четвертый ответ', isCorrect: false }
-                        ];
-                    }
-                    
-                    uniqueQuestions.push(cleanedQuestion);
-                }
-            });
-            
-            return uniqueQuestions;
         }
 
         function showClassSelection() {
@@ -552,8 +548,11 @@
             currentClass = selectedClass;
             selectedClassSpan.textContent = `Класс: ${currentClass}`;
             
-            // Фильтруем вопросы по классу
-            filteredQuestions = allQuestions.filter(q => q.class.toString() === selectedClass.toString());
+            // Фильтруем вопросы по классу (приводим к числу для сравнения)
+            filteredQuestions = allQuestions.filter(q => {
+                const questionClass = typeof q.class === 'string' ? parseInt(q.class) : q.class;
+                return questionClass == selectedClass; // Нестрогое сравнение
+            });
             
             console.log("Найдено вопросов для класса", selectedClass, ":", filteredQuestions.length);
             
@@ -561,6 +560,30 @@
                 alert(`Для ${selectedClass} класса пока нет вопросов.`);
                 return;
             }
+
+            // Перемешиваем вопросы в случайном порядке
+            filteredQuestions = shuffleArray(filteredQuestions);
+            
+            // Для каждого вопроса перемешиваем ответы
+            filteredQuestions = filteredQuestions.map(question => {
+                // Сохраняем индекс правильного ответа в оригинальном порядке
+                const originalAnswers = question.answers || [];
+                const originalCorrectIndex = originalAnswers.findIndex(a => a && a.isCorrect);
+                
+                // Перемешиваем ответы
+                const shuffledAnswers = shuffleAnswers(originalAnswers);
+                
+                // Находим новый индекс правильного ответа после перемешивания
+                const correctAnswerText = originalCorrectIndex !== -1 ? originalAnswers[originalCorrectIndex].text : '';
+                const newCorrectIndex = shuffledAnswers.findIndex(a => a && a.text === correctAnswerText);
+                
+                return {
+                    ...question,
+                    answers: shuffledAnswers,
+                    originalCorrectIndex: originalCorrectIndex,
+                    newCorrectIndex: newCorrectIndex
+                };
+            });
 
             // Инициализируем тест
             initializeQuiz();
@@ -615,32 +638,33 @@
             
             const question = filteredQuestions[index];
             
-            // Отображаем текст вопроса
-            let questionHTML = '';
-            if (question.topic && question.topic !== 'Без темы') {
-                questionHTML += `<div style="color: #667eea; font-weight: bold; margin-bottom: 10px; font-size: 0.9em;">${question.topic}</div>`;
-            }
-            questionHTML += `<div><strong>${index + 1}.</strong> ${question.question}</div>`;
-            questionText.innerHTML = questionHTML;
+            // Отображаем текст вопроса (без темы)
+            questionText.innerHTML = `<div><strong>Вопрос ${index + 1}.</strong> ${question.question || 'Вопрос без текста'}</div>`;
             
             // Очищаем и заполняем варианты ответов
             answersArea.innerHTML = '';
             
-            question.answers.forEach((answer, optionIndex) => {
-                const button = document.createElement('button');
-                button.className = 'answer-option';
-                button.textContent = answer.text;
-                
-                if (userAnswers[index] === optionIndex) {
-                    button.classList.add('selected');
-                }
-                
-                button.addEventListener('click', function() {
-                    selectAnswer(optionIndex);
+            if (question.answers && question.answers.length > 0) {
+                question.answers.forEach((answer, optionIndex) => {
+                    if (!answer || !answer.text) return;
+                    
+                    const button = document.createElement('button');
+                    button.className = 'answer-option';
+                    button.textContent = `${String.fromCharCode(65 + optionIndex)}) ${answer.text}`; // A), B), C), D)
+                    
+                    if (userAnswers[index] === optionIndex) {
+                        button.classList.add('selected');
+                    }
+                    
+                    button.addEventListener('click', function() {
+                        selectAnswer(optionIndex);
+                    });
+                    
+                    answersArea.appendChild(button);
                 });
-                
-                answersArea.appendChild(button);
-            });
+            } else {
+                answersArea.innerHTML = '<p style="color: #e74c3c; text-align: center;">Нет вариантов ответа</p>';
+            }
             
             // Обновляем счетчик
             progressCounter.textContent = `Вопрос ${index + 1} из ${filteredQuestions.length}`;
@@ -737,15 +761,15 @@
         }
 
         // =============================================
-        // ЗАВЕРШЕНИЕ ТЕСТА (УБРАНЫ ВСЕ confirm ДИАЛОГИ)
+        // ЗАВЕРШЕНИЕ ТЕСТА
         // =============================================
         function finishTestAnytime() {
-            // Убрано confirm - сразу завершаем тест
+            // Сразу завершаем тест
             finishTest();
         }
 
         function finishTest() {
-            // Убрано confirm - сразу рассчитываем результаты
+            // Сразу рассчитываем результаты
             calculateResults();
         }
 
@@ -755,7 +779,9 @@
             
             filteredQuestions.forEach((question, index) => {
                 const userAnswerIndex = userAnswers[index];
-                const correctAnswerIndex = question.answers.findIndex(a => a.isCorrect);
+                
+                // Используем сохраненный правильный индекс после перемешивания
+                const correctAnswerIndex = question.newCorrectIndex !== undefined ? question.newCorrectIndex : -1;
                 
                 if (correctAnswerIndex === -1) {
                     console.warn(`Вопрос ${index + 1} не имеет правильного ответа`);
@@ -772,15 +798,17 @@
                     resultDiv.className = 'result-item';
                     
                     let userAnswerText = 'Не отвечено';
-                    if (userAnswerIndex !== null && question.answers[userAnswerIndex]) {
+                    if (userAnswerIndex !== null && question.answers && question.answers[userAnswerIndex]) {
                         userAnswerText = question.answers[userAnswerIndex].text;
                     }
                     
-                    const correctAnswerText = question.answers[correctAnswerIndex].text;
+                    const correctAnswerText = question.answers && question.answers[correctAnswerIndex] 
+                        ? question.answers[correctAnswerIndex].text 
+                        : 'Не указан';
                     
                     resultDiv.innerHTML = `
                         <div style="margin-bottom: 10px;">
-                            <strong>Вопрос ${index + 1}:</strong> ${question.question}
+                            <strong>Вопрос ${index + 1}:</strong> ${question.question || 'Вопрос без текста'}
                         </div>
                         <div style="color: #ef4444; margin-bottom: 5px;">
                             <strong>Ваш ответ:</strong> ${userAnswerText}
@@ -788,10 +816,6 @@
                         <div style="color: #10b981; font-weight: bold;">
                             <strong>Правильный ответ:</strong> ${correctAnswerText}
                         </div>
-                        ${question.topic && question.topic !== 'Без темы' ? 
-                            `<div style="color: #666; font-size: 0.9em; margin-top: 5px;">
-                                Тема: ${question.topic}
-                            </div>` : ''}
                     `;
                     
                     reportContainer.appendChild(resultDiv);
@@ -809,7 +833,7 @@
             scoreSpan.textContent = `${score} из ${filteredQuestions.length}`;
             
             // Статистика
-            const percentage = Math.round((score / filteredQuestions.length) * 100);
+            const percentage = filteredQuestions.length > 0 ? Math.round((score / filteredQuestions.length) * 100) : 0;
             let message = '';
             
             if (percentage >= 90) {
