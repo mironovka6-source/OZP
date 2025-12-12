@@ -70,6 +70,22 @@
             transform: translateY(-5px);
         }
 
+        .loading {
+            text-align: center;
+            color: #667eea;
+            font-size: 1.2em;
+            padding: 20px;
+        }
+
+        .error-message {
+            color: #e74c3c;
+            text-align: center;
+            padding: 20px;
+            background: #ffeaea;
+            border-radius: 10px;
+            margin: 20px 0;
+        }
+
         /* ЭКРАН ТЕСТА */
         #quiz-container {
             display: none;
@@ -224,6 +240,7 @@
             border-radius: 10px;
             border-left: 5px solid #ef4444;
             text-align: left;
+            box-shadow: 0 3px 10px rgba(0,0,0,0.1);
         }
 
         .result-item.correct {
@@ -239,6 +256,11 @@
             border-radius: 10px;
             font-size: 1.1em;
             cursor: pointer;
+            transition: transform 0.3s;
+        }
+
+        #restart-button:hover {
+            transform: translateY(-3px);
         }
 
         @media (max-width: 600px) {
@@ -273,13 +295,19 @@
                 <p>Тест проверяет знания по основам изобразительного искусства и дизайна</p>
             </div>
             
-            <div id="class-selection">
+            <div id="loading" class="loading">
+                ⏳ Загрузка вопросов...
+            </div>
+            
+            <div id="class-selection" style="display: none;">
                 <button data-class="5">5 класс</button>
                 <button data-class="6">6 класс</button>
                 <button data-class="7">7 класс</button>
                 <button data-class="8">8 класс</button>
                 <button data-class="9">9 класс</button>
             </div>
+            
+            <div id="error-message" class="error-message" style="display: none;"></div>
         </div>
 
         <!-- ЭКРАН ТЕСТА -->
@@ -324,102 +352,19 @@
 
     <script>
         // =============================================
-        // ТЕСТОВЫЕ ВОПРОСЫ (встроены в код)
+        // КОНСТАНТЫ
         // =============================================
-        const testQuestions = [
-            {
-                id: 1,
-                class: 5,
-                topic: "Бумага и Оригами",
-                question: "Какой материал традиционно используется для создания фигурок в технике оригами?",
-                answers: [
-                    {text: "Картон", isCorrect: false},
-                    {text: "Пластилин", isCorrect: false},
-                    {text: "Бумага", isCorrect: true},
-                    {text: "Фольга", isCorrect: false}
-                ]
-            },
-            {
-                id: 2,
-                class: 5,
-                topic: "Живопись",
-                question: "Что является основным языком живописи?",
-                answers: [
-                    {text: "Линия", isCorrect: false},
-                    {text: "Объем", isCorrect: false},
-                    {text: "Цвет", isCorrect: true},
-                    {text: "Фактура", isCorrect: false}
-                ]
-            },
-            {
-                id: 3,
-                class: 5,
-                topic: "Скульптура",
-                question: "Как называется вид пластического искусства, где произведения создаются путем резьбы или лепки?",
-                answers: [
-                    {text: "Живопись", isCorrect: false},
-                    {text: "Графика", isCorrect: false},
-                    {text: "Скульптура", isCorrect: true},
-                    {text: "Архитектура", isCorrect: false}
-                ]
-            },
-            {
-                id: 4,
-                class: 6,
-                topic: "Рисунок",
-                question: "Как называется художественный прием передачи объема с помощью света и тени?",
-                answers: [
-                    {text: "Перспектива", isCorrect: false},
-                    {text: "Колорит", isCorrect: false},
-                    {text: "Штриховка", isCorrect: false},
-                    {text: "Светотень", isCorrect: true}
-                ]
-            },
-            {
-                id: 5,
-                class: 7,
-                topic: "Декоративное искусство",
-                question: "Какой вид росписи по ткани включает использование воска?",
-                answers: [
-                    {text: "Гуашь", isCorrect: false},
-                    {text: "Акварель", isCorrect: false},
-                    {text: "Батик", isCorrect: true},
-                    {text: "Фреска", isCorrect: false}
-                ]
-            },
-            {
-                id: 6,
-                class: 8,
-                topic: "Цветоведение",
-                question: "Какие цвета называются основными в живописи?",
-                answers: [
-                    {text: "Красный, синий, желтый", isCorrect: true},
-                    {text: "Зеленый, оранжевый, фиолетовый", isCorrect: false},
-                    {text: "Черный, белый, серый", isCorrect: false},
-                    {text: "Коричневый, бежевый, бордовый", isCorrect: false}
-                ]
-            },
-            {
-                id: 7,
-                class: 9,
-                topic: "Дизайн",
-                question: "Что означает аббревиатура 'CMYK' в графическом дизайне?",
-                answers: [
-                    {text: "Цвет, Металл, Желтый, Кварц", isCorrect: false},
-                    {text: "Голубой, Пурпурный, Желтый, Черный", isCorrect: true},
-                    {text: "Хром, Магний, Желтый, Кадмий", isCorrect: false},
-                    {text: "Циан, Маджента, Йеллоу, Ки", isCorrect: false}
-                ]
-            }
-        ];
+        const QUESTIONS_URL = 'https://raw.githubusercontent.com/mironovka6-source/OZP/main/questions.json';
 
         // =============================================
-        // ЭЛЕМЕНТЫ ДОМ
+        // ЭЛЕМЕНТЫ DOM
         // =============================================
         const startScreen = document.getElementById('start-screen');
         const quizContainer = document.getElementById('quiz-container');
         const resultsScreen = document.getElementById('results-screen');
         const classSelection = document.getElementById('class-selection');
+        const loadingElement = document.getElementById('loading');
+        const errorMessageElement = document.getElementById('error-message');
         const questionText = document.getElementById('question-text');
         const answersArea = document.getElementById('answers-area');
         const navigationPanel = document.getElementById('navigation-panel');
@@ -436,6 +381,7 @@
         // =============================================
         // ПЕРЕМЕННЫЕ СОСТОЯНИЯ
         // =============================================
+        let allQuestions = [];
         let currentClass = null;
         let filteredQuestions = [];
         let currentQuestionIndex = 0;
@@ -443,52 +389,146 @@
         let score = 0;
 
         // =============================================
-        // ИНИЦИАЛИЗАЦИЯ
+        // ИНИЦИАЛИЗАЦИЯ ПРИ ЗАГРУЗКЕ
         // =============================================
         document.addEventListener('DOMContentLoaded', function() {
-            console.log("Страница загружена!");
-            
-            // Назначаем обработчики событий
-            setupEventListeners();
-            
-            // Показываем стартовый экран
-            startScreen.style.display = 'block';
+            console.log("DOM загружен, начинаем загрузку вопросов...");
+            loadQuestions();
         });
 
-        function setupEventListeners() {
-            // Обработчики для кнопок выбора класса
+        // =============================================
+        // ЗАГРУЗКА ВОПРОСОВ ИЗ JSON
+        // =============================================
+        async function loadQuestions() {
+            try {
+                console.log("Загружаю вопросы с:", QUESTIONS_URL);
+                
+                const response = await fetch(QUESTIONS_URL);
+                
+                if (!response.ok) {
+                    throw new Error(`HTTP ошибка: ${response.status}`);
+                }
+                
+                const data = await response.json();
+                console.log("Вопросы успешно загружены:", data.length, "вопросов");
+                
+                // Очищаем данные от дубликатов
+                allQuestions = cleanQuestionsData(data);
+                console.log("После очистки:", allQuestions.length, "уникальных вопросов");
+                
+                // Показываем выбор класса
+                showClassSelection();
+                
+            } catch (error) {
+                console.error("Ошибка загрузки вопросов:", error);
+                showError(`Не удалось загрузить вопросы: ${error.message}`);
+            }
+        }
+
+        function cleanQuestionsData(questions) {
+            if (!Array.isArray(questions)) return [];
+            
+            const uniqueQuestions = [];
+            const seen = new Set();
+            
+            questions.forEach(question => {
+                if (!question || typeof question !== 'object') return;
+                
+                // Создаем уникальный ключ
+                const key = `${question.id || ''}-${question.class || ''}-${question.question || ''}`;
+                
+                if (!seen.has(key)) {
+                    seen.add(key);
+                    
+                    // Нормализуем вопрос
+                    const cleanedQuestion = {
+                        id: question.id || Date.now() + Math.random(),
+                        class: question.class || 5,
+                        topic: question.topic || 'Без темы',
+                        question: question.question || 'Вопрос без текста',
+                        answers: []
+                    };
+                    
+                    // Обрабатываем варианты ответов
+                    if (Array.isArray(question.answers)) {
+                        question.answers.forEach((answer, index) => {
+                            if (answer && typeof answer === 'object') {
+                                cleanedQuestion.answers.push({
+                                    text: answer.text || `Вариант ${index + 1}`,
+                                    isCorrect: Boolean(answer.isCorrect)
+                                });
+                            }
+                        });
+                    }
+                    
+                    // Если нет ответов, создаем стандартные
+                    if (cleanedQuestion.answers.length === 0) {
+                        cleanedQuestion.answers = [
+                            { text: 'Первый ответ', isCorrect: false },
+                            { text: 'Второй ответ', isCorrect: true },
+                            { text: 'Третий ответ', isCorrect: false },
+                            { text: 'Четвертый ответ', isCorrect: false }
+                        ];
+                    }
+                    
+                    uniqueQuestions.push(cleanedQuestion);
+                }
+            });
+            
+            return uniqueQuestions;
+        }
+
+        function showClassSelection() {
+            loadingElement.style.display = 'none';
+            classSelection.style.display = 'grid';
+            errorMessageElement.style.display = 'none';
+            
+            // Назначаем обработчики для кнопок классов
             const classButtons = classSelection.querySelectorAll('button');
             classButtons.forEach(button => {
                 button.addEventListener('click', function() {
-                    console.log("Нажата кнопка класса:", this.dataset.class);
-                    startTest(this.dataset.class);
+                    const selectedClass = this.getAttribute('data-class');
+                    console.log("Выбран класс:", selectedClass);
+                    startTest(selectedClass);
                 });
             });
+        }
 
-            // Обработчики для кнопок навигации
-            prevButton.addEventListener('click', goToPreviousQuestion);
-            nextButton.addEventListener('click', goToNextQuestion);
-            finishButton.addEventListener('click', finishTest);
-            finishAnytimeButton.addEventListener('click', finishTestAnytime);
-            restartButton.addEventListener('click', restartTest);
+        function showError(message) {
+            loadingElement.style.display = 'none';
+            classSelection.style.display = 'none';
+            errorMessageElement.style.display = 'block';
+            errorMessageElement.innerHTML = `
+                ${message}<br><br>
+                <button onclick="location.reload()" style="
+                    background: #667eea;
+                    color: white;
+                    border: none;
+                    padding: 10px 20px;
+                    border-radius: 5px;
+                    cursor: pointer;
+                ">
+                    🔄 Попробовать снова
+                </button>
+            `;
         }
 
         // =============================================
         // ЗАПУСК ТЕСТА
         // =============================================
         function startTest(selectedClass) {
-            console.log("Запуск теста для класса:", selectedClass);
+            console.log("Начинаем тест для класса:", selectedClass);
             
             currentClass = selectedClass;
             selectedClassSpan.textContent = `Класс: ${currentClass}`;
             
             // Фильтруем вопросы по классу
-            filteredQuestions = testQuestions.filter(q => q.class == currentClass);
+            filteredQuestions = allQuestions.filter(q => q.class.toString() === selectedClass.toString());
             
-            console.log("Найдено вопросов:", filteredQuestions.length);
+            console.log("Найдено вопросов для класса", selectedClass, ":", filteredQuestions.length);
             
             if (filteredQuestions.length === 0) {
-                alert(`Извините, для ${currentClass} класса пока нет вопросов.`);
+                alert(`Для ${selectedClass} класса пока нет вопросов.`);
                 return;
             }
 
@@ -515,6 +555,23 @@
             nextButton.disabled = true;
             prevButton.disabled = true;
 
+            // Назначаем обработчики (если еще не назначены)
+            if (!prevButton.onclick) {
+                prevButton.addEventListener('click', goToPreviousQuestion);
+            }
+            if (!nextButton.onclick) {
+                nextButton.addEventListener('click', goToNextQuestion);
+            }
+            if (!finishButton.onclick) {
+                finishButton.addEventListener('click', finishTest);
+            }
+            if (!finishAnytimeButton.onclick) {
+                finishAnytimeButton.addEventListener('click', finishTestAnytime);
+            }
+            if (!restartButton.onclick) {
+                restartButton.addEventListener('click', restartTest);
+            }
+
             // Показываем первый вопрос
             renderQuestion(currentQuestionIndex);
             renderNavigation();
@@ -529,10 +586,12 @@
             const question = filteredQuestions[index];
             
             // Отображаем текст вопроса
-            questionText.innerHTML = `
-                ${question.topic ? `<div style="color: #667eea; font-weight: bold; margin-bottom: 10px;">${question.topic}</div>` : ''}
-                <div><strong>${index + 1}.</strong> ${question.question}</div>
-            `;
+            let questionHTML = '';
+            if (question.topic && question.topic !== 'Без темы') {
+                questionHTML += `<div style="color: #667eea; font-weight: bold; margin-bottom: 10px; font-size: 0.9em;">${question.topic}</div>`;
+            }
+            questionHTML += `<div><strong>${index + 1}.</strong> ${question.question}</div>`;
+            questionText.innerHTML = questionHTML;
             
             // Очищаем и заполняем варианты ответов
             answersArea.innerHTML = '';
@@ -556,12 +615,13 @@
             // Обновляем счетчик
             progressCounter.textContent = `Вопрос ${index + 1} из ${filteredQuestions.length}`;
             
-            // Обновляем навигацию
+            // Обновляем навигацию и кнопки
             renderNavigation();
             updateButtonVisibility();
         }
 
         function selectAnswer(optionIndex) {
+            console.log("Выбран ответ:", optionIndex, "для вопроса", currentQuestionIndex);
             userAnswers[currentQuestionIndex] = optionIndex;
             
             // Обновляем стили кнопок
@@ -684,6 +744,11 @@
                 const userAnswerIndex = userAnswers[index];
                 const correctAnswerIndex = question.answers.findIndex(a => a.isCorrect);
                 
+                if (correctAnswerIndex === -1) {
+                    console.warn(`Вопрос ${index + 1} не имеет правильного ответа`);
+                    return;
+                }
+                
                 const isCorrect = userAnswerIndex !== null && userAnswerIndex === correctAnswerIndex;
                 
                 if (isCorrect) {
@@ -694,16 +759,26 @@
                     resultDiv.className = 'result-item';
                     
                     let userAnswerText = 'Не отвечено';
-                    if (userAnswerIndex !== null) {
+                    if (userAnswerIndex !== null && question.answers[userAnswerIndex]) {
                         userAnswerText = question.answers[userAnswerIndex].text;
                     }
                     
                     const correctAnswerText = question.answers[correctAnswerIndex].text;
                     
                     resultDiv.innerHTML = `
-                        <div style="margin-bottom: 10px;"><strong>Вопрос ${index + 1}:</strong> ${question.question}</div>
-                        <div style="color: #ef4444; margin-bottom: 5px;">Ваш ответ: ${userAnswerText}</div>
-                        <div style="color: #10b981; font-weight: bold;">Правильный ответ: ${correctAnswerText}</div>
+                        <div style="margin-bottom: 10px;">
+                            <strong>Вопрос ${index + 1}:</strong> ${question.question}
+                        </div>
+                        <div style="color: #ef4444; margin-bottom: 5px;">
+                            <strong>Ваш ответ:</strong> ${userAnswerText}
+                        </div>
+                        <div style="color: #10b981; font-weight: bold;">
+                            <strong>Правильный ответ:</strong> ${correctAnswerText}
+                        </div>
+                        ${question.topic && question.topic !== 'Без темы' ? 
+                            `<div style="color: #666; font-size: 0.9em; margin-top: 5px;">
+                                Тема: ${question.topic}
+                            </div>` : ''}
                     `;
                     
                     reportContainer.appendChild(resultDiv);
@@ -781,6 +856,23 @@
                     break;
             }
         });
+
+        // =============================================
+        // ФУНКЦИИ ДЛЯ ОТЛАДКИ
+        // =============================================
+        window.debugApp = {
+            loadQuestions: loadQuestions,
+            getState: () => ({
+                allQuestions: allQuestions,
+                currentClass: currentClass,
+                filteredQuestions: filteredQuestions,
+                currentQuestionIndex: currentQuestionIndex,
+                userAnswers: userAnswers,
+                score: score
+            }),
+            showClassSelection: showClassSelection,
+            startTest: startTest
+        };
     </script>
 </body>
 </html>
