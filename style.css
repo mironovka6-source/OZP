@@ -6,11 +6,11 @@
 }
 
 /* ======================================= */
-/* 1. ГЛОБАЛЬНЫЕ ПРАВИЛА ДЛЯ УСТРАНЕНИЯ ГОРИЗОНТАЛЬНОЙ ПРОКРУТКИ */
+/* 1. ГЛОБАЛЬНЫЕ ПРАВИЛА И ДИЗАЙН */
 /* ======================================= */
 html, body {
-    overflow-x: hidden; /* Запрещает горизонтальную прокрутку */
-    width: 100%;
+    overflow-x: hidden;
+    width: 100%;
 }
 
 body {
@@ -23,24 +23,18 @@ body {
     min-height: 100vh;
 }
 
+/* Контейнер: современный вид с тенью и закруглениями */
 .container {
     background: #ffffff;
     width: 90%;
     max-width: 600px;
     padding: 30px;
-    border-radius: 15px;
-    box-shadow: 0 10px 25px rgba(0,0,0,0.1);
-    /* Добавляем box-sizing: border-box; в общие правила выше, но дублируем здесь для уверенности */
-    box-sizing: border-box;
+    border-radius: 20px;
+    box-shadow: 0 15px 40px rgba(0,0,0,0.15); 
+    box-sizing: border-box;
 }
 
-/* Экран выбора класса */
-#start-screen h2 {
-    text-align: center;
-    margin-bottom: 25px;
-    color: #2c3e50;
-}
-
+/* Выбор класса: кнопки Индиго */
 #class-selection {
     display: grid;
     grid-template-columns: repeat(auto-fit, minmax(100px, 1fr));
@@ -50,20 +44,71 @@ body {
 #class-selection button {
     padding: 15px;
     font-size: 18px;
-    background-color: #3498db;
+    background-color: #6610f2; 
     color: white;
     border: none;
-    border-radius: 8px;
+    border-radius: 12px;
     cursor: pointer;
-    transition: transform 0.2s, background 0.2s;
+    transition: all 0.2s, box-shadow 0.3s;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
 }
 
 #class-selection button:hover {
-    background-color: #2980b9;
+    background-color: #4c0cc3;
     transform: translateY(-3px);
+    box-shadow: 0 8px 16px rgba(0, 0, 0, 0.2);
 }
 
-/* Экран теста */
+/* Навигация и ответы */
+.nav-dot.active, 
+.nav-dot.answered,
+.nav-dot.active {
+    border-color: #6610f2;
+    background-color: #6610f2; 
+    color: white;
+}
+.nav-dot.active {
+    background-color: #ffffff; /* Активная, но не отвеченная точка остается белой */
+    color: #6610f2;
+    box-shadow: 0 0 5px #6610f2;
+}
+
+.answer-option.selected {
+    background: #e0e7ff; 
+    border: 2px solid #6610f2;
+    color: #2c3e50;
+    font-weight: 500;
+    box-shadow: 0 0 10px rgba(102, 16, 242, 0.5);
+}
+
+/* Кнопки управления */
+#next-button {
+    background-color: #6610f2; 
+    color: white;
+}
+
+#finish-button {
+    background-color: #1abc9c; /* Бирюзовый */
+    color: white;
+}
+
+/* Экран результатов */
+#score, .result-item.correct {
+    color: #1abc9c;
+}
+
+#restart-button {
+    background-color: #f39c12; /* Оранжевый */
+    color: white;
+    border-radius: 12px;
+    box-shadow: 0 5px 15px rgba(243, 156, 18, 0.4);
+}
+
+
+/* ========================================================= */
+/* 2. БАЗОВЫЕ И ВТОРИЧНЫЕ ПРАВИЛА (для полноты) */
+/* ========================================================= */
+
 .quiz-header {
     display: flex;
     justify-content: space-between;
@@ -73,7 +118,6 @@ body {
     border-bottom: 2px solid #ecf0f1;
 }
 
-/* Панель навигации (кружочки с номерами) */
 #navigation-panel {
     display: flex;
     flex-wrap: wrap;
@@ -96,19 +140,6 @@ body {
     transition: all 0.3s;
 }
 
-.nav-dot.active {
-    border-color: #3498db;
-    box-shadow: 0 0 5px #3498db;
-    font-weight: bold;
-}
-
-.nav-dot.answered {
-    background-color: #3498db;
-    color: white;
-    border-color: #3498db;
-}
-
-/* Область вопроса и ответов */
 .question-area {
     margin-bottom: 30px;
 }
@@ -126,136 +157,56 @@ body {
     padding: 12px 15px;
     margin-bottom: 10px;
     background: #f8f9fa;
-    border: 2px solid #e9ecef;
-    border-radius: 8px;
+    border: none;
+    border-radius: 10px;
     text-align: left;
     cursor: pointer;
-    transition: all 0.2s;
+    transition: all 0.2s, box-shadow 0.3s;
     font-size: 1em;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
 }
 
 .answer-option:hover {
     background: #e2e6ea;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
 }
 
-.answer-option.selected {
-    background: #d4e6f1;
-    border-color: #3498db;
-    color: #2c3e50;
-    font-weight: 500;
-}
-
-/* Кнопки управления (Контейнер) */
-.buttons-container { /* Используется для flex-контейнера кнопок */
+.buttons-container {
     display: flex;
     justify-content: space-between;
 }
 
 .buttons-container button {
-    padding: 10px 20px;
+    padding: 12px 22px;
     border: none;
-    border-radius: 6px;
+    border-radius: 10px;
     cursor: pointer;
     font-size: 16px;
-    transition: background 0.3s;
-}
-
-#prev-button {
-    background-color: #95a5a6;
-    color: white;
-}
-
-#next-button {
-    background-color: #3498db;
-    color: white;
-}
-
-#finish-button {
-    background-color: #27ae60;
-    color: white;
+    transition: background 0.3s, box-shadow 0.3s;
+    box-shadow: 0 3px 6px rgba(0,0,0,0.1);
 }
 
 button:disabled {
     background-color: #ecf0f1 !important;
     color: #bdc3c7 !important;
     cursor: not-allowed;
+    box-shadow: none;
 }
 
-/* Экран результатов */
-#results-screen {
-    text-align: center;
+#prev-button {
+    background-color: #95a5a6;
+    color: white;
 }
 
-#score {
-    font-size: 2em;
-    color: #27ae60;
-    font-weight: bold;
-    margin: 20px 0;
-}
-
-#restart-button {
-    margin-top: 20px;
-    padding: 12px 25px;
-    background-color: #e67e22;
-    color: white;
-    border: none;
-    border-radius: 8px;
-    font-size: 1.1em;
-    cursor: pointer;
-}
-
-#restart-button:hover {
-    background-color: #d35400;
-}
-
-/* Отчет по ошибкам (опционально) */
-.result-item {
-    text-align: left;
-    padding: 10px;
-    border-bottom: 1px solid #eee;
-    font-size: 0.9em;
-}
-.result-item.correct { color: #27ae60; }
-.result-item.wrong { color: #c0392b; }
-
-
-/* ========================================================= */
-/* 2. АДАПТИВНОСТЬ: ИСПРАВЛЕНИЕ ДЛЯ МОБИЛЬНЫХ УСТРОЙСТВ */
-/* (Устраняет проблему с невидимой кнопкой "Завершить тест") */
-/* ========================================================= */
+/* АДАПТИВНОСТЬ */
 
 @media (max-width: 600px) {
-
-    /* Делаем кнопки навигации компактными и равномерно распределенными */
     .buttons-container button {
-        flex-grow: 1; /* Кнопки занимают равное доступное пространство */
-        margin: 0 4px; /* Уменьшаем горизонтальные отступы между кнопками */
-        padding: 10px 5px; /* Уменьшаем внутренние отступы, чтобы текст влез */
-        font-size: 14px; /* Делаем шрифт меньше */
-        white-space: nowrap; /* Запрещаем перенос текста (например, "Завершить тест") */
+        flex-grow: 1;
+        margin: 0 4px;
+        padding: 10px 5px;
+        font-size: 14px;
+        white-space: nowrap;
         min-width: 70px;
-    }
-    
-    /* Убираем отступ с крайних кнопок, чтобы они не выталкивали контейнер */
-    .buttons-container button:first-child {
-        margin-left: 0;
-    }
-    .buttons-container button:last-child {
-        margin-right: 0;
-    }
-
-    /* Уменьшаем отступы для всего контейнера */
-    .container {
-        padding: 20px 15px;
-    }
-    
-    /* Уменьшаем отступы между точками навигации */
-    #navigation-panel {
-        gap: 5px;
-    }
-    
-    .nav-dot {
-        width: 25px;
-        height: 25px;
     }
 }
