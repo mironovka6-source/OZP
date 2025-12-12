@@ -1,64 +1,61 @@
 <!DOCTYPE html>
 <html lang="ru">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Тест по Художественному труду</title>
-    <link rel="stylesheet" href="style.css">
-    <link rel="icon" href="favicon.ico" type="image/x-icon">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Онлайн-тест ОЗП</title>
+    
+    <link rel="stylesheet" href="style.css?v=10"> 
 </head>
 <body>
 
-    <div class="container">
-        <!-- Начальный экран -->
-        <div id="start-screen">
-            <h2>Выберите класс для прохождения теста</h2>
-            <div id="class-selection">
-                <button id="class-5" data-class="5">5 класс</button>
-                <button id="class-6" data-class="6">6 класс</button>
-                <button id="class-7" data-class="7">7 класс</button>
-                <button id="class-8" data-class="8">8 класс</button>
-                <button id="class-9" data-class="9">9 класс</button>
-            </div>
-        </div>
-        
-        <!-- Экран теста -->
-        <main id="quiz-container" style="display:none;">
-            <div class="quiz-header">
-                <h3 class="current-class">Класс: <span id="selected-class">5</span></h3>
-                <div class="progress-info">
-                    <span id="progress-counter">Отвечено: 0 из 0</span>
-                </div>
-            </div>
-            
-            <!-- Навигационная панель -->
-            <div id="navigation-panel"></div>
-            
-            <div class="question-area">
-                <p id="question-text">Текст вопроса</p>
-                
-                <div id="answers-area">
-                    <!-- Варианты ответов будут здесь -->
-                </div>
-            </div>
-            
-            <!-- Кнопки управления -->
-            <div class="buttons-container">
-                <button id="prev-button" disabled>← Предыдущий</button>
-                <button id="next-button" disabled>Следующий →</button>
-                <button id="finish-button" style="display:none;">🏁 Завершить тест</button>
-            </div>
-        </main>
+    <div class="container">
+        
+        <div id="start-screen">
+            <h2>Выберите класс для начала теста</h2>
+            <div id="class-selection">
+                <button data-class="5">5 класс</button>
+                <button data-class="6">6 класс</button>
+                <button data-class="7">7 класс</button>
+                <button data-class="8">8 класс</button>
+                <button data-class="9">9 класс</button>
+            </div>
+        </div>
 
-        <!-- Экран результатов -->
-        <div id="results-screen" style="display:none;">
-            <h3>Ваш результат:</h3>
-            <p id="score">0 из 0</p>
-            <div id="report-container"></div>
-            <button id="restart-button">🔄 Начать заново</button>
-        </div>
-    </div>
+        <div id="quiz-container" style="display: none;">
+            <div class="quiz-header">
+                <span id="selected-class"></span>
+                <span id="progress-counter"></span>
+            </div>
 
-    <script src="script.js"></script>
+            <div id="navigation-panel">
+                </div>
+
+            <div class="question-area">
+                <p id="question-text"></p>
+                <div id="answers-area">
+                    </div>
+            </div>
+
+            <div class="buttons-container">
+                <button id="prev-button">← Назад</button>
+                <div>
+                    <button id="next-button">Далее →</button>
+                    <button id="finish-button" style="display: none;">Завершить тест</button>
+                </div>
+            </div>
+        </div>
+
+        <div id="results-screen" style="display: none;">
+            <h2>Ваш результат</h2>
+            <p>Верных ответов: <span id="score">0 из 0</span></p>
+            <div id="report-container">
+                </div>
+            <button id="restart-button">Начать заново</button>
+        </div>
+
+    </div>
+
+    <script src="script.js"></script> 
 </body>
 </html>
