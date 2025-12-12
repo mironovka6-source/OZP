@@ -1,61 +1,57 @@
-<!DOCTYPE html>
-<html lang="ru">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Онлайн-тест ОЗП</title>
+/* ======================================= */
+/* 1. ГЛОБАЛЬНЫЕ ПРАВИЛА ДЛЯ УСТРАНЕНИЯ ГОРИЗОНТАЛЬНОЙ ПРОКРУТКИ */
+/* ======================================= */
+
+/* Запрещает горизонтальную прокрутку и гарантирует, что 
+   тело страницы не шире, чем экран устройства. */
+html, body {
+    overflow-x: hidden;
+    width: 100%;
+    margin: 0;
+    padding: 0;
+}
+
+/* Гарантирует, что основной контейнер теста не выходит за пределы экрана */
+#quiz-container {
+    max-width: 100%;
+    /* Важно: box-sizing гарантирует, что padding не добавляет ширину,
+       которая вытолкнет контент за пределы экрана. */
+    box-sizing: border-box; 
+    padding: 10px; /* Немного уменьшаем отступы на всякий случай */
+}
+
+
+/* ======================================= */
+/* 2. АДАПТАЦИЯ КНОПОК УПРАВЛЕНИЯ НА МОБИЛЬНЫХ УСТРОЙСТВАХ */
+/* ======================================= */
+
+/* Предполагая, что блок с кнопками имеет ID controls.
+   Если у вас другой ID/Класс, замените #controls. */
+#controls {
+    display: flex; /* Делает кнопки гибкими элементами */
+    justify-content: space-between; /* Распределяет кнопки по ширине */
+    width: 100%;
+    box-sizing: border-box;
+    padding: 10px 0;
+}
+
+/* Медиа-запрос: применяется к экранам шириной 600px и менее (телефоны) */
+@media (max-width: 600px) {
     
-    <link rel="stylesheet" href="style.css"> 
-</head>
-<body>
-
-    <div class="container">
-        
-        <div id="start-screen">
-            <h2>Выберите класс для начала теста</h2>
-            <div id="class-selection">
-                <button data-class="5">5 класс</button>
-                <button data-class="6">6 класс</button>
-                <button data-class="7">7 класс</button>
-                <button data-class="8">8 класс</button>
-                <button data-class="9">9 класс</button>
-            </div>
-        </div>
-
-        <div id="quiz-container" style="display: none;">
-            <div class="quiz-header">
-                <span id="selected-class"></span>
-                <span id="progress-counter"></span>
-            </div>
-
-            <div id="navigation-panel">
-                </div>
-
-            <div class="question-area">
-                <p id="question-text"></p>
-                <div id="answers-area">
-                    </div>
-            </div>
-
-            <div class="buttons-container">
-                <button id="prev-button">← Назад</button>
-                <div>
-                    <button id="next-button">Далее →</button>
-                    <button id="finish-button" style="display: none;">Завершить тест</button>
-                </div>
-            </div>
-        </div>
-
-        <div id="results-screen" style="display: none;">
-            <h2>Ваш результат</h2>
-            <p>Верных ответов: <span id="score">0 из 0</span></p>
-            <div id="report-container">
-                </div>
-            <button id="restart-button">Начать заново</button>
-        </div>
-
-    </div>
-
-    <script src="script.js"></script> 
-</body>
-</html>
+    /* Делаем кнопки навигации более компактными и равномерно распределенными */
+    #prev-button, 
+    #next-button,
+    #finish-button {
+        flex-grow: 1; /* Кнопки занимают равное доступное пространство */
+        margin: 0 5px; /* Небольшие отступы между кнопками */
+        padding: 10px 5px; /* Уменьшаем вертикальные отступы */
+        font-size: 14px; /* Уменьшаем размер шрифта, чтобы он поместился */
+        white-space: nowrap; /* Запрещаем перенос текста (например, "Завершить тест") */
+        min-width: 80px;
+    }
+    
+    /* Дополнительно: уменьшаем отступы для всего содержимого теста на мобильных устройствах */
+    body {
+        padding: 5px;
+    }
+}
