@@ -5,14 +5,207 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Онлайн-тест ОЗП</title>
     
-    <link rel="stylesheet" href="style.css?v=10"> 
+    <style>
+        /* Общие настройки */
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        /* ======================================= */
+        /* 1. ГЛОБАЛЬНЫЕ ПРАВИЛА И ДИЗАЙН (ЯРКИЙ) */
+        /* ======================================= */
+        html, body {
+            overflow-x: hidden;
+            width: 100%;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: #f0f4f8;
+            color: #333;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+        }
+
+        /* Контейнер: современный вид с тенью и закруглениями */
+        .container {
+            background: #ffffff;
+            width: 90%;
+            max-width: 600px;
+            padding: 30px;
+            border-radius: 20px;
+            box-shadow: 0 15px 40px rgba(0,0,0,0.15); 
+            box-sizing: border-box;
+        }
+
+        /* Выбор класса: кнопки Индиго */
+        #start-screen h2 {
+            text-align: center;
+            margin-bottom: 25px;
+            color: #2c3e50;
+        }
+
+        #class-selection {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(100px, 1fr));
+            gap: 15px;
+        }
+
+        #class-selection button {
+            padding: 15px;
+            font-size: 18px;
+            background-color: #6610f2 !important; /* ЯРКИЙ ИНДИГО */
+            color: white !important;
+            border: none;
+            border-radius: 12px;
+            cursor: pointer;
+            transition: all 0.2s, box-shadow 0.3s;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        }
+
+        #class-selection button:hover {
+            background-color: #4c0cc3 !important;
+            transform: translateY(-3px);
+            box-shadow: 0 8px 16px rgba(0, 0, 0, 0.2) !important;
+        }
+
+        /* Элементы теста */
+        .quiz-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+            padding-bottom: 10px;
+            border-bottom: 2px solid #ecf0f1;
+        }
+        
+        #navigation-panel {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+            margin-bottom: 20px;
+            justify-content: center;
+        }
+
+        .nav-dot {
+            width: 30px;
+            height: 30px;
+            border-radius: 50%;
+            border: 1px solid #bdc3c7;
+            background: #fff;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 12px;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .nav-dot.active {
+            border-color: #6610f2 !important;
+            box-shadow: 0 0 5px #6610f2 !important;
+            font-weight: bold;
+        }
+
+        .nav-dot.answered {
+            background-color: #6610f2 !important;
+            color: white !important;
+            border-color: #6610f2 !important;
+        }
+
+        /* Варианты ответов */
+        .answer-option {
+            display: block;
+            width: 100%;
+            padding: 12px 15px;
+            margin-bottom: 10px;
+            background: #f8f9fa;
+            border: none;
+            border-radius: 10px;
+            text-align: left;
+            cursor: pointer;
+            transition: all 0.2s, box-shadow 0.3s;
+            font-size: 1em;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+        }
+
+        .answer-option.selected {
+            background: #e0e7ff !important; 
+            border: 2px solid #6610f2 !important;
+            color: #2c3e50 !important;
+            font-weight: 500;
+            box-shadow: 0 0 10px rgba(102, 16, 242, 0.5) !important;
+        }
+
+        /* Кнопки навигации */
+        .buttons-container {
+            display: flex;
+            justify-content: space-between;
+        }
+        .buttons-container button {
+            padding: 12px 22px;
+            border: none;
+            border-radius: 10px;
+            cursor: pointer;
+            font-size: 16px;
+            transition: background 0.3s, box-shadow 0.3s;
+            box-shadow: 0 3px 6px rgba(0,0,0,0.1);
+        }
+        #prev-button {
+            background-color: #95a5a6;
+            color: white;
+        }
+        #next-button {
+            background-color: #6610f2 !important;
+            color: white !important;
+        }
+        #finish-button {
+            background-color: #1abc9c !important; /* БИРЮЗОВЫЙ */
+            color: white !important;
+        }
+        
+        /* Результаты */
+        #score {
+            font-size: 2em;
+            color: #1abc9c !important;
+            font-weight: bold;
+            margin: 20px 0;
+        }
+        #restart-button {
+            margin-top: 20px;
+            padding: 14px 30px;
+            background-color: #f39c12 !important; /* ОРАНЖЕВЫЙ */
+            color: white !important;
+            border: none;
+            border-radius: 12px;
+            font-size: 1.1em;
+            cursor: pointer;
+            box-shadow: 0 5px 15px rgba(243, 156, 18, 0.4) !important;
+        }
+        
+        /* Адаптивность (для мобильных) */
+        @media (max-width: 600px) {
+            .buttons-container button {
+                flex-grow: 1;
+                margin: 0 4px;
+                padding: 10px 5px;
+                font-size: 14px;
+                white-space: nowrap;
+                min-width: 70px;
+            }
+        }
+    </style>
 </head>
 <body>
 
     <div class="container">
         
         <div id="start-screen">
-            <h2>Выберите класс для начала теста</h2>
+            <h2>Выберите класс для начала теста (Ура! Дизайн должен сработать!)</h2>
             <div id="class-selection">
                 <button data-class="5">5 класс</button>
                 <button data-class="6">6 класс</button>
