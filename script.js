@@ -1,297 +1,239 @@
-// ==============================================================================
-// ВАЖНО: Убедитесь, что здесь указана ваша правильная RAW-ссылка с GitHub!
-const JSON_URL = "https://raw.githubusercontent.com/mironovka6-source/OZP/main/questions.json"; 
-// ==============================================================================
+const QUESTIONS_URL = 'https://raw.githubusercontent.com/mironovka6-source/OZP/main/questions.json';
 
-
-// --- Переменные состояния ---
-let quizData = {}; // Сюда загрузятся вопросы, сгруппированные по классу
-let currentClass = null;
-let currentQuestions = []; // Вопросы для текущего теста (уже перемешанные)
-let userAnswers = [];
-let currentQuestionIndex = 0;
-
-// --- DOM Элементы ---
+// Элементы DOM
 const startScreen = document.getElementById('start-screen');
 const quizContainer = document.getElementById('quiz-container');
 const resultsScreen = document.getElementById('results-screen');
-const classButtons = document.querySelectorAll('#class-selection button');
-
+const classSelection = document.getElementById('class-selection');
 const questionText = document.getElementById('question-text');
 const answersArea = document.getElementById('answers-area');
 const navigationPanel = document.getElementById('navigation-panel');
 const progressCounter = document.getElementById('progress-counter');
 const selectedClassSpan = document.getElementById('selected-class');
-
 const prevButton = document.getElementById('prev-button');
 const nextButton = document.getElementById('next-button');
 const finishButton = document.getElementById('finish-button');
 const restartButton = document.getElementById('restart-button');
-const scoreDisplay = document.getElementById('score');
+const scoreSpan = document.getElementById('score');
 const reportContainer = document.getElementById('report-container');
 
+// Переменные состояния
+let allQuestions = [];
+let currentClass = null;
+let filteredQuestions = [];
+let currentQuestionIndex = 0;
+let userAnswers = [];
+let score = 0;
 
-// --- ВСПОМОГАТЕЛЬНАЯ ФУНКЦИЯ ДЛЯ ПЕРЕМЕШИВАНИЯ (Fisher-Yates) ---
-function shuffleArray(array) {
-    for (let i = array.length - 1; i > 0; i--) {
-        const j = Math.floor(Math.random() * (i + 1));
-        [array[i], array[j]] = [array[j], array[i]];
-    }
-}
+// =======================================================
+// 1. ЗАГРУЗКА ДАННЫХ
+// =======================================================
 
-
-// --- ЗАГРУЗКА И ОБРАБОТКА ДАННЫХ С GITHUB ---
-async function loadAndProcessQuestions() {
+async function loadQuestions() {
     try {
-        const response = await fetch(JSON_URL);
-        
+        const response = await fetch(QUESTIONS_URL);
         if (!response.ok) {
-            throw new Error(`Ошибка HTTP: ${response.status}. Не удалось загрузить данные с GitHub. Проверьте ссылку!`);
+            throw new Error(`Ошибка HTTP: ${response.status}`);
         }
-
-        let rawData = await response.json();
-        
-        // АНТИ-КРАШ КОД: Убеждаемся, что rawData является массивом
-        if (typeof rawData === 'object' && rawData !== null && !Array.isArray(rawData)) {
-            if (rawData.questions) { 
-                rawData = rawData.questions;
-            } else if (rawData.Questions) { 
-                rawData = rawData.Questions;
-            } else {
-                const keys = Object.keys(rawData);
-                if (keys.length === 1 && Array.isArray(rawData[keys[0]])) {
-                    rawData = rawData[keys[0]];
-                }
-            }
-        }
-        
-        if (!Array.isArray(rawData)) {
-            throw new Error(`Файл вопросов не содержит массива. Тип данных: ${typeof rawData}.`);
-        }
-        
-        // --- Логика обработки и перемешивания ответов ---
-        rawData.forEach(item => {
-            if (!quizData[item.class]) {
-                quizData[item.class] = [];
-            }
-            
-            // Перемешиваем варианты ответов ОДИН РАЗ при загрузке
-            shuffleArray(item.answers); 
-
-            // Находим новый индекс правильного ответа после перемешивания
-            const newCorrectIndex = item.answers.findIndex(answer => answer.isCorrect === true);
-            
-            const answersList = item.answers.map(answer => answer.text);
-
-            quizData[item.class].push({
-                question: item.question,
-                answers: answersList,
-                correct: newCorrectIndex, // Сохраняем НОВЫЙ, случайный индекс
-                topic: item.topic
-            });
-        });
-        console.log(`Вопросы успешно загружены с GitHub! Всего ${rawData.length} вопросов.`);
-
+        allQuestions = await response.json();
+        console.log(`Вопросы успешно загружены с GitHub! Всего ${allQuestions.length} вопросов.`);
+        startScreen.style.display = 'block';
     } catch (error) {
-        console.error("КРИТИЧЕСКАЯ ОШИБКА загрузки:", error);
-        alert(`Не удалось загрузить или обработать вопросы. Ошибка: ${error.message}`);
+        console.error('Ошибка загрузки вопросов:', error);
+        questionText.textContent = 'Не удалось загрузить вопросы. Проверьте подключение или URL.';
     }
 }
 
-// Запускаем загрузку сразу при старте страницы
-loadAndProcessQuestions();
+// =======================================================
+// 2. УПРАВЛЕНИЕ КЛАССОМ И НАЧАЛО ТЕСТА
+// =======================================================
 
+classSelection.addEventListener('click', (event) => {
+    if (event.target.tagName === 'BUTTON') {
+        currentClass = event.target.dataset.class;
+        selectedClassSpan.textContent = `Класс: ${currentClass}`;
+        
+        filteredQuestions = allQuestions.filter(q => 
+            q.class === parseInt(currentClass) || q.class === currentClass.toString()
+        );
 
-// --- ИНИЦИАЛИЗАЦИЯ СОБЫТИЙ ---
+        if (filteredQuestions.length === 0) {
+            alert(`Нет вопросов для ${currentClass} класса.`);
+            return;
+        }
 
-classButtons.forEach(btn => {
-    btn.addEventListener('click', () => {
-        const selected = parseInt(btn.getAttribute('data-class'));
-        startQuiz(selected);
-    });
-});
-
-restartButton.addEventListener('click', () => {
-    resultsScreen.style.display = 'none';
-    startScreen.style.display = 'block';
-});
-
-prevButton.addEventListener('click', () => {
-    if (currentQuestionIndex > 0) {
-        currentQuestionIndex--;
-        renderQuestion();
+        initializeQuiz();
     }
 });
 
-nextButton.addEventListener('click', () => {
-    if (currentQuestionIndex < currentQuestions.length - 1) {
-        currentQuestionIndex++;
-        renderQuestion();
-    }
-});
-
-finishButton.addEventListener('click', showResults);
-
-
-// --- ЛОГИКА ТЕСТА ---
-
-function startQuiz(classNum) {
-    if (Object.keys(quizData).length === 0) {
-        alert("Данные еще не загрузились. Пожалуйста, подождите.");
-        return;
-    }
-
-    currentClass = classNum;
-    
-    if (!quizData[classNum] || quizData[classNum].length === 0) {
-        alert("Для этого класса вопросов пока нет в базе!");
-        return;
-    }
-
-    // 1. ПЕРЕМЕШИВАНИЕ ВОПРОСОВ ПРИ СТАРТЕ ТЕСТА
-    let questionsForClass = [...quizData[classNum]]; // Копируем массив
-    shuffleArray(questionsForClass);
-    currentQuestions = questionsForClass;
-
-    userAnswers = new Array(currentQuestions.length).fill(null);
+function initializeQuiz() {
+    // Сброс состояния
     currentQuestionIndex = 0;
-
-    // 2. Корректное отображение класса
-    selectedClassSpan.textContent = `${classNum} класс`;
+    userAnswers = new Array(filteredQuestions.length).fill(null);
+    score = 0;
+    reportContainer.innerHTML = '';
     
+    // Переключение экранов
     startScreen.style.display = 'none';
+    resultsScreen.style.display = 'none';
     quizContainer.style.display = 'block';
-    
-    finishButton.style.display = 'inline-block';
-    finishButton.disabled = false;
 
-    createNavigationPanel();
-    renderQuestion();
+    renderNavigation();
+    renderQuestion(currentQuestionIndex);
 }
 
-function createNavigationPanel() {
+// =======================================================
+// 3. ОТОБРАЖЕНИЕ ТЕСТА И НАВИГАЦИЯ
+// =======================================================
+
+function renderNavigation() {
     navigationPanel.innerHTML = '';
-    currentQuestions.forEach((_, index) => {
+    filteredQuestions.forEach((_, index) => {
         const dot = document.createElement('div');
         dot.classList.add('nav-dot');
         dot.textContent = index + 1;
-        dot.onclick = () => {
-            currentQuestionIndex = index;
-            renderQuestion();
-        };
-        navigationPanel.appendChild(dot);
-    });
-}
-
-function renderQuestion() {
-    const questionData = currentQuestions[currentQuestionIndex];
-    
-    // !!! УБРАНА ЛОГИКА ОТОБРАЖЕНИЯ ТЕМЫ !!!
-    let questionTitle = `${currentQuestionIndex + 1}. ${questionData.question}`;
-
-    questionText.innerHTML = questionTitle;
-
-    answersArea.innerHTML = '';
-    questionData.answers.forEach((answer, index) => {
-        const btn = document.createElement('button');
-        btn.classList.add('answer-option');
-        btn.textContent = answer;
         
-        if (userAnswers[currentQuestionIndex] === index) {
-            btn.classList.add('selected');
-        }
-
-        btn.onclick = () => selectAnswer(index);
-        answersArea.appendChild(btn);
-    });
-
-    updateControls();
-    updateNavigationDots();
-
-    const answeredCount = userAnswers.filter(a => a !== null).length;
-    progressCounter.textContent = `Отвечено: ${answeredCount} из ${currentQuestions.length}`;
-}
-
-function selectAnswer(index) {
-    userAnswers[currentQuestionIndex] = index;
-    renderQuestion();
-}
-
-function updateControls() {
-    prevButton.disabled = currentQuestionIndex === 0;
-    nextButton.disabled = currentQuestionIndex === currentQuestions.length - 1;
-    
-    if (currentQuestionIndex === currentQuestions.length - 1) {
-        nextButton.style.display = 'none';
-        finishButton.style.display = 'inline-block';
-    } else {
-        nextButton.style.display = 'inline-block';
-        finishButton.style.display = 'inline-block';
-    }
-}
-
-function updateNavigationDots() {
-    const dots = document.querySelectorAll('.nav-dot');
-    dots.forEach((dot, index) => {
-        dot.classList.remove('active', 'answered');
         if (index === currentQuestionIndex) {
             dot.classList.add('active');
         }
         if (userAnswers[index] !== null) {
             dot.classList.add('answered');
         }
+
+        dot.addEventListener('click', () => {
+            currentQuestionIndex = index;
+            renderQuestion(currentQuestionIndex);
+            updateButtonVisibility();
+        });
+
+        navigationPanel.appendChild(dot);
     });
 }
 
-function showResults() {
-    let score = 0;
-    let reportHTML = '<div style="text-align:left; max-height: 300px; overflow-y: auto; padding: 10px;">';
-    const totalQuestions = currentQuestions.length;
+function renderQuestion(index) {
+    const question = filteredQuestions[index];
+    questionText.textContent = `${index + 1}. ${question.question}`;
+    answersArea.innerHTML = '';
 
-    currentQuestions.forEach((q, index) => {
-        const userAnswer = userAnswers[index];
-        const isAnswered = userAnswer !== null; 
-        const isCorrect = userAnswer === q.correct;
-        
-        if (isCorrect) score++;
+    // Отображение вариантов ответов
+    question.options.forEach((option, optionIndex) => {
+        const button = document.createElement('button');
+        button.classList.add('answer-option');
+        button.textContent = option;
+        button.dataset.index = optionIndex;
 
-        let feedbackText = '';
-        let resultClass = 'result-item';
-        let answerText = isAnswered ? q.answers[userAnswer] : 'Нет ответа';
-        
-        if (isCorrect) {
-            feedbackText = '✅';
-            resultClass += ' correct';
-        } else if (isAnswered && !isCorrect) {
-            // Пользователь ответил, но ошибся - показываем правильный ответ
-            feedbackText = `❌ (Правильно: ${q.answers[q.correct]})`;
-            resultClass += ' wrong';
-        } else {
-            // Пользователь не ответил - не показываем правильный ответ
-            feedbackText = '— Пропущен';
-            resultClass += ' skipped';
+        // Помечаем выбранный ранее ответ
+        if (userAnswers[index] === optionIndex) {
+            button.classList.add('selected');
         }
 
-        reportHTML += `
-            <div class="${resultClass}" style="margin-bottom: 10px; padding: 10px; background: #f9f9f9; border: 1px solid #eee; border-left: 5px solid ${isCorrect ? '#27ae60' : (isAnswered ? '#c0392b' : '#bdc3c7')};">
-                <strong>${index + 1}. ${q.question}</strong><br>
-                Ваш ответ: <span style="font-weight: 500;">${answerText}</span> 
-                <span style="float: right; color: ${isCorrect ? 'green' : (isAnswered ? 'red' : 'gray')};">${feedbackText}</span>
-            </div>
-        `;
+        button.addEventListener('click', () => {
+            selectAnswer(optionIndex);
+        });
+
+        answersArea.appendChild(button);
     });
-    reportHTML += '</div>';
+
+    // Обновление прогресса и кнопок
+    progressCounter.textContent = `${index + 1}/${filteredQuestions.length}`;
+    renderNavigation();
+    updateButtonVisibility();
+}
+
+function selectAnswer(optionIndex) {
+    userAnswers[currentQuestionIndex] = optionIndex;
     
-    let percentage = 0;
-    if (totalQuestions > 0) {
-        percentage = ((score / totalQuestions) * 100).toFixed(0);
-        scoreDisplay.textContent = `${score} из ${totalQuestions} (${percentage}%)`;
-    } else {
-        scoreDisplay.textContent = `0 из 0`;
+    // Удаляем класс 'selected' у всех кнопок
+    document.querySelectorAll('.answer-option').forEach(btn => {
+        btn.classList.remove('selected');
+    });
+
+    // Добавляем класс 'selected' только выбранной кнопке
+    const selectedButton = document.querySelector(`.answer-option[data-index="${optionIndex}"]`);
+    selectedButton.classList.add('selected');
+
+    renderNavigation(); // Обновляем точку навигации как "answered"
+}
+
+// =======================================================
+// 4. УПРАВЛЕНИЕ КНОПКАМИ
+// =======================================================
+
+function updateButtonVisibility() {
+    // Кнопка "Назад"
+    prevButton.disabled = currentQuestionIndex === 0;
+
+    // Кнопка "Далее" / "Завершить"
+    const isLastQuestion = currentQuestionIndex === filteredQuestions.length - 1;
+    
+    nextButton.style.display = isLastQuestion ? 'none' : 'inline-block';
+    
+    // Кнопка "Завершить тест" показывается, если это последний вопрос
+    finishButton.style.display = isLastQuestion ? 'inline-block' : 'none';
+}
+
+prevButton.addEventListener('click', () => {
+    if (currentQuestionIndex > 0) {
+        currentQuestionIndex--;
+        renderQuestion(currentQuestionIndex);
     }
+});
 
-    reportContainer.innerHTML = reportHTML;
+nextButton.addEventListener('click', () => {
+    if (currentQuestionIndex < filteredQuestions.length - 1) {
+        currentQuestionIndex++;
+        renderQuestion(currentQuestionIndex);
+    }
+});
 
+// =======================================================
+// 5. РЕЗУЛЬТАТЫ И ЗАВЕРШЕНИЕ
+// =======================================================
+
+finishButton.addEventListener('click', calculateResults);
+
+function calculateResults() {
+    score = 0;
+    reportContainer.innerHTML = '';
+    
+    filteredQuestions.forEach((question, index) => {
+        const userAnswerIndex = userAnswers[index];
+        const isCorrect = userAnswerIndex !== null && userAnswerIndex === question.correctAnswerIndex;
+        
+        if (isCorrect) {
+            score++;
+        } else {
+            // Создание отчета об ошибке
+            const resultItem = document.createElement('div');
+            resultItem.classList.add('result-item', isCorrect ? 'correct' : 'wrong');
+            
+            const selectedText = userAnswerIndex !== null ? 
+                `Ваш ответ: ${question.options[userAnswerIndex]}` : 
+                `Вы не ответили.`;
+            
+            const correctText = `Верный ответ: ${question.options[question.correctAnswerIndex]}`;
+            
+            resultItem.innerHTML = `
+                <p><strong>Вопрос ${index + 1}:</strong> ${question.question}</p>
+                <p>${selectedText}</p>
+                <p>${correctText}</p>
+                <hr>
+            `;
+            reportContainer.appendChild(resultItem);
+        }
+    });
+
+    // Обновление экрана результатов
     quizContainer.style.display = 'none';
     resultsScreen.style.display = 'block';
+    scoreSpan.textContent = `${score} из ${filteredQuestions.length}`;
 }
+
+restartButton.addEventListener('click', () => {
+    resultsScreen.style.display = 'none';
+    startScreen.style.display = 'block';
+    currentClass = null; // Сброс класса для нового выбора
+});
+
+// Запускаем загрузку вопросов при старте страницы
+loadQuestions();
