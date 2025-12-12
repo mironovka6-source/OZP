@@ -133,6 +133,11 @@
             box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
         }
 
+        .answer-option:hover {
+            background: #e2e6ea;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+        }
+
         .answer-option.selected {
             background: #e0e7ff !important; 
             border: 2px solid #6610f2 !important;
@@ -168,6 +173,13 @@
             color: white !important;
         }
         
+        button:disabled {
+            background-color: #ecf0f1 !important;
+            color: #bdc3c7 !important;
+            cursor: not-allowed;
+            box-shadow: none;
+        }
+
         /* Результаты */
         #score {
             font-size: 2em;
@@ -187,6 +199,8 @@
             box-shadow: 0 5px 15px rgba(243, 156, 18, 0.4) !important;
         }
         
+        .result-item.wrong { color: #c0392b; }
+        
         /* Адаптивность (для мобильных) */
         @media (max-width: 600px) {
             .buttons-container button {
@@ -205,7 +219,7 @@
     <div class="container">
         
         <div id="start-screen">
-            <h2>Выберите класс для начала теста (Ура! Дизайн должен сработать!)</h2>
+            <h2>Выберите класс для начала теста</h2>
             <div id="class-selection">
                 <button data-class="5">5 класс</button>
                 <button data-class="6">6 класс</button>
