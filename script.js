@@ -31,7 +31,7 @@ let lastFetchTime = 0;
 const CACHE_DURATION = 5 * 60 * 1000; // 5 минут
 
 // =======================================================
-// 1. ЗАГРУЗКА ДАННЫХ (ИСПРАВЛЕННАЯ ВЕРСИЯ)
+// 1. ЗАГРУЗКА ДАННЫХ
 // =======================================================
 
 async function loadQuestions() {
@@ -46,7 +46,7 @@ async function loadQuestions() {
     try {
         // Добавляем таймаут для загрузки
         const controller = new AbortController();
-        const timeoutId = setTimeout(() => controller.abort(), 10000); // 10 секунд
+        const timeoutId = setTimeout(() => controller.abort(), 10000);
         
         const response = await fetch(QUESTIONS_URL, { 
             signal: controller.signal,
@@ -59,21 +59,17 @@ async function loadQuestions() {
             throw new Error(`Ошибка HTTP: ${response.status}`);
         }
         
-        // Сначала получаем как текст для проверки
         const data = await response.text();
         if (!data.trim()) {
             throw new Error('Файл questions.json пустой');
         }
         
-        // Парсим JSON
         allQuestions = JSON.parse(data);
         
-        // Проверка структуры данных
-        if (!Array.isArray(allQuestions)) {
-            throw new Error('questions.json должен содержать массив вопросов');
-        }
+        // Проверка и очистка данных от дубликатов
+        allQuestions = cleanQuestionsData(allQuestions);
         
-        console.log(`Вопросы успешно загружены! Всего ${allQuestions.length} вопросов.`);
+        console.log(`Загружено ${allQuestions.length} вопросов после очистки`);
         
         // Сохраняем в кэш
         questionsCache = allQuestions;
@@ -84,28 +80,23 @@ async function loadQuestions() {
     } catch (error) {
         console.error('Ошибка загрузки вопросов:', error);
         
-        // При ошибке сети используем кэш, если он есть
         if (questionsCache) {
             allQuestions = questionsCache;
-            console.log('Используются кэшированные вопросы из-за ошибки сети');
+            console.log('Используются кэшированные вопросы');
             startScreen.style.display = 'block';
             return;
         }
         
-        // Показываем понятное сообщение пользователю
         let errorMessage = 'Ошибка загрузки вопросов. Проверьте подключение.';
         
         if (error.name === 'AbortError') {
-            errorMessage = 'Ошибка: Превышено время ожидания загрузки вопросов';
+            errorMessage = 'Ошибка: Превышено время ожидания';
         } else if (error instanceof SyntaxError) {
-            errorMessage = 'Ошибка: Некорректный формат questions.json';
-        } else if (error.message.includes('пустой')) {
-            errorMessage = 'Ошибка: Файл с вопросами пустой';
+            errorMessage = 'Ошибка: Некорректный формат JSON';
         }
         
         questionText.textContent = errorMessage;
         
-        // Отключаем кнопки выбора класса
         document.querySelectorAll('#class-selection button').forEach(btn => {
             btn.disabled = true;
             btn.style.opacity = '0.5';
@@ -114,39 +105,79 @@ async function loadQuestions() {
     }
 }
 
+// Функция для очистки вопросов от дубликатов
+function cleanQuestionsData(questions) {
+    if (!Array.isArray(questions)) return [];
+    
+    // Удаляем дубликаты по комбинации id, class и question
+    const uniqueQuestions = [];
+    const seen = new Set();
+    
+    questions.forEach(question => {
+        if (!question || typeof question !== 'object') return;
+        
+        // Создаем уникальный ключ
+        const key = `${question.id || ''}-${question.class || ''}-${question.question || ''}`;
+        
+        if (!seen.has(key)) {
+            seen.add(key);
+            
+            // Проверяем и нормализуем структуру вопроса
+            const cleanedQuestion = {
+                id: question.id || Date.now() + Math.random(),
+                class: question.class || 5,
+                topic: question.topic || 'Без темы',
+                question: question.question || 'Вопрос без текста',
+                answers: []
+            };
+            
+            // Обрабатываем answers
+            if (Array.isArray(question.answers)) {
+                question.answers.forEach((answer, index) => {
+                    if (answer && typeof answer === 'object') {
+                        cleanedQuestion.answers.push({
+                            text: answer.text || `Вариант ${index + 1}`,
+                            isCorrect: Boolean(answer.isCorrect)
+                        });
+                    }
+                });
+            }
+            
+            // Если нет answers, создаем пустые
+            if (cleanedQuestion.answers.length === 0) {
+                cleanedQuestion.answers = [
+                    { text: 'Первый ответ', isCorrect: false },
+                    { text: 'Второй ответ', isCorrect: true },
+                    { text: 'Третий ответ', isCorrect: false },
+                    { text: 'Четвертый ответ', isCorrect: false }
+                ];
+            }
+            
+            uniqueQuestions.push(cleanedQuestion);
+        }
+    });
+    
+    return uniqueQuestions;
+}
+
 // =======================================================
 // 2. УПРАВЛЕНИЕ КЛАССОМ И НАЧАЛО ТЕСТА
 // =======================================================
 
 classSelection.addEventListener('click', (event) => {
     if (event.target.tagName === 'BUTTON') {
-        // Берем класс и приводим его к строке для универсальности
-        currentClass = event.target.dataset.class.toString(); 
+        currentClass = event.target.dataset.class.toString();
         selectedClassSpan.textContent = `Класс: ${currentClass}`;
         
-        // Фильтрация вопросов по классу
+        // Фильтруем вопросы по классу
         filteredQuestions = allQuestions.filter(q => {
-            // Проверяем наличие поля class и сравниваем как строки
             if (!q || q.class === undefined || q.class === null) return false;
             return q.class.toString() === currentClass;
         });
 
         if (filteredQuestions.length === 0) {
-            alert(`Нет вопросов для ${currentClass} класса. Проверьте поле "class" в questions.json.`);
+            alert(`Нет вопросов для ${currentClass} класса.`);
             return;
-        }
-
-        // Дополнительная проверка структуры вопросов
-        const invalidQuestions = filteredQuestions.filter(q => 
-            !q.question || !q.options || !Array.isArray(q.options) || q.options.length === 0
-        );
-        
-        if (invalidQuestions.length > 0) {
-            console.warn(`Найдено ${invalidQuestions.length} вопросов с некорректной структурой`);
-            // Можно показать предупреждение или отфильтровать некорректные вопросы
-            filteredQuestions = filteredQuestions.filter(q => 
-                q.question && q.options && Array.isArray(q.options) && q.options.length > 0
-            );
         }
 
         initializeQuiz();
@@ -154,27 +185,23 @@ classSelection.addEventListener('click', (event) => {
 });
 
 function initializeQuiz() {
-    // Проверка наличия вопросов
     if (!filteredQuestions || filteredQuestions.length === 0) {
-        alert('Нет доступных вопросов для тестирования');
+        alert('Нет доступных вопросов');
         return;
     }
     
-    // Сброс состояния
     currentQuestionIndex = 0;
     userAnswers = new Array(filteredQuestions.length).fill(null);
     score = 0;
     reportContainer.innerHTML = '';
     
-    // Переключение экранов
     startScreen.style.display = 'none';
     resultsScreen.style.display = 'none';
     quizContainer.style.display = 'block';
 
-    // Сброс кнопок к начальному состоянию
     finishButton.style.display = 'none';
     nextButton.style.display = 'inline-block';
-    nextButton.disabled = true; // Первоначально отключена, пока нет ответа
+    nextButton.disabled = true;
     prevButton.disabled = true;
 
     renderNavigation();
@@ -182,7 +209,7 @@ function initializeQuiz() {
 }
 
 // =======================================================
-// 3. ОТОБРАЖЕНИЕ ТЕСТА И НАВИГАЦИЯ (ИСПРАВЛЕННАЯ ВЕРСИЯ)
+// 3. ОТОБРАЖЕНИЕ ТЕСТА И НАВИГАЦИЯ
 // =======================================================
 
 function renderNavigation() {
@@ -215,112 +242,97 @@ function renderNavigation() {
 }
 
 function renderQuestion(index) {
-    // Проверка индекса
     if (index < 0 || index >= filteredQuestions.length) {
-        console.error(`Некорректный индекс вопроса: ${index}`);
-        questionText.textContent = 'Ошибка: некорректный индекс вопроса';
-        answersArea.innerHTML = '';
+        console.error(`Некорректный индекс: ${index}`);
         return;
     }
     
     const question = filteredQuestions[index];
     
-    // Проверка структуры вопроса
     if (!question || typeof question !== 'object') {
-        questionText.textContent = `Ошибка: Вопрос №${index + 1} имеет некорректную структуру`;
+        questionText.textContent = `Ошибка в вопросе №${index + 1}`;
         answersArea.innerHTML = '';
         updateButtonVisibility();
         return;
     }
     
-    // Проверка наличия options
-    if (!question.options || !Array.isArray(question.options) || question.options.length === 0) {
-        questionText.textContent = `Ошибка: Вопрос №${index + 1} не содержит вариантов ответа`;
-        answersArea.innerHTML = '';
-        updateButtonVisibility();
-        return; 
-    }
+    // Отображаем тему и текст вопроса
+    questionText.innerHTML = `
+        ${question.topic ? `<small style="color: #6610f2; font-weight: bold;">${question.topic}</small><br>` : ''}
+        <strong>${index + 1}.</strong> ${question.question}
+    `;
     
-    questionText.textContent = `${index + 1}. ${question.question}`;
     answersArea.innerHTML = '';
 
-    // Отображение вариантов ответов
-    question.options.forEach((option, optionIndex) => { 
-        if (!option || option.trim() === '') {
-            console.warn(`Пустой вариант ответа в вопросе ${index + 1}, вариант ${optionIndex}`);
-            return;
-        }
-        
-        const button = document.createElement('button');
-        button.classList.add('answer-option');
-        button.textContent = option;
-        button.dataset.index = optionIndex;
+    // Отображаем варианты ответов из нового формата
+    if (!question.answers || !Array.isArray(question.answers) || question.answers.length === 0) {
+        answersArea.innerHTML = '<p style="color: #e74c3c;">Нет вариантов ответа</p>';
+    } else {
+        question.answers.forEach((answer, optionIndex) => { 
+            if (!answer || !answer.text) return;
+            
+            const button = document.createElement('button');
+            button.classList.add('answer-option');
+            button.textContent = answer.text;
+            button.dataset.index = optionIndex;
 
-        // Помечаем выбранный ранее ответ
-        if (userAnswers[index] === optionIndex) {
-            button.classList.add('selected');
-        }
+            if (userAnswers[index] === optionIndex) {
+                button.classList.add('selected');
+            }
 
-        button.addEventListener('click', () => {
-            selectAnswer(optionIndex);
+            button.addEventListener('click', () => {
+                selectAnswer(optionIndex);
+            });
+
+            answersArea.appendChild(button);
         });
+    }
 
-        answersArea.appendChild(button);
-    });
-
-    // Обновление прогресса и кнопок
     progressCounter.textContent = `${index + 1}/${filteredQuestions.length}`;
     renderNavigation();
     updateButtonVisibility();
 }
 
 function selectAnswer(optionIndex) {
-    // Проверка валидности индекса
     const currentQuestion = filteredQuestions[currentQuestionIndex];
-    if (!currentQuestion || !currentQuestion.options) {
-        console.error('Текущий вопрос не найден или не имеет вариантов ответа');
+    if (!currentQuestion || !currentQuestion.answers) {
+        console.error('Вопрос не найден');
         return;
     }
     
-    if (optionIndex < 0 || optionIndex >= currentQuestion.options.length) {
-        console.error('Некорректный индекс ответа:', optionIndex);
+    if (optionIndex < 0 || optionIndex >= currentQuestion.answers.length) {
+        console.error('Некорректный индекс ответа');
         return;
     }
     
     userAnswers[currentQuestionIndex] = optionIndex;
     
-    // Более эффективный способ обновления стилей
     const answerButtons = answersArea.querySelectorAll('.answer-option');
     answerButtons.forEach((btn, idx) => {
         btn.classList.toggle('selected', idx === optionIndex);
     });
 
-    renderNavigation(); // Обновляем точку навигации как "answered"
-    updateButtonVisibility(); // Обновляем состояние кнопок
+    renderNavigation();
+    updateButtonVisibility();
 }
 
 // =======================================================
-// 4. УПРАВЛЕНИЕ КНОПКАМИ (ИСПРАВЛЕННАЯ ВЕРСИЯ)
+// 4. УПРАВЛЕНИЕ КНОПКАМИ
 // =======================================================
 
 function updateButtonVisibility() {
     if (!filteredQuestions || filteredQuestions.length === 0) return;
     
-    // Кнопка "Назад"
     prevButton.disabled = currentQuestionIndex === 0;
-
-    // Кнопка "Далее" должна быть активна только если есть ответ на текущий вопрос
+    
     const hasAnswer = userAnswers[currentQuestionIndex] !== null;
     const isLastQuestion = currentQuestionIndex === filteredQuestions.length - 1;
     
-    // Для НЕ последнего вопроса
     if (!isLastQuestion) {
         nextButton.disabled = !hasAnswer;
         nextButton.style.display = 'inline-block';
         finishButton.style.display = 'none';
-    } 
-    // Для последнего вопроса
-    else {
+    } else {
         nextButton.style.display = 'none';
         finishButton.style.display = 'inline-block';
         finishButton.disabled = !hasAnswer;
@@ -336,9 +348,8 @@ prevButton.addEventListener('click', () => {
 
 nextButton.addEventListener('click', () => {
     if (currentQuestionIndex < filteredQuestions.length - 1) {
-        // Проверяем, есть ли ответ на текущий вопрос
         if (userAnswers[currentQuestionIndex] === null) {
-            alert('Пожалуйста, выберите ответ на текущий вопрос перед переходом к следующему');
+            alert('Пожалуйста, выберите ответ');
             return;
         }
         currentQuestionIndex++;
@@ -347,15 +358,14 @@ nextButton.addEventListener('click', () => {
 });
 
 // =======================================================
-// 5. РЕЗУЛЬТАТЫ И ЗАВЕРШЕНИЕ (ИСПРАВЛЕННАЯ ВЕРСИЯ)
+// 5. РЕЗУЛЬТАТЫ И ЗАВЕРШЕНИЕ
 // =======================================================
 
 finishButton.addEventListener('click', () => {
-    // Проверить, все ли вопросы отвечены
     const unanswered = userAnswers.filter(answer => answer === null).length;
     
     if (unanswered > 0) {
-        const confirmFinish = confirm(`Вы не ответили на ${unanswered} вопрос(а/ов). Завершить тест?`);
+        const confirmFinish = confirm(`Вы не ответили на ${unanswered} вопрос(ов). Завершить?`);
         if (!confirmFinish) return;
     }
     
@@ -364,70 +374,87 @@ finishButton.addEventListener('click', () => {
 
 function calculateResults() {
     if (!filteredQuestions || filteredQuestions.length === 0) {
-        alert('Нет данных для расчета результатов');
+        alert('Нет данных для расчета');
         return;
     }
     
     score = 0;
     reportContainer.innerHTML = '';
+    let correctQuestions = 0;
+    let totalQuestions = 0;
     
     filteredQuestions.forEach((question, index) => {
-        // Пропускаем вопросы с некорректной структурой
-        if (!question || !question.options || !Array.isArray(question.options) || question.options.length === 0) {
-            console.warn(`Пропущен вопрос ${index + 1} из-за некорректной структуры`);
+        if (!question || !question.answers || !Array.isArray(question.answers)) {
+            console.warn(`Пропущен вопрос ${index + 1}`);
             return;
         }
 
+        totalQuestions++;
         const userAnswerIndex = userAnswers[index];
-        const correctIndex = question.correctAnswerIndex;
         
-        // Проверка корректности correctAnswerIndex
-        if (correctIndex === undefined || correctIndex === null || 
-            correctIndex < 0 || correctIndex >= question.options.length) {
-            console.error(`Некорректный correctAnswerIndex в вопросе ${index + 1}:`, correctIndex);
+        // Находим правильный ответ
+        const correctAnswerIndex = question.answers.findIndex(answer => answer.isCorrect);
+        
+        if (correctAnswerIndex === -1) {
+            console.warn(`Нет правильного ответа в вопросе ${index + 1}`);
             return;
         }
 
-        const isCorrect = userAnswerIndex !== null && userAnswerIndex === correctIndex;
+        const isCorrect = userAnswerIndex !== null && userAnswerIndex === correctAnswerIndex;
         
         if (isCorrect) {
             score++;
+            correctQuestions++;
         } else {
-            // Создание отчета об ошибке
+            // Создаем отчет об ошибке
             const resultItem = document.createElement('div');
             resultItem.classList.add('result-item', 'wrong');
             
-            const selectedText = userAnswerIndex !== null ? 
-                `Ваш ответ: ${question.options[userAnswerIndex]}` : 
-                `Вы не ответили на этот вопрос.`;
+            let selectedText = 'Вы не ответили на этот вопрос.';
+            if (userAnswerIndex !== null && question.answers[userAnswerIndex]) {
+                selectedText = `Ваш ответ: ${question.answers[userAnswerIndex].text}`;
+            }
             
-            const correctText = `Верный ответ: ${question.options[correctIndex]}`;
+            const correctText = `Верный ответ: ${question.answers[correctAnswerIndex].text}`;
             
             resultItem.innerHTML = `
-                <div style="margin-bottom: 15px; padding: 10px; background: #f8f9fa; border-radius: 8px;">
-                    <p style="margin-bottom: 8px;"><strong>Вопрос ${index + 1}:</strong> ${question.question}</p>
+                <div style="margin-bottom: 15px; padding: 15px; background: #f8f9fa; border-radius: 10px; border-left: 4px solid #c0392b;">
+                    <p style="margin-bottom: 10px;">
+                        <strong>Вопрос ${index + 1}:</strong> ${question.question}
+                    </p>
                     <p style="color: #c0392b; margin-bottom: 5px;">${selectedText}</p>
-                    <p style="color: #27ae60; font-weight: bold;">${correctText}</p>
-                    ${question.explanation ? `<p style="margin-top: 8px; color: #7f8c8d; font-style: italic;">Объяснение: ${question.explanation}</p>` : ''}
+                    <p style="color: #27ae60; font-weight: bold; margin-bottom: 5px;">${correctText}</p>
+                    ${question.topic ? `<p style="color: #7f8c8d; font-size: 0.9em;">Тема: ${question.topic}</p>` : ''}
                 </div>
             `;
             reportContainer.appendChild(resultItem);
         }
     });
 
-    // Обновление экрана результатов
+    // Обновляем результаты
     quizContainer.style.display = 'none';
     resultsScreen.style.display = 'block';
     scoreSpan.textContent = `${score} из ${filteredQuestions.length}`;
     
-    // Если нет ошибок, показываем сообщение
+    // Показываем статистику
+    const statsHTML = `
+        <div style="text-align: center; margin-bottom: 20px;">
+            <p style="font-size: 1.1em;">Правильно: <strong style="color: #27ae60;">${correctQuestions}</strong></p>
+            <p style="font-size: 1.1em;">Неправильно: <strong style="color: #c0392b;">${filteredQuestions.length - correctQuestions}</strong></p>
+            <p style="font-size: 1.1em;">Процент правильных: <strong>${Math.round((correctQuestions / filteredQuestions.length) * 100)}%</strong></p>
+        </div>
+    `;
+    
     if (reportContainer.children.length === 0) {
         reportContainer.innerHTML = `
-            <div style="text-align: center; padding: 20px; color: #27ae60;">
-                <p style="font-size: 1.2em; font-weight: bold;">Поздравляем! Все ответы верны!</p>
-                <p>Вы ответили правильно на все вопросы теста.</p>
+            <div style="text-align: center; padding: 30px; background: #e8f5e9; border-radius: 10px; margin: 20px 0;">
+                <p style="font-size: 1.3em; color: #27ae60; font-weight: bold;">🎉 Поздравляем! 🎉</p>
+                <p>Вы ответили правильно на все вопросы теста!</p>
+                ${statsHTML}
             </div>
         `;
+    } else {
+        reportContainer.insertAdjacentHTML('afterbegin', statsHTML);
     }
 }
 
@@ -436,7 +463,6 @@ restartButton.addEventListener('click', () => {
     startScreen.style.display = 'block';
     currentClass = null;
     
-    // Включаем кнопки классов обратно
     document.querySelectorAll('#class-selection button').forEach(btn => {
         btn.disabled = false;
         btn.style.opacity = '1';
@@ -445,18 +471,9 @@ restartButton.addEventListener('click', () => {
 });
 
 // =======================================================
-// 6. ДОПОЛНИТЕЛЬНЫЕ ФУНКЦИИ
+// 6. ГОРЯЧИЕ КЛАВИШИ
 // =======================================================
 
-// Сохраняем прогресс при закрытии страницы (опционально)
-window.addEventListener('beforeunload', (e) => {
-    if (quizContainer.style.display === 'block' && userAnswers.some(answer => answer !== null)) {
-        e.preventDefault();
-        e.returnValue = 'У вас есть несохраненные ответы. Вы уверены, что хотите покинуть страницу?';
-    }
-});
-
-// Добавляем горячие клавиши
 document.addEventListener('keydown', (e) => {
     if (quizContainer.style.display !== 'block') return;
     
@@ -475,7 +492,7 @@ document.addEventListener('keydown', (e) => {
         case '3':
         case '4':
             const keyNum = parseInt(e.key) - 1;
-            const currentOptions = filteredQuestions[currentQuestionIndex]?.options;
+            const currentOptions = filteredQuestions[currentQuestionIndex]?.answers;
             if (currentOptions && keyNum >= 0 && keyNum < currentOptions.length) {
                 selectAnswer(keyNum);
             }
@@ -483,5 +500,13 @@ document.addEventListener('keydown', (e) => {
     }
 });
 
-// Запускаем загрузку вопросов при старте страницы
-loadQuestions();
+// Предупреждение при закрытии страницы
+window.addEventListener('beforeunload', (e) => {
+    if (quizContainer.style.display === 'block' && userAnswers.some(answer => answer !== null)) {
+        e.preventDefault();
+        e.returnValue = 'У вас есть несохраненные ответы. Вы уверены, что хотите покинуть страницу?';
+    }
+});
+
+// Запуск при загрузке страницы
+document.addEventListener('DOMContentLoaded', loadQuestions);
