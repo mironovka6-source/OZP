@@ -112,11 +112,21 @@ function renderNavigation() {
 
 function renderQuestion(index) {
     const question = filteredQuestions[index];
+    
+    // !!! ИСПРАВЛЕНИЕ: ПРОВЕРКА НАЛИЧИЯ OPTIONS !!!
+    if (!question || !question.options || !Array.isArray(question.options) || question.options.length === 0) {
+        questionText.textContent = `Ошибка: Вопрос №${index + 1} отсутствует или не содержит вариантов ответа. Проверьте questions.json.`;
+        answersArea.innerHTML = '';
+        updateButtonVisibility();
+        // ВАЖНО: Мы не останавливаемся, чтобы пользователь мог перейти к следующему вопросу, если он существует.
+        return; 
+    }
+    
     questionText.textContent = `${index + 1}. ${question.question}`;
     answersArea.innerHTML = '';
 
     // Отображение вариантов ответов
-    question.options.forEach((option, optionIndex) => {
+    question.options.forEach((option, optionIndex) => { 
         const button = document.createElement('button');
         button.classList.add('answer-option');
         button.textContent = option;
@@ -198,6 +208,12 @@ function calculateResults() {
     
     filteredQuestions.forEach((question, index) => {
         const userAnswerIndex = userAnswers[index];
+        
+        // Пропускаем вопросы с неверной структурой при подсчете
+        if (!question || !question.options || !question.options.length) {
+            return;
+        }
+
         const isCorrect = userAnswerIndex !== null && userAnswerIndex === question.correctAnswerIndex;
         
         if (isCorrect) {
