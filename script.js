@@ -50,15 +50,18 @@ async function loadQuestions() {
 
 classSelection.addEventListener('click', (event) => {
     if (event.target.tagName === 'BUTTON') {
-        currentClass = event.target.dataset.class;
+        // Берем класс и приводим его к строке для универсальности
+        currentClass = event.target.dataset.class.toString(); 
         selectedClassSpan.textContent = `Класс: ${currentClass}`;
         
+        // !!! ИСПРАВЛЕННАЯ ЛОГИКА ФИЛЬТРАЦИИ !!!
+        // Сравниваем класс в JSON (приведенный к строке) с выбранным классом (строка)
         filteredQuestions = allQuestions.filter(q => 
-            q.class === parseInt(currentClass) || q.class === currentClass.toString()
+            q.class != null && q.class.toString() === currentClass
         );
 
         if (filteredQuestions.length === 0) {
-            alert(`Нет вопросов для ${currentClass} класса.`);
+            alert(`Нет вопросов для ${currentClass} класса. Проверьте поле "class" в questions.json.`);
             return;
         }
 
@@ -114,11 +117,11 @@ function renderQuestion(index) {
     const question = filteredQuestions[index];
     
     // !!! ИСПРАВЛЕНИЕ: ПРОВЕРКА НАЛИЧИЯ OPTIONS !!!
+    // Проверка, что вопрос существует и содержит валидный массив вариантов ответа
     if (!question || !question.options || !Array.isArray(question.options) || question.options.length === 0) {
         questionText.textContent = `Ошибка: Вопрос №${index + 1} отсутствует или не содержит вариантов ответа. Проверьте questions.json.`;
         answersArea.innerHTML = '';
         updateButtonVisibility();
-        // ВАЖНО: Мы не останавливаемся, чтобы пользователь мог перейти к следующему вопросу, если он существует.
         return; 
     }
     
