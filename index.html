@@ -264,18 +264,29 @@
             display: block;
         }
 
+        /* Стили для разных типов результатов */
         .result-item {
             background: white;
             padding: 20px;
             margin: 15px 0;
             border-radius: 10px;
-            border-left: 5px solid #ef4444;
             text-align: left;
             box-shadow: 0 3px 10px rgba(0,0,0,0.1);
         }
 
         .result-item.correct {
-            border-left-color: #10b981;
+            border-left: 5px solid #10b981;
+            background: linear-gradient(to right, rgba(16, 185, 129, 0.05), transparent);
+        }
+
+        .result-item.wrong {
+            border-left: 5px solid #ef4444;
+            background: linear-gradient(to right, rgba(239, 68, 68, 0.05), transparent);
+        }
+
+        .result-item.unanswered {
+            border-left: 5px solid #6b7280;
+            background: linear-gradient(to right, rgba(107, 114, 128, 0.05), transparent);
         }
 
         #restart-button {
@@ -447,8 +458,12 @@
 
         // Функция для перемешивания ответов с сохранением правильного
         function shuffleAnswers(answers) {
+            if (!answers || !Array.isArray(answers) || answers.length === 0) {
+                return answers;
+            }
+            
             // Находим правильный ответ
-            const correctIndex = answers.findIndex(a => a.isCorrect);
+            const correctIndex = answers.findIndex(a => a && a.isCorrect);
             if (correctIndex === -1) return answers;
             
             // Создаем копию массива ответов
@@ -564,24 +579,28 @@
             // Перемешиваем вопросы в случайном порядке
             filteredQuestions = shuffleArray(filteredQuestions);
             
-            // Для каждого вопроса перемешиваем ответы
+            // Для каждого вопроса перемешиваем ответы и сохраняем правильный индекс
             filteredQuestions = filteredQuestions.map(question => {
-                // Сохраняем индекс правильного ответа в оригинальном порядке
                 const originalAnswers = question.answers || [];
+                
+                // Сохраняем правильный ответ до перемешивания
                 const originalCorrectIndex = originalAnswers.findIndex(a => a && a.isCorrect);
+                const correctAnswerText = originalCorrectIndex !== -1 ? originalAnswers[originalCorrectIndex].text : '';
                 
                 // Перемешиваем ответы
                 const shuffledAnswers = shuffleAnswers(originalAnswers);
                 
                 // Находим новый индекс правильного ответа после перемешивания
-                const correctAnswerText = originalCorrectIndex !== -1 ? originalAnswers[originalCorrectIndex].text : '';
-                const newCorrectIndex = shuffledAnswers.findIndex(a => a && a.text === correctAnswerText);
+                let newCorrectIndex = -1;
+                if (correctAnswerText) {
+                    newCorrectIndex = shuffledAnswers.findIndex(a => a && a.text === correctAnswerText);
+                }
                 
                 return {
                     ...question,
                     answers: shuffledAnswers,
-                    originalCorrectIndex: originalCorrectIndex,
-                    newCorrectIndex: newCorrectIndex
+                    correctAnswerIndex: newCorrectIndex, // Сохраняем индекс правильного ответа после перемешивания
+                    correctAnswerText: correctAnswerText // Сохраняем текст правильного ответа
                 };
             });
 
@@ -638,7 +657,7 @@
             
             const question = filteredQuestions[index];
             
-            // Отображаем текст вопроса (без темы)
+            // Отображаем текст вопроса
             questionText.innerHTML = `<div><strong>Вопрос ${index + 1}.</strong> ${question.question || 'Вопрос без текста'}</div>`;
             
             // Очищаем и заполняем варианты ответов
@@ -777,33 +796,66 @@
             score = 0;
             reportContainer.innerHTML = '';
             
+            // Считаем правильные ответы
             filteredQuestions.forEach((question, index) => {
                 const userAnswerIndex = userAnswers[index];
+                const correctAnswerIndex = question.correctAnswerIndex;
                 
-                // Используем сохраненный правильный индекс после перемешивания
-                const correctAnswerIndex = question.newCorrectIndex !== undefined ? question.newCorrectIndex : -1;
-                
-                if (correctAnswerIndex === -1) {
-                    console.warn(`Вопрос ${index + 1} не имеет правильного ответа`);
-                    return;
-                }
-                
-                const isCorrect = userAnswerIndex !== null && userAnswerIndex === correctAnswerIndex;
-                
-                if (isCorrect) {
+                if (userAnswerIndex !== null && correctAnswerIndex !== -1 && userAnswerIndex === correctAnswerIndex) {
                     score++;
+                }
+            });
+            
+            // Показываем результаты ВСЕХ вопросов
+            showAllQuestionsResults();
+        }
+
+        function showAllQuestionsResults() {
+            quizContainer.style.display = 'none';
+            resultsScreen.style.display = 'block';
+            
+            scoreSpan.textContent = `${score} из ${filteredQuestions.length}`;
+            
+            // Создаем отчет по ВСЕМ вопросам
+            filteredQuestions.forEach((question, index) => {
+                const userAnswerIndex = userAnswers[index];
+                const correctAnswerIndex = question.correctAnswerIndex;
+                const correctAnswerText = question.correctAnswerText || 'Не указан';
+                
+                const resultDiv = document.createElement('div');
+                
+                // Определяем тип результата
+                if (userAnswerIndex === null) {
+                    // Неотвеченный вопрос
+                    resultDiv.className = 'result-item unanswered';
+                    resultDiv.innerHTML = `
+                        <div style="margin-bottom: 10px;">
+                            <strong>Вопрос ${index + 1}:</strong> ${question.question || 'Вопрос без текста'}
+                        </div>
+                        <div style="color: #6b7280; font-style: italic;">
+                            ❌ Вы не ответили на этот вопрос
+                        </div>
+                    `;
+                } else if (correctAnswerIndex !== -1 && userAnswerIndex === correctAnswerIndex) {
+                    // Правильный ответ
+                    resultDiv.className = 'result-item correct';
+                    const userAnswerText = question.answers && question.answers[userAnswerIndex] 
+                        ? question.answers[userAnswerIndex].text 
+                        : 'Не указан';
+                    
+                    resultDiv.innerHTML = `
+                        <div style="margin-bottom: 10px;">
+                            <strong>Вопрос ${index + 1}:</strong> ${question.question || 'Вопрос без текста'}
+                        </div>
+                        <div style="color: #10b981; font-weight: bold;">
+                            ✅ Ваш ответ: ${userAnswerText} (правильный)
+                        </div>
+                    `;
                 } else {
-                    // Добавляем в отчет об ошибке
-                    const resultDiv = document.createElement('div');
-                    resultDiv.className = 'result-item';
-                    
-                    let userAnswerText = 'Не отвечено';
-                    if (userAnswerIndex !== null && question.answers && question.answers[userAnswerIndex]) {
-                        userAnswerText = question.answers[userAnswerIndex].text;
-                    }
-                    
-                    const correctAnswerText = question.answers && question.answers[correctAnswerIndex] 
-                        ? question.answers[correctAnswerIndex].text 
+                    // Неправильный ответ
+                    resultDiv.className = 'result-item wrong';
+                    const userAnswerText = question.answers && question.answers[userAnswerIndex] 
+                        ? question.answers[userAnswerIndex].text 
                         : 'Не указан';
                     
                     resultDiv.innerHTML = `
@@ -811,28 +863,18 @@
                             <strong>Вопрос ${index + 1}:</strong> ${question.question || 'Вопрос без текста'}
                         </div>
                         <div style="color: #ef4444; margin-bottom: 5px;">
-                            <strong>Ваш ответ:</strong> ${userAnswerText}
+                            ❌ Ваш ответ: ${userAnswerText}
                         </div>
                         <div style="color: #10b981; font-weight: bold;">
-                            <strong>Правильный ответ:</strong> ${correctAnswerText}
+                            ✅ Правильный ответ: ${correctAnswerText}
                         </div>
                     `;
-                    
-                    reportContainer.appendChild(resultDiv);
                 }
+                
+                reportContainer.appendChild(resultDiv);
             });
             
-            // Показываем результаты
-            showResults();
-        }
-
-        function showResults() {
-            quizContainer.style.display = 'none';
-            resultsScreen.style.display = 'block';
-            
-            scoreSpan.textContent = `${score} из ${filteredQuestions.length}`;
-            
-            // Статистика
+            // Добавляем статистику в начало отчета
             const percentage = filteredQuestions.length > 0 ? Math.round((score / filteredQuestions.length) * 100) : 0;
             let message = '';
             
@@ -846,38 +888,30 @@
                 message = '📖 Нужно повторить материал!';
             }
             
-            // Если все ответы правильные или есть ошибки
-            if (reportContainer.children.length === 0) {
-                reportContainer.innerHTML = `
-                    <div style="background: #e8f5e9; padding: 30px; border-radius: 10px; margin: 20px 0;">
-                        <p style="font-size: 1.2em; color: #10b981; font-weight: bold;">${message}</p>
-                        <p style="font-size: 1.1em; margin-top: 10px;">Вы ответили правильно на все вопросы!</p>
-                        <p style="color: #666; margin-top: 10px;">Процент правильных ответов: <strong>${percentage}%</strong></p>
-                    </div>
-                `;
-            } else {
-                // Добавляем статистику в начало отчета
-                const statsHTML = `
-                    <div style="background: #f8f9fa; padding: 20px; border-radius: 10px; margin-bottom: 20px;">
-                        <p style="font-size: 1.2em; color: #667eea; font-weight: bold;">${message}</p>
-                        <div style="display: flex; justify-content: space-around; margin-top: 15px;">
-                            <div>
-                                <p style="color: #10b981; font-size: 1.5em; font-weight: bold; margin: 0;">${score}</p>
-                                <p style="color: #666; margin: 0;">Правильно</p>
-                            </div>
-                            <div>
-                                <p style="color: #ef4444; font-size: 1.5em; font-weight: bold; margin: 0;">${filteredQuestions.length - score}</p>
-                                <p style="color: #666; margin: 0;">Ошибок</p>
-                            </div>
-                            <div>
-                                <p style="color: #667eea; font-size: 1.5em; font-weight: bold; margin: 0;">${percentage}%</p>
-                                <p style="color: #666; margin: 0;">Успех</p>
-                            </div>
+            const statsHTML = `
+                <div style="background: #f8f9fa; padding: 20px; border-radius: 10px; margin-bottom: 20px;">
+                    <p style="font-size: 1.2em; color: #667eea; font-weight: bold;">${message}</p>
+                    <div style="display: flex; justify-content: space-around; margin-top: 15px;">
+                        <div>
+                            <p style="color: #10b981; font-size: 1.5em; font-weight: bold; margin: 0;">${score}</p>
+                            <p style="color: #666; margin: 0;">Правильно</p>
+                        </div>
+                        <div>
+                            <p style="color: #ef4444; font-size: 1.5em; font-weight: bold; margin: 0;">${filteredQuestions.length - score}</p>
+                            <p style="color: #666; margin: 0;">Неправильно</p>
+                        </div>
+                        <div>
+                            <p style="color: #6b7280; font-size: 1.5em; font-weight: bold; margin: 0;">${userAnswers.filter(a => a === null).length}</p>
+                            <p style="color: #666; margin: 0;">Не отвечено</p>
+                        </div>
+                        <div>
+                            <p style="color: #667eea; font-size: 1.5em; font-weight: bold; margin: 0;">${percentage}%</p>
+                            <p style="color: #666; margin: 0;">Успех</p>
                         </div>
                     </div>
-                `;
-                reportContainer.insertAdjacentHTML('afterbegin', statsHTML);
-            }
+                </div>
+            `;
+            reportContainer.insertAdjacentHTML('afterbegin', statsHTML);
         }
 
         // =============================================
