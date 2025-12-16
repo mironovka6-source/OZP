@@ -3,669 +3,624 @@
     "id": 1,
     "class": 5,
     "topic": "Бумага и Оригами",
-    "question": "Какой материал традиционно используется для создания фигурок в технике оригами?",
+    "question": "Что такое Портрет?",
     "answers": [
-      {"text": "Картон", "isCorrect": false},
-      {"text": "Пластилин", "isCorrect": false},
-      {"text": "Бумага", "isCorrect": true},
-      {"text": "Фольга", "isCorrect": false}
+      {
+        "text": "Изображение природы",
+        "isCorrect": false
+      },
+      {
+        "text": "Изображение человека или группы людей",
+        "isCorrect": true
+      },
+      {
+        "text": "Изображение неодушевленных предметов",
+        "isCorrect": false
+      },
+      {
+        "text": "Изображение батальных сцен.",
+        "isCorrect": false
+      }
     ]
   },
   {
     "id": 2,
-    "class": 6,
-    "question": "Как называется художественный прием, когда художник передает объем предмета с помощью света и тени?",
+    "class": 5,
+    "topic": "Бумага и Оригами",
+    "question": "Какой из перечисленных материалов относится к графическим?",
     "answers": [
-      {"text": "Перса", "isCorrect": false},
-      {"text": "Колор", "isCorrect": false},
-      {"text": "Штрих", "isCorrect": false},
-      {"text": "Свет", "isCorrect": true}
-    ]
-  },
-  {
-    "id": 2,
-    "class": 6,
-    "question": "Как называется художественный прием, когда художник передает объем предмета с помощью света и тени?",
-    "answers": [
-      {"text": "Перса", "isCorrect": false},
-      {"text": "Колор", "isCorrect": false},
-      {"text": "Штрих", "isCorrect": false},
-      {"text": "Свет", "isCorrect": true}
-    ]
-  },
- {
-    "id": 3,
-    "class": 7,
-    "topic": "Декоративно-прикладное искусство",
-    "question": "Какой вид росписи по ткани включает использование резервирующего (непропускающего краску) состава, чаще всего на основе воска?",
-    "answers": [
-      {"text": "Гуашь", "isCorrect": false},
-      {"text": "Акварель", "isCorrect": false},
-      {"text": "Батик", "isCorrect": true},
-      {"text": "Фреска", "isCorrect": false}
-    ]
-  },
-  {
-    "id": 2,
-    "class": 6,
-    "question": "Как называется художественный прием, когда художник передает объем предмета с помощью света и тени?",
-    "answers": [
-      {"text": "Перспектива", "isCorrect": false},
-      {"text": "Колорит", "isCorrect": false},
-      {"text": "Штриховка", "isCorrect": false},
-      {"text": "Светотень", "isCorrect": true}
+      {
+        "text": "Акварель",
+        "isCorrect": false
+      },
+      {
+        "text": "Масло",
+        "isCorrect": false
+      },
+      {
+        "text": "Сангина",
+        "isCorrect": true
+      },
+      {
+        "text": "Гипс.",
+        "isCorrect": false
+      }
     ]
   },
   {
     "id": 3,
-    "class": 8,
-    "topic": "Декоративно-прикладное искусство",
-    "question": "Что является основным языком живописи?",
+    "class": 5,
+    "topic": "Бумага и Оригами",
+    "question": "Что означает слово Пропорция при создании портрета?",
     "answers": [
-      {"text": "Линия", "isCorrect": false},
-      {"text": "Объем", "isCorrect": false},
-      {"text": "Цвет", "isCorrect": true},
-      {"text": "Фактура", "isCorrect": false}
+      {
+        "text": "Цвет фона",
+        "isCorrect": false
+      },
+      {
+        "text": "Техника исполнения",
+        "isCorrect": false
+      },
+      {
+        "text": "Соразмерность всех частей, их соответствие друг другу и соотношение каждой части с целым",
+        "isCorrect": true
+      },
+      {
+        "text": "Размер холста.",
+        "isCorrect": false
+      }
     ]
   },
   {
     "id": 4,
-    "class": 9,
-    "topic": "Графика и Дизайн",
-    "question": "Что в графическом дизайне означает аббревиатура 'CMYK'?",
+    "class": 5,
+    "topic": "Бумага и Оригами",
+    "question": "Какой жанр портрета включает изображение художника, выполненное им самим?",
     "answers": [
-      {"text": "Цвет, Металл, Желтый, Кварц", "isCorrect": false},
-      {"text": "Голубой, Пурпурный, Желтый, Черный", "isCorrect": true},
-      {"text": "Хром, Магний, Желтый, Кадмий", "isCorrect": false},
-      {"text": "Циан, Маджента, Йеллоу, Ки", "isCorrect": false}
+      {
+        "text": "Линейный портрет",
+        "isCorrect": false
+      },
+      {
+        "text": "Современный портрет",
+        "isCorrect": false
+      },
+      {
+        "text": "Автопортрет",
+        "isCorrect": true
+      },
+      {
+        "text": "Этюд.",
+        "isCorrect": false
+      }
     ]
   },
   {
-"id": 1,
-"class": 5,
-"topic": "Бумага и Оригами",
-"question": " Что является основным языком живописи?",
-"answers": [
-{"text": " Линия ", "isCorrect": false},
-{"text": " Объем ", "isCorrect": false},
-{"text": " Цвет ", "isCorrect": true},
-{"text": " Фактура ", "isCorrect": false}
-]
-},
- {
-"id": 1,
-"class": 5,
-"topic": "Декоративно-прикладное искусство",
-"question": " Как называется вид пластического искусства, где художественные произведения создаются путем резьбы, лепки или отливки?",
-"answers": [
-{"text": " Живопись ", "isCorrect": false},
-{"text": " Графика ", "isCorrect": false},
-{"text": " Скульптура ", "isCorrect": true},
-{"text": " Архитектура ", "isCorrect": false}
-]
-},
-{
-"id": 1,
-"class": 5,
-"topic": "Изобразительное искусство",
-"question": " Что означает термин Графика?",
-"answers": [
-{"text": " Произведение, выполненное красками ", "isCorrect": false},
-{"text": " Искусство проектировать здания ", "isCorrect": false},
-{"text": " Создание художественных изделий в быту.", "isCorrect": false},
-{"text": " Рисунок, основанный на сочетании черного и белого ", "isCorrect": true}
-]
-},
-{
-"id": 1,
-"class": 5,
-"topic": "Декоративно-прикладное искусство",
-"question": "Какой жанр изобразительного искусства отражает повседневную жизнь людей?",
-"answers": [
-{"text": " Исторический ", "isCorrect": false},
-{"text": " Батальный ", "isCorrect": false},
-{"text": " Бытовой (Жанровая картина).", "isCorrect": true},
-{"text": " Мифологический ", "isCorrect": false}
-]
-},
-{
-"id": 1,
-"class": 5,
-"topic": "Графика и Дизайн",
-"question": " Что такое Пейзаж?",
-"answers": [
-{"text": " Изображение человека ", "isCorrect": false},
-{"text": " Изображение природы ", "isCorrect": true},
-{"text": " Изображение неодушевленных предметов ", "isCorrect": false},
-{"text": " Изображение битв ", "isCorrect": false}
-]
-},
-{
-"id": 1,
-"class": 5,
-"topic": "Графика и Дизайн",
-"question": "11 Вопрос",
-"answers": [
-{"text": " Первый ответ", "isCorrect": false},
-{"text": " Второй ответ ", "isCorrect": true},
-{"text": " Третий ответ ", "isCorrect": false},
-{"text": " Четвертый ответ ", "isCorrect": false}
-]
-},
+    "id": 5,
+    "class": 5,
+    "topic": "Бумага и Оригами",
+    "question": "Какая техника относится к нетрадиционным способам создания портретов, упомянутых в учебнике?",
+    "answers": [
+      {
+        "text": "Живопись",
+        "isCorrect": false
+      },
+      {
+        "text": "Графика",
+        "isCorrect": false
+      },
+      {
+        "text": "Портрет из проволоки",
+        "isCorrect": true
+      },
+      {
+        "text": "Скульптура.",
+        "isCorrect": false
+      }
+    ]
+  },
   {
-"id": 1,
-"class": 5,
-"topic": "Графика и Дизайн",
-"question": "12 Вопрос",
-"answers": [
-{"text": " Первый ответ", "isCorrect": false},
-{"text": " Второй ответ ", "isCorrect": true},
-{"text": " Третий ответ ", "isCorrect": false},
-{"text": " Четвертый ответ ", "isCorrect": false}
-]
-},
+    "id": 6,
+    "class": 5,
+    "topic": "Бумага и Оригами",
+    "question": "Как называется явление, основанное на оптической иллюзии, при котором изображение оживает при быстром вращении?",
+    "answers": [
+      {
+        "text": "Флипбук",
+        "isCorrect": false
+      },
+      {
+        "text": "Тауматроп",
+        "isCorrect": true
+      },
+      {
+        "text": "Анимация",
+        "isCorrect": false
+      },
+      {
+        "text": "Фотоискусство.",
+        "isCorrect": false
+      }
+    ]
+  },
   {
-"id": 1,
-"class": 5,
-"topic": "Графика и Дизайн",
-"question": "13 Вопрос",
-"answers": [
-{"text": " Первый ответ", "isCorrect": false},
-{"text": " Второй ответ ", "isCorrect": true},
-{"text": " Третий ответ ", "isCorrect": false},
-{"text": " Четвертый ответ ", "isCorrect": false}
-]
-},
+    "id": 7,
+    "class": 5,
+    "topic": "Бумага и Оригами",
+    "question": "Что является основным элементом Театра теней?",
+    "answers": [
+      {
+        "text": "Движущиеся элементы",
+        "isCorrect": false
+      },
+      {
+        "text": "Марионетки",
+        "isCorrect": false
+      },
+      {
+        "text": "Большой полупрозрачный экран и плоские цветные марионетки",
+        "isCorrect": true
+      },
+      {
+        "text": "Проволочные фигуры.",
+        "isCorrect": false
+      }
+    ]
+  },
   {
-"id": 1,
-"class": 5,
-"topic": "Графика и Дизайн",
-"question": "14 Вопрос",
-"answers": [
-{"text": " Первый ответ", "isCorrect": false},
-{"text": " Второй ответ ", "isCorrect": true},
-{"text": " Третий ответ ", "isCorrect": false},
-{"text": " Четвертый ответ ", "isCorrect": false}
-]
-},
+    "id": 8,
+    "class": 5,
+    "topic": "Бумага и Оригами",
+    "question": "Что подразумевает термин Озвучивание в реализации художественных идей (например, в театре кукол)?",
+    "answers": [
+      {
+        "text": "Рисование декораций",
+        "isCorrect": false
+      },
+      {
+        "text": "Использование только музыки",
+        "isCorrect": false
+      },
+      {
+        "text": "Передача голосом и звуками того, что куклы изобразить не могут (стук, шелест, плеск воды)",
+        "isCorrect": true
+      },
+      {
+        "text": "Создание костюмов.",
+        "isCorrect": false
+      }
+    ]
+  },
   {
-"id": 1,
-"class": 5,
-"topic": "Графика и Дизайн",
-"question": "15 Вопрос",
-"answers": [
-{"text": " Первый ответ", "isCorrect": false},
-{"text": " Второй ответ ", "isCorrect": true},
-{"text": " Третий ответ ", "isCorrect": false},
-{"text": " Четвертый ответ ", "isCorrect": false}
-]
-},
+    "id": 9,
+    "class": 5,
+    "topic": "Бумага и Оригами",
+    "question": "Что такое Паспарту?",
+    "answers": [
+      {
+        "text": "Деревянная рама",
+        "isCorrect": false
+      },
+      {
+        "text": "Картина",
+        "isCorrect": false
+      },
+      {
+        "text": "Картонная рама с вырезанным отверстием для оформления работы",
+        "isCorrect": true
+      },
+      {
+        "text": "Изображение на холсте.",
+        "isCorrect": false
+      }
+    ]
+  },
   {
-"id": 1,
-"class": 5,
-"topic": "Графика и Дизайн",
-"question": "16 Вопрос",
-"answers": [
-{"text": " Первый ответ", "isCorrect": false},
-{"text": " Второй ответ ", "isCorrect": true},
-{"text": " Третий ответ ", "isCorrect": false},
-{"text": " Четвертый ответ ", "isCorrect": false}
-]
-},
+    "id": 10,
+    "class": 5,
+    "topic": "Бумага и Оригами",
+    "question": "Какой вид кукол использует ширмы, за которыми работают актеры?",
+    "answers": [
+      {
+        "text": "Пальчиковые куклы",
+        "isCorrect": false
+      },
+      {
+        "text": "Тростевые куклы",
+        "isCorrect": false
+      },
+      {
+        "text": "Куклы для театра теней",
+        "isCorrect": true
+      },
+      {
+        "text": "Марионетки.",
+        "isCorrect": false
+      }
+    ]
+  },
   {
-"id": 1,
-"class": 5,
-"topic": "Графика и Дизайн",
-"question": "17 Вопрос",
-"answers": [
-{"text": " Первый ответ", "isCorrect": false},
-{"text": " Второй ответ ", "isCorrect": true},
-{"text": " Третий ответ ", "isCorrect": false},
-{"text": " Четвертый ответ ", "isCorrect": false}
-]
-},
+    "id": 11,
+    "class": 5,
+    "topic": "Бумага и Оригами",
+    "question": "При создании Линейного портрета, что является ключевым для передачи точного сходства?",
+    "answers": [
+      {
+        "text": "Использование яркого цвета",
+        "isCorrect": false
+      },
+      {
+        "text": "Использование теней",
+        "isCorrect": false
+      },
+      {
+        "text": "Соблюдение пропорций и соразмерность всех частей",
+        "isCorrect": true
+      },
+      {
+        "text": "Выбор необычных материалов.",
+        "isCorrect": false
+      }
+    ]
+  },
   {
-"id": 1,
-"class": 5,
-"topic": "Графика и Дизайн",
-"question": "18 Вопрос",
-"answers": [
-{"text": " Первый ответ", "isCorrect": false},
-{"text": " Второй ответ ", "isCorrect": true},
-{"text": " Третий ответ ", "isCorrect": false},
-{"text": " Четвертый ответ ", "isCorrect": false}
-]
-},
+    "id": 12,
+    "class": 5,
+    "topic": "Бумага и Оригами",
+    "question": "Какое изделие казахского ювелирного искусства представляет собой традиционное женское украшение для кос?",
+    "answers": [
+      {
+        "text": "Жүзік (перстень)",
+        "isCorrect": false
+      },
+      {
+        "text": "Білезік (браслет)",
+        "isCorrect": false
+      },
+      {
+        "text": "Шолпы или Шашбау",
+        "isCorrect": true
+      },
+      {
+        "text": "Қапсырма (застежка).",
+        "isCorrect": false
+      }
+    ]
+  },
   {
-"id": 1,
-"class": 5,
-"topic": "Графика и Дизайн",
-"question": "19 Вопрос",
-"answers": [
-{"text": " Первый ответ", "isCorrect": false},
-{"text": " Второй ответ ", "isCorrect": true},
-{"text": " Третий ответ ", "isCorrect": false},
-{"text": " Четвертый ответ ", "isCorrect": false}
-]
-},
+    "id": 13,
+    "class": 5,
+    "topic": "Бумага и Оригами",
+    "question": "Как называются казахские мастера-ювелиры?",
+    "answers": [
+      {
+        "text": "Тасшы (каменщик)",
+        "isCorrect": false
+      },
+      {
+        "text": "Ұста (кузнец)",
+        "isCorrect": false
+      },
+      {
+        "text": "Зергер",
+        "isCorrect": true
+      },
+      {
+        "text": "Шебер (мастер).",
+        "isCorrect": false
+      }
+    ]
+  },
   {
-"id": 1,
-"class": 5,
-"topic": "Графика и Дизайн",
-"question": "20 Вопрос",
-"answers": [
-{"text": " Первый ответ", "isCorrect": false},
-{"text": " Второй ответ ", "isCorrect": true},
-{"text": " Третий ответ ", "isCorrect": false},
-{"text": " Четвертый ответ ", "isCorrect": false}
-]
-},
+    "id": 14,
+    "class": 5,
+    "topic": "Бумага и Оригами",
+    "question": "Какая техника ювелирного искусства включает нанесение рисунка или изображения путем выдавливания на заготовке?",
+    "answers": [
+      {
+        "text": "Литье",
+        "isCorrect": false
+      },
+      {
+        "text": "Ковка",
+        "isCorrect": false
+      },
+      {
+        "text": "Чеканка",
+        "isCorrect": true
+      },
+      {
+        "text": "Филигрань.",
+        "isCorrect": false
+      }
+    ]
+  },
   {
-"id": 1,
-"class": 5,
-"topic": "Графика и Дизайн",
-"question": "17 Вопрос",
-"answers": [
-{"text": " Первый ответ", "isCorrect": false},
-{"text": " Второй ответ ", "isCorrect": true},
-{"text": " Третий ответ ", "isCorrect": false},
-{"text": " Четвертый ответ ", "isCorrect": false}
-]
-},
+    "id": 15,
+    "class": 5,
+    "topic": "Бумага и Оригами",
+    "question": "Что такое Филигрань в ювелирном искусстве?",
+    "answers": [
+      {
+        "text": "Отливка изделий",
+        "isCorrect": false
+      },
+      {
+        "text": "Чеканка по металлу",
+        "isCorrect": false
+      },
+      {
+        "text": "Ажурный или напаянный на металлический фон узор из тонкой проволоки",
+        "isCorrect": true
+      },
+      {
+        "text": "Инкрустация камнями.",
+        "isCorrect": false
+      }
+    ]
+  },
   {
-"id": 1,
-"class": 5,
-"topic": "Графика и Дизайн",
-"question": "18 Вопрос",
-"answers": [
-{"text": " Первый ответ", "isCorrect": false},
-{"text": " Второй ответ ", "isCorrect": true},
-{"text": " Третий ответ ", "isCorrect": false},
-{"text": " Четвертый ответ ", "isCorrect": false}
-]
-},
+    "id": 16,
+    "class": 5,
+    "topic": "Бумага и Оригами",
+    "question": "К какому виду природных материалов относятся камни, песок, глина?",
+    "answers": [
+      {
+        "text": "Растительные",
+        "isCorrect": false
+      },
+      {
+        "text": "Минеральные",
+        "isCorrect": true
+      },
+      {
+        "text": "Животные",
+        "isCorrect": false
+      },
+      {
+        "text": "Искусственные.",
+        "isCorrect": false
+      }
+    ]
+  },
   {
-"id": 1,
-"class": 5,
-"topic": "Графика и Дизайн",
-"question": "19 Вопрос",
-"answers": [
-{"text": " Первый ответ", "isCorrect": false},
-{"text": " Второй ответ ", "isCorrect": true},
-{"text": " Третий ответ ", "isCorrect": false},
-{"text": " Четвертый ответ ", "isCorrect": false}
-]
-},
+    "id": 17,
+    "class": 5,
+    "topic": "Бумага и Оригами",
+    "question": "Какой из перечисленных материалов относится к животным природным материалам?",
+    "answers": [
+      {
+        "text": "Листья",
+        "isCorrect": false
+      },
+      {
+        "text": "Камни",
+        "isCorrect": false
+      },
+      {
+        "text": "Шерсть",
+        "isCorrect": true
+      },
+      {
+        "text": "Солома.",
+        "isCorrect": false
+      }
+    ]
+  },
   {
-"id": 1,
-"class": 5,
-"topic": "Графика и Дизайн",
-"question": "20 Вопрос",
-"answers": [
-{"text": " Первый ответ", "isCorrect": false},
-{"text": " Второй ответ ", "isCorrect": true},
-{"text": " Третий ответ ", "isCorrect": false},
-{"text": " Четвертый ответ ", "isCorrect": false}
-]
-},
-    {
-"id": 1,
-"class": 5,
-"topic": "Графика и Дизайн",
-"question": "15 Вопрос",
-"answers": [
-{"text": " Первый ответ", "isCorrect": false},
-{"text": " Второй ответ ", "isCorrect": true},
-{"text": " Третий ответ ", "isCorrect": false},
-{"text": " Четвертый ответ ", "isCorrect": false}
-]
-},
+    "id": 18,
+    "class": 5,
+    "topic": "Бумага и Оригами",
+    "question": "Что, согласно правилам композиции при работе с природными материалами, должна иметь композиция?",
+    "answers": [
+      {
+        "text": "Только контрастные цвета",
+        "isCorrect": false
+      },
+      {
+        "text": "Максимальный объем",
+        "isCorrect": false
+      },
+      {
+        "text": "Единство и целостность, соответствие элементов общему замыслу",
+        "isCorrect": true
+      },
+      {
+        "text": "Использование только минеральных материалов.",
+        "isCorrect": false
+      }
+    ]
+  },
   {
-"id": 1,
-"class": 5,
-"topic": "Графика и Дизайн",
-"question": "16 Вопрос",
-"answers": [
-{"text": " Первый ответ", "isCorrect": false},
-{"text": " Второй ответ ", "isCorrect": true},
-{"text": " Третий ответ ", "isCorrect": false},
-{"text": " Четвертый ответ ", "isCorrect": false}
-]
-},
+    "id": 19,
+    "class": 5,
+    "topic": "Бумага и Оригами",
+    "question": "Какое изделие из природных материалов можно изготовить, используя ветки деревьев для каркаса и декоративные элементы для украшения?",
+    "answers": [
+      {
+        "text": "Панно",
+        "isCorrect": false
+      },
+      {
+        "text": "Вешалка для одежды",
+        "isCorrect": true
+      },
+      {
+        "text": "Рамка для фотографий",
+        "isCorrect": false
+      },
+      {
+        "text": "Шкатулка.",
+        "isCorrect": false
+      }
+    ]
+  },
   {
-"id": 1,
-"class": 5,
-"topic": "Графика и Дизайн",
-"question": "17 Вопрос",
-"answers": [
-{"text": " Первый ответ", "isCorrect": false},
-{"text": " Второй ответ ", "isCorrect": true},
-{"text": " Третий ответ ", "isCorrect": false},
-{"text": " Четвертый ответ ", "isCorrect": false}
-]
-},
+    "id": 20,
+    "class": 5,
+    "topic": "Бумага и Оригами",
+    "question": "Чем отличаются Эскиз и Технический рисунок?",
+    "answers": [
+      {
+        "text": "Эскиз цветной, а рисунок черно-белый",
+        "isCorrect": false
+      },
+      {
+        "text": "Технический рисунок – предварительный набросок, а эскиз – окончательный",
+        "isCorrect": false
+      },
+      {
+        "text": "Технический рисунок выполняется с соблюдением пропорций, а эскиз — от руки, без чертежных инструментов",
+        "isCorrect": true
+      },
+      {
+        "text": "Они ничем не отличаются.",
+        "isCorrect": false
+      }
+    ]
+  },
   {
-"id": 1,
-"class": 5,
-"topic": "Графика и Дизайн",
-"question": "18 Вопрос",
-"answers": [
-{"text": " Первый ответ", "isCorrect": false},
-{"text": " Второй ответ ", "isCorrect": true},
-{"text": " Третий ответ ", "isCorrect": false},
-{"text": " Четвертый ответ ", "isCorrect": false}
-]
-},
+    "id": 21,
+    "class": 5,
+    "topic": "Бумага и Оригами",
+    "question": "При изготовлении украшений, какой этап предшествует выбору материалов и инструментов?",
+    "answers": [
+      {
+        "text": "Отделка изделия",
+        "isCorrect": false
+      },
+      {
+        "text": "Разработка эскиза (графического изображения)",
+        "isCorrect": true
+      },
+      {
+        "text": "Полировка",
+        "isCorrect": false
+      },
+      {
+        "text": "Продажа изделия.",
+        "isCorrect": false
+      }
+    ]
+  },
   {
-"id": 1,
-"class": 5,
-"topic": "Графика и Дизайн",
-"question": "19 Вопрос",
-"answers": [
-{"text": " Первый ответ", "isCorrect": false},
-{"text": " Второй ответ ", "isCorrect": true},
-{"text": " Третий ответ ", "isCorrect": false},
-{"text": " Четвертый ответ ", "isCorrect": false}
-]
-},
+    "id": 22,
+    "class": 5,
+    "topic": "Бумага и Оригами",
+    "question": "Что такое Білезік?",
+    "answers": [
+      {
+        "text": "Перстень",
+        "isCorrect": false
+      },
+      {
+        "text": "Серьги",
+        "isCorrect": false
+      },
+      {
+        "text": "Браслет",
+        "isCorrect": true
+      },
+      {
+        "text": "Застежка.",
+        "isCorrect": false
+      }
+    ]
+  },
   {
-"id": 1,
-"class": 5,
-"topic": "Графика и Дизайн",
-"question": "20 Вопрос",
-"answers": [
-{"text": " Первый ответ", "isCorrect": false},
-{"text": " Второй ответ ", "isCorrect": true},
-{"text": " Третий ответ ", "isCorrect": false},
-{"text": " Четвертый ответ ", "isCorrect": false}
-]
-},
+    "id": 23,
+    "class": 5,
+    "topic": "Бумага и Оригами",
+    "question": "Какие из перечисленных инструментов являются основными для работы с проволокой при изготовлении ювелирных изделий?",
+    "answers": [
+      {
+        "text": "Пилка, стамеска",
+        "isCorrect": false
+      },
+      {
+        "text": "Ножовка, рубанок",
+        "isCorrect": false
+      },
+      {
+        "text": "Круглогубцы и кусачки",
+        "isCorrect": true
+      },
+      {
+        "text": "Дрель, сверло.",
+        "isCorrect": false
+      }
+    ]
+  },
   {
-"id": 1,
-"class": 5,
-"topic": "Графика и Дизайн",
-"question": "17 Вопрос",
-"answers": [
-{"text": " Первый ответ", "isCorrect": false},
-{"text": " Второй ответ ", "isCorrect": true},
-{"text": " Третий ответ ", "isCorrect": false},
-{"text": " Четвертый ответ ", "isCorrect": false}
-]
-},
+    "id": 24,
+    "class": 5,
+    "topic": "Бумага и Оригами",
+    "question": "Что такое Ковка в ювелирном искусстве?",
+    "answers": [
+      {
+        "text": "Отливка металла в форму",
+        "isCorrect": false
+      },
+      {
+        "text": "Нагревание металла",
+        "isCorrect": false
+      },
+      {
+        "text": "Способ обработки металла давлением",
+        "isCorrect": true
+      },
+      {
+        "text": "Нанесение узора иглой.",
+        "isCorrect": false
+      }
+    ]
+  },
   {
-"id": 1,
-"class": 5,
-"topic": "Графика и Дизайн",
-"question": "18 Вопрос",
-"answers": [
-{"text": " Первый ответ", "isCorrect": false},
-{"text": " Второй ответ ", "isCorrect": true},
-{"text": " Третий ответ ", "isCorrect": false},
-{"text": " Четвертый ответ ", "isCorrect": false}
-]
-},
+    "id": 25,
+    "class": 5,
+    "topic": "Бумага и Оригами",
+    "question": "Какое свойство ювелирных изделий казахского народа, помимо декоративной функции, было наиболее важным?",
+    "answers": [
+      {
+        "text": "Эстетическая функция",
+        "isCorrect": false
+      },
+      {
+        "text": "Защитная, магическая, смысловая функция",
+        "isCorrect": true
+      },
+      {
+        "text": "Транспортировка",
+        "isCorrect": false
+      },
+      {
+        "text": "Пищевая функция.",
+        "isCorrect": false
+      }
+    ]
+  },
   {
-"id": 1,
-"class": 5,
-"topic": "Графика и Дизайн",
-"question": "19 Вопрос",
-"answers": [
-{"text": " Первый ответ", "isCorrect": false},
-{"text": " Второй ответ ", "isCorrect": true},
-{"text": " Третий ответ ", "isCorrect": false},
-{"text": " Четвертый ответ ", "isCorrect": false}
-]
-},
-  {
-"id": 1,
-"class": 5,
-"topic": "Графика и Дизайн",
-"question": "20 Вопрос",
-"answers": [
-{"text": " Первый ответ", "isCorrect": false},
-{"text": " Второй ответ ", "isCorrect": true},
-{"text": " Третий ответ ", "isCorrect": false},
-{"text": " Четвертый ответ ", "isCorrect": false}
-]
-},
-    {
-"id": 1,
-"class": 5,
-"topic": "Графика и Дизайн",
-"question": "15 Вопрос",
-"answers": [
-{"text": " Первый ответ", "isCorrect": false},
-{"text": " Второй ответ ", "isCorrect": true},
-{"text": " Третий ответ ", "isCorrect": false},
-{"text": " Четвертый ответ ", "isCorrect": false}
-]
-},
-  {
-"id": 1,
-"class": 5,
-"topic": "Графика и Дизайн",
-"question": "16 Вопрос",
-"answers": [
-{"text": " Первый ответ", "isCorrect": false},
-{"text": " Второй ответ ", "isCorrect": true},
-{"text": " Третий ответ ", "isCorrect": false},
-{"text": " Четвертый ответ ", "isCorrect": false}
-]
-},
-  {
-"id": 1,
-"class": 5,
-"topic": "Графика и Дизайн",
-"question": "17 Вопрос",
-"answers": [
-{"text": " Первый ответ", "isCorrect": false},
-{"text": " Второй ответ ", "isCorrect": true},
-{"text": " Третий ответ ", "isCorrect": false},
-{"text": " Четвертый ответ ", "isCorrect": false}
-]
-},
-  {
-"id": 1,
-"class": 5,
-"topic": "Графика и Дизайн",
-"question": "18 Вопрос",
-"answers": [
-{"text": " Первый ответ", "isCorrect": false},
-{"text": " Второй ответ ", "isCorrect": true},
-{"text": " Третий ответ ", "isCorrect": false},
-{"text": " Четвертый ответ ", "isCorrect": false}
-]
-},
-  {
-"id": 1,
-"class": 5,
-"topic": "Графика и Дизайн",
-"question": "19 Вопрос",
-"answers": [
-{"text": " Первый ответ", "isCorrect": false},
-{"text": " Второй ответ ", "isCorrect": true},
-{"text": " Третий ответ ", "isCorrect": false},
-{"text": " Четвертый ответ ", "isCorrect": false}
-]
-},
-  {
-"id": 1,
-"class": 5,
-"topic": "Графика и Дизайн",
-"question": "20 Вопрос",
-"answers": [
-{"text": " Первый ответ", "isCorrect": false},
-{"text": " Второй ответ ", "isCorrect": true},
-{"text": " Третий ответ ", "isCorrect": false},
-{"text": " Четвертый ответ ", "isCorrect": false}
-]
-},
-  {
-"id": 1,
-"class": 5,
-"topic": "Графика и Дизайн",
-"question": "17 Вопрос",
-"answers": [
-{"text": " Первый ответ", "isCorrect": false},
-{"text": " Второй ответ ", "isCorrect": true},
-{"text": " Третий ответ ", "isCorrect": false},
-{"text": " Четвертый ответ ", "isCorrect": false}
-]
-},
-  {
-"id": 1,
-"class": 5,
-"topic": "Графика и Дизайн",
-"question": "18 Вопрос",
-"answers": [
-{"text": " Первый ответ", "isCorrect": false},
-{"text": " Второй ответ ", "isCorrect": true},
-{"text": " Третий ответ ", "isCorrect": false},
-{"text": " Четвертый ответ ", "isCorrect": false}
-]
-},
-  {
-"id": 1,
-"class": 5,
-"topic": "Графика и Дизайн",
-"question": "19 Вопрос",
-"answers": [
-{"text": " Первый ответ", "isCorrect": false},
-{"text": " Второй ответ ", "isCorrect": true},
-{"text": " Третий ответ ", "isCorrect": false},
-{"text": " Четвертый ответ ", "isCorrect": false}
-]
-},
-  {
-"id": 1,
-"class": 5,
-"topic": "Графика и Дизайн",
-"question": "20 Вопрос",
-"answers": [
-{"text": " Первый ответ", "isCorrect": false},
-{"text": " Второй ответ ", "isCorrect": true},
-{"text": " Третий ответ ", "isCorrect": false},
-{"text": " Четвертый ответ ", "isCorrect": false}
-]
-},
-    {
-"id": 1,
-"class": 5,
-"topic": "Графика и Дизайн",
-"question": "15 Вопрос",
-"answers": [
-{"text": " Первый ответ", "isCorrect": false},
-{"text": " Второй ответ ", "isCorrect": true},
-{"text": " Третий ответ ", "isCorrect": false},
-{"text": " Четвертый ответ ", "isCorrect": false}
-]
-},
-  {
-"id": 1,
-"class": 5,
-"topic": "Графика и Дизайн",
-"question": "16 Вопрос",
-"answers": [
-{"text": " Первый ответ", "isCorrect": false},
-{"text": " Второй ответ ", "isCorrect": true},
-{"text": " Третий ответ ", "isCorrect": false},
-{"text": " Четвертый ответ ", "isCorrect": false}
-]
-},
-  {
-"id": 1,
-"class": 5,
-"topic": "Графика и Дизайн",
-"question": "17 Вопрос",
-"answers": [
-{"text": " Первый ответ", "isCorrect": false},
-{"text": " Второй ответ ", "isCorrect": true},
-{"text": " Третий ответ ", "isCorrect": false},
-{"text": " Четвертый ответ ", "isCorrect": false}
-]
-},
-  {
-"id": 1,
-"class": 5,
-"topic": "Графика и Дизайн",
-"question": "18 Вопрос",
-"answers": [
-{"text": " Первый ответ", "isCorrect": false},
-{"text": " Второй ответ ", "isCorrect": true},
-{"text": " Третий ответ ", "isCorrect": false},
-{"text": " Четвертый ответ ", "isCorrect": false}
-]
-},
-  {
-"id": 1,
-"class": 5,
-"topic": "Графика и Дизайн",
-"question": "19 Вопрос",
-"answers": [
-{"text": " Первый ответ", "isCorrect": false},
-{"text": " Второй ответ ", "isCorrect": true},
-{"text": " Третий ответ ", "isCorrect": false},
-{"text": " Четвертый ответ ", "isCorrect": false}
-]
-},
-  {
-"id": 1,
-"class": 5,
-"topic": "Графика и Дизайн",
-"question": "20 Вопрос",
-"answers": [
-{"text": " Первый ответ", "isCorrect": false},
-{"text": " Второй ответ ", "isCorrect": true},
-{"text": " Третий ответ ", "isCorrect": false},
-{"text": " Четвертый ответ ", "isCorrect": false}
-]
-},
-  {
-"id": 1,
-"class": 5,
-"topic": "Графика и Дизайн",
-"question": "17 Вопрос",
-"answers": [
-{"text": " Первый ответ", "isCorrect": false},
-{"text": " Второй ответ ", "isCorrect": true},
-{"text": " Третий ответ ", "isCorrect": false},
-{"text": " Четвертый ответ ", "isCorrect": false}
-]
-},
-  {
-"id": 1,
-"class": 5,
-"topic": "Графика и Дизайн",
-"question": "18 Вопрос",
-"answers": [
-{"text": " Первый ответ", "isCorrect": false},
-{"text": " Второй ответ ", "isCorrect": true},
-{"text": " Третий ответ ", "isCorrect": false},
-{"text": " Четвертый ответ ", "isCorrect": false}
-]
-},
-  {
-"id": 1,
-"class": 5,
-"topic": "Графика и Дизайн",
-"question": "19 Вопрос",
-"answers": [
-{"text": " Первый ответ", "isCorrect": false},
-{"text": " Второй ответ ", "isCorrect": true},
-{"text": " Третий ответ ", "isCorrect": false},
-{"text": " Четвертый ответ ", "isCorrect": false}
-]
-},
-  {
-"id": 1,
-"class": 5,
-"topic": "Графика и Дизайн",
-"question": "20 Вопрос",
-"answers": [
-{"text": " Первый ответ", "isCorrect": false},
-{"text": " Второй ответ ", "isCorrect": true},
-{"text": " Третий ответ ", "isCorrect": false},
-{"text": " Четвертый ответ ", "isCorrect": false}
-]
-}
-]
+    "id": 26,
+    "class": 5,
+    "topic": "Бумага и Оригами",
+    "question": "Какое правило, связанное с рабочим местом, необходимо соблюдать при работе с проволокой?",
+    "answers": [
+      {
+        "text": "Проволока может лежать в любом месте",
+        "isCorrect": false
+      },
+      {
+        "text": "Хранить проволоку в бухтах или мотках, чтобы концы были загнуты внутрь",
+        "isCorrect": true
+      },
+      {
+        "text": "Работать без перчаток",
+        "isCorrect": false
+      },
+      {
+        "text": "Использовать только ржавую проволоку.",
+        "isCorrect": false
+      }
+    ]
+  }
+    ]
