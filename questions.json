@@ -539,11 +539,11 @@
       },
       {
         "text": "Резьба;",
-        "isCorrect": true
+        "isCorrect": false
       },
       {
         "text": "Тиснение (Тильден);",
-        "isCorrect": false
+        "isCorrect": true
       },
       {
         "text": "Плетение.",
